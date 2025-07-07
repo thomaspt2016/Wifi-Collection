@@ -14,3 +14,4 @@ class CustomUser(AbstractUser):
         otp_number=str(randint(1000,9999))+str(self.id)
         self.otp=otp_number
         self.save()
+        return otp_number
