@@ -22,4 +22,7 @@ app_name = 'common'
 urlpatterns = [
     path('', views.Homeview.as_view(), name='home'),
     path('aboutus', views.AboutUsview.as_view(), name='aboutus'),
+    path('pricing', views.PricingView.as_view(), name='pricing'),
+    path('signup', views.SignupView.as_view(), name='signup'),
+    path('login', views.LoginformView.as_view(), name='login')
 ]

@@ -10,3 +10,15 @@ class Homeview(View):
 class AboutUsview(View):
     def get(self,request):
         return render(request, 'common/aboutus.html')
+
+class PricingView(View):
+    def get(self, request):
+        return render(request, 'common/pricing.html')
+
+class SignupView(View):
+    def get(self, request):
+        return render(request, 'common/sighnup.html')
+
+class LoginformView(View):
+    def get(self, request):
+        return render(request, 'common/login.html')

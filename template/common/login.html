@@ -1,0 +1,145 @@
+{% extends 'common/base.html' %}
+{% load static %} {# Load the static files tag for images #}
+
+{% block title %}
+<title>Login</title>
+{% endblock %}
+
+{% block content %}
+{# This div now acts as the primary flex-grow content area between the body and the footer. #}
+{# It contains both the navbar and the login page content. #}
+<div class="flex flex-col flex-grow bg-gray-100 dark:bg-gray-800">
+
+    {# Navbar with linear gradient background - Reusing the same structure as home.html #}
+    <nav class="bg-gradient-to-r from-blue-500 to-purple-600 p-4 shadow-md">
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
+            {# Logo and site title #}
+            <a href="{% url 'common:home' %}" class="flex items-center space-x-3 rtl:space-x-reverse">
+                {# Using Django's static tag for the image path #}
+                <img src="{% static 'Icons/wifi-svgrepo-com' %}.svg" class="h-8" alt="Connect Logo" />
+                <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">Connect</span>
+            </a>
+
+            {# Mobile menu toggle button #}
+            <button data-collapse-toggle="navbar-default" type="button"
+                class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-white rounded-lg md:hidden hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                aria-controls="navbar-default" aria-expanded="false">
+                <span class="sr-only">Open main menu</span>
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M1 1h15M1 7h15M1 13h15" />
+                </svg>
+            </button>
+
+            {# Desktop navigation links #}
+            <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+                <ul
+                    class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-blue-500 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-transparent dark:bg-gray-800 md:dark:bg-transparent dark:border-gray-700">
+                    <li>
+                        {# Home link #}
+                        <a href="{% url 'common:home' %}"
+                            class="block py-2 px-3 text-white rounded-sm hover:bg-blue-700 md:hover:bg-blue-700 md:p-0">Home</a>
+                    </li>
+                    <li>
+                        {# About link #}
+                        <a href="{% url 'common:aboutus' %}"
+                            class="block py-2 px-3 text-white rounded-sm hover:bg-blue-700 md:hover:bg-blue-700 md:border-0 md:hover:text-white md:p-0 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white">About</a>
+                    </li>
+                    <li>
+                        {# Pricing link #}
+                        <a href="{% url 'common:pricing' %}"
+                            class="block py-2 px-3 text-white rounded-sm hover:bg-blue-700 md:hover:bg-blue-700 md:border-0 md:hover:text-white md:p-0 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white">Pricing</a>
+                    </li>
+                    <li>
+                        {# Current page link - Login link, adjusted for consistency #}
+                        <a href="{% url 'common:login' %}"
+                            class="block py-2 px-3 text-white rounded-sm hover:bg-blue-700 md:hover:bg-blue-700 md:border-0 md:hover:text-white md:p-0 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white"
+                            aria-current="page">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {# Main content area for the Login page - now with two columns #}
+    <section class="bg-gray-100 dark:bg-gray-800 flex-grow py-8 px-4 flex items-center justify-center">
+        <div class="container mx-auto px-4 py-6 flex-grow flex items-stretch justify-center">
+            {# Flex container for two columns, using items-stretch to ensure equal height #}
+            <div class="flex flex-col md:flex-row md:space-x-8 h-full w-full max-w-screen-xl items-stretch justify-center">
+
+                {# LEFT Column (Signup Form) #}
+                <div class="w-full md:w-1/4 p-6 rounded-lg shadow-lg mb-4 md:mb-0
+                            bg-gradient-to-tl from-pink-500 to-red-600
+                            text-white flex flex-col justify-center items-center min-h-[550px]">
+                    <h2 class="mb-4 text-4xl tracking-tight font-extrabold">Join Us!</h2>
+                    <p class="mb-5 font-light text-xl">Create your account to get started with Connect.</p>
+
+                    <form class="max-w-md mx-auto w-full">
+                        <div class="relative z-0 w-full mb-5 group">
+                            <input type="email" name="floating_email" id="floating_email" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                            <label for="floating_email" class="peer-focus:font-medium absolute text-sm text-white duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Email address</label>
+                        </div>
+                        <div class="relative z-0 w-full mb-5 group">
+                            <input type="password" name="floating_password" id="floating_password" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                            <label for="floating_password" class="peer-focus:font-medium absolute text-sm text-white duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Password</label>
+                        </div>
+                        <div class="relative z-0 w-full mb-5 group">
+                            <input type="password" name="repeat_password" id="floating_repeat_password" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                            <label for="floating_repeat_password" class="peer-focus:font-medium absolute text-sm text-white duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Confirm password</label>
+                        </div>
+                        <div class="grid md:grid-cols-2 md:gap-6">
+                            <div class="relative z-0 w-full mb-5 group">
+                                <input type="text" name="floating_first_name" id="floating_first_name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                                <label for="floating_first_name" class="peer-focus:font-medium absolute text-sm text-white duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">First name</label>
+                            </div>
+                            <div class="relative z-0 w-full mb-5 group">
+                                <input type="text" name="floating_last_name" id="floating_last_name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                                <label for="floating_last_name" class="peer-focus:font-medium absolute text-sm text-white duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Last name</label>
+                            </div>
+                        </div>
+                        <div class="grid md:grid-cols-2 md:gap-6">
+                            <div class="relative z-0 w-full mb-5 group">
+                                <input type="tel" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" name="floating_phone" id="floating_phone" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                                <label for="floating_phone" class="peer-focus:font-medium absolute text-sm text-white duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Phone number (123-456-7890)</label>
+                            </div>
+                            <div class="relative z-0 w-full mb-5 group">
+                                <input type="text" name="floating_company" id="floating_company" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required />
+                                <label for="floating_company" class="peer-focus:font-medium absolute text-sm text-white duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Company (Ex. Google)</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="text-blue-600 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-white dark:hover:bg-gray-100 dark:focus:ring-blue-800">Submit</button>
+                    </form>
+
+                </div>
+
+                {# RIGHT Column (Login Form) #}
+                <div class="w-full md:w-3/4 p-6 rounded-lg shadow-lg mb-4 md:mb-0
+                            bg-gradient-to-br from-green-400 to-blue-500
+                            text-white flex flex-col justify-center items-center min-h-[550px]">
+                    <h2 class="mb-4 text-4xl tracking-tight font-extrabold">Welcome Back!</h2>
+                    <p class="mb-5 font-light text-xl">Log in to your Connect account to continue.</p>
+
+                    <form class="max-w-sm mx-auto w-full"> {# Added w-full to form to make it responsive within its column #}
+                        <div class="mb-5">
+                            <label for="email" class="block mb-2 text-sm font-medium text-white">Your email</label>
+                            <input type="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@flowbite.com" required />
+                        </div>
+                        <div class="mb-5">
+                            <label for="password" class="block mb-2 text-sm font-medium text-white">Your password</label>
+                            <input type="password" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                        </div>
+                        <div class="flex items-start mb-5">
+                            <div class="flex items-center h-5">
+                                <input id="remember" type="checkbox" value="" class="w-4 h-4 border border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" required />
+                            </div>
+                            <label for="remember" class="ms-2 text-sm font-medium text-white">Remember me</label>
+                        </div>
+                        <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900">Login to your account</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}
