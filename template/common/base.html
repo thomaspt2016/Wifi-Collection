@@ -1,0 +1,38 @@
+<!doctype html>
+
+{% load static %}
+<html>
+
+<head>
+    {% block title %}
+    {% endblock %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+</head>
+
+{# The body is now a flex container to push the footer to the bottom #}
+<body class="min-h-screen flex flex-col">
+    {# Navbar will go here if it's part of the base, or within content block if page-specific #}
+
+    {# This block will contain the main content of each page, and will flex-grow #}
+    {% block content %}
+    {% endblock %}
+
+    {# Footer section - now placed in base.html, pushed to bottom by mt-auto #}
+    <footer class="bg-gradient-to-r from-blue-500 to-purple-600 py-8 text-white text-center shadow-inner mt-auto">
+        <div class="max-w-screen-xl mx-auto px-4">
+            <p>&copy; 2025 Connect. All rights reserved.</p>
+            <div class="mt-4 flex justify-center space-x-6">
+                <a href="#" class="hover:text-blue-200">Privacy Policy</a>
+                <a href="#" class="hover:text-blue-200">Terms of Service</a>
+                <a href="#" class="hover:text-blue-200">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+</body>
+
+</html>

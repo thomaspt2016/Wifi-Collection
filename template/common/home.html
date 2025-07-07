@@ -1,0 +1,105 @@
+{% extends 'common/base.html' %}
+{% load static %} {# Load the static files tag for images #}
+
+{% block title %}
+<title>Home</title>
+{% endblock %}
+
+{% block content %}
+{# This div now acts as the primary flex-grow content area between the body and the footer. #}
+{# It contains both the navbar and the columns. #}
+<div class="flex flex-col flex-grow bg-gray-100 dark:bg-gray-800">
+
+    {# Navbar with linear gradient background #}
+    <nav class="bg-gradient-to-r from-blue-500 to-purple-600 p-4 shadow-md">
+        <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
+            {# Logo and site title #}
+            <a href="#" class="flex items-center space-x-3 rtl:space-x-reverse">
+                {# Using Django's static tag for the image path #}
+                <img src="{% static 'Icons/wifi-svgrepo-com' %}.svg" class="h-8" alt="Connect Logo" />
+                <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">Connect</span>
+            </a>
+
+            {# Mobile menu toggle button #}
+            <button data-collapse-toggle="navbar-default" type="button"
+                class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-white rounded-lg md:hidden hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 dark:text-gray-200 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                aria-controls="navbar-default" aria-expanded="false">
+                <span class="sr-only">Open main menu</span>
+                <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M1 1h15M1 7h15M1 13h15" />
+                </svg>
+            </button>
+
+            {# Desktop navigation links #}
+            <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+                <ul
+                    class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-blue-500 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-transparent dark:bg-gray-800 md:dark:bg-transparent dark:border-gray-700">
+                    <li>
+                        {# Current page link - adjusted hover for consistency #}
+                        <a href="#"
+                            class="block py-2 px-3 text-white rounded-sm hover:bg-blue-700 md:hover:bg-blue-700 md:p-0"
+                            aria-current="page">Home</a>
+                    </li>
+                    <li>
+                        {# Other links - ensured text is white and hover background is consistent #}
+                        <a href="#"
+                            class="block py-2 px-3 text-white rounded-sm hover:bg-blue-700 md:hover:bg-blue-700 md:border-0 md:hover:text-white md:p-0 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white">About</a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="block py-2 px-3 text-white rounded-sm hover:bg-blue-700 md:hover:bg-blue-700 md:border-0 md:hover:text-white md:p-0 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white">Pricing</a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="block py-2 px-3 text-white rounded-sm hover:bg-blue-700 md:hover:bg-blue-700 md:border-0 md:hover:text-white md:p-0 dark:text-white dark:hover:bg-gray-700 dark:hover:text-white">Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {# Content area for columns - now flex-grow to take remaining height below navbar #}
+    <div class="container mx-auto px-4 py-6 flex-grow flex items-stretch justify-center">
+        {# Flex container for two columns, using items-stretch to ensure equal height #}
+        <div class="flex flex-col md:flex-row md:space-x-8 h-full w-full max-w-screen-xl items-stretch justify-center">
+
+            {# This is the LEFT Column (Image Column) - remains md:w-1/4 #}
+            <div class="w-full md:w-1/4 p-2 rounded-lg shadow-lg mb-4 md:mb-0
+                        bg-gradient-to-tl from-pink-500 to-red-600
+                        text-white flex flex-col justify-center items-center min-h-[550px]">
+                {# Grid container for images: 4 columns, each image takes 2 columns #}
+                <div class="grid grid-cols-4 gap-3 w-full h-full p-1">
+                    <img src="{% static 'homepage/img1.png' %}" alt="Image 1" class="col-span-1 w-1/2 h-auto object-cover rounded-lg shadow-md">
+                    <img src="{% static 'homepage/img2.png' %}" alt="Image 2" class="col-span-2  h-auto object-cover rounded-lg shadow-md">
+                    <img src="{% static 'homepage/img3.png' %}" alt="Image 3" class="col-span-1 w-1/2 h-auto object-cover rounded-lg shadow-md">
+                    <img src="{% static 'homepage/img4.png' %}" alt="Image 4" class="col-span-2   h-auto object-cover rounded-lg shadow-md">
+                </div>
+            </div>
+
+            {# This is the RIGHT Column (Text Column) - set to md:w-1/12 #}
+            <div class="w-full md:w-1/ p-6 rounded-lg shadow-lg mb-4 md:mb-0
+                        bg-gradient-to-br from-green-400 to-blue-500
+                        text-white flex flex-col justify-center min-h-[550px]"> {# Changed justify-between to justify-center here #}
+                <div>
+                    <h1 class="text-3xl font-bold mb-4">Experience the future of connectivity!</h1>
+                    {# New, detailed text about high-speed internet #}
+                    <p class="mt-4 text-lg">
+                        Experience the future of connectivity with our **high-speed internet**. Say goodbye to buffering and slow downloads, and hello to **seamless streaming**, instant gaming, and crystal-clear video calls. Our **robust fiber-optic network** delivers lightning-fast speeds directly to your home or business, ensuring you stay connected and productive.
+                    </p>
+                    <p class="mt-2 text-md">
+                        Whether you're working remotely, educating your children, or enjoying your favorite entertainment, our **reliable and ultra-fast internet** empowers your digital life. Unlock a world of possibilities with the speed you deserve.
+                    </p>
+                </div>
+                {# Button for Right Column - color matched to gradient's 'to' color #}
+                <button
+                    class="mt-6 px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 self-center"> {# Removed self-start and added self-center #}
+                    Discover More
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}
