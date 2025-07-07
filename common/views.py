@@ -22,3 +22,7 @@ class SignupView(View):
 class LoginformView(View):
     def get(self, request):
         return render(request, 'common/login.html')
+
+class ContactusView(View):
+    def get(self, request):
+        return render(request, 'common/contactus.html')

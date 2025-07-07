@@ -24,5 +24,6 @@ urlpatterns = [
     path('aboutus', views.AboutUsview.as_view(), name='aboutus'),
     path('pricing', views.PricingView.as_view(), name='pricing'),
     path('signup', views.SignupView.as_view(), name='signup'),
-    path('login', views.LoginformView.as_view(), name='login')
+    path('login', views.LoginformView.as_view(), name='login'),
+    path('contactus', views.ContactusView.as_view(), name='contactus'),
 ]
