@@ -33,6 +33,7 @@ class SignupView(View):
             print("form is valid")
             user=form_instance.save(commit=False)
             user.is_active = False
+            user.username = user.email
             user.save()
             otp = user.generate_otp()
             send_mail(
@@ -81,6 +82,23 @@ class OtpVerificationView(View):
 class LoginformView(View):
     def get(self, request):
         return render(request, 'common/login.html')
+    
+    def post(self, request):
+        name = request.POST.get('username')
+        pwd = request.POST.get('password')
+        print(name, pwd)
+        user = authenticate(username=name, password=pwd)
+        print(user)
+        if user:
+            login(request, user)
+            u = request.user
+            if user.is_superuser:
+                return HttpResponse("Login Successfull")
+            else:
+                return HttpResponse("Login Successfull")
+        else:
+            print("Invalid user credentials")
+            return HttpResponse("Invalid username or password")
 
 class ContactusView(View):
     def get(self, request):
