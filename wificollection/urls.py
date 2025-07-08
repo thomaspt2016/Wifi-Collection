@@ -18,14 +18,15 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf.urls.static import static
 from django.conf import settings
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('common.urls')),
     path('common/', include('common.urls')),
     path('clients/',include('clients.urls')),
     path('coagents/',include('coagents.urls')),
-    path('owner/', include('owner.urls'))
+    path('owner/', include('owner.urls')),
+    path('auth/', include('common.urls', namespace='common')),
+
 ]
 
 if settings.DEBUG:

@@ -8,7 +8,7 @@
 {% block content %}
 <div class="flex flex-col flex-grow bg-gray-100 dark:bg-gray-800">
 
-  <nav class="bg-gradient-to-r from-blue-500 to-purple-600 p-4 shadow-md">
+<nav class="bg-gradient-to-r from-blue-500 to-purple-600 p-4 shadow-md">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
       <a href="{% url 'common:home' %}" class="flex items-center space-x-3 rtl:space-x-reverse">
         <img src="{% static 'Icons/wifi-svgrepo-com' %}.svg" class="h-8" alt="Connect Logo" />
@@ -76,109 +76,26 @@
           <h2 class="mb-4 text-4xl tracking-tight font-extrabold">Welcome Back!</h2>
           <p class="mb-5 font-light text-xl">Log in to your Connect account to continue.</p>
 
-          <form class="max-w-sm mx-auto w-full" id="loginForm" method="post">
-            {% csrf_token %}
+          <form class="max-w-sm mx-auto w-full">
             <div class="mb-5">
               <label for="email" class="block mb-2 text-sm font-medium text-white">Your email</label>
-              <input type="email" name="username" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@flowbite.com" required />
+              <input type="email" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@flowbite.com" required />
             </div>
             <div class="mb-5">
               <label for="password" class="block mb-2 text-sm font-medium text-white">Your password</label>
-              <input type="password" id="password" name="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+              <input type="password" id="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
             </div>
-            <div class="flex items-start mb-5 justify-between">
+            <div class="flex items-start mb-5">
               <div class="flex items-center h-5">
-                <input id="remember" type="checkbox" value="" class="w-4 h-4 border border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" />
-                <label for="remember" class="ms-2 text-sm font-medium text-white">Remember me</label>
+                <input id="remember" type="checkbox" value="" class="w-4 h-4 border border-gray-300 rounded-sm bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" required />
               </div>
-              <a href="{% url 'common:password_reset' %}" class="text-sm text-white hover:underline">Forgot password?</a>
+              <label for="remember" class="ms-2 text-sm font-medium text-white">Remember me</label>
             </div>
-            {# NEW CONTAINER FOR THE BUTTON TO CENTER IT #}
-            <div class="flex justify-center">
-              <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900">Login to your account</button>
-            </div>
+            <button type="submit" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900">Login to your account</button>
           </form>
         </div>
       </div>
     </div>
-  </section>
+</section>
 </div>
-
-<script>
-  // Ensure the DOM is fully loaded before running the script
-  document.addEventListener('DOMContentLoaded', function() {
-    // Get references to the form elements
-    const loginForm = document.getElementById('loginForm');
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const rememberMeCheckbox = document.getElementById('remember');
-
-    // Define keys for local storage
-    const LS_EMAIL_KEY = 'rememberMeEmail';
-    const LS_PASSWORD_KEY = 'rememberMePassword';
-    const LS_REMEMBER_ME_CHECKED_KEY = 'rememberMeChecked';
-
-    /**
-     * Loads saved credentials from local storage and pre-fills the form.
-     */
-    function loadCredentials() {
-      const rememberMeChecked = localStorage.getItem(LS_REMEMBER_ME_CHECKED_KEY) === 'true';
-      if (rememberMeChecked) {
-        const savedEmail = localStorage.getItem(LS_EMAIL_KEY);
-        const savedPassword = localStorage.getItem(LS_PASSWORD_KEY);
-
-        if (savedEmail) {
-          emailInput.value = savedEmail;
-        }
-        if (savedPassword) {
-          passwordInput.value = savedPassword;
-        }
-        rememberMeCheckbox.checked = true;
-      } else {
-        // Ensure checkbox is unchecked if not set to remember
-        rememberMeCheckbox.checked = false;
-      }
-    }
-
-    /**
-     * Saves or clears credentials in local storage based on the checkbox state.
-     */
-    function handleRememberMe() {
-      if (rememberMeCheckbox.checked) {
-        localStorage.setItem(LS_EMAIL_KEY, emailInput.value);
-        localStorage.setItem(LS_PASSWORD_KEY, passwordInput.value);
-        localStorage.setItem(LS_REMEMBER_ME_CHECKED_KEY, 'true');
-      } else {
-        localStorage.removeItem(LS_EMAIL_KEY);
-        localStorage.removeItem(LS_PASSWORD_KEY);
-        localStorage.setItem(LS_REMEMBER_ME_CHECKED_KEY, 'false'); // Explicitly set to false
-      }
-    }
-
-    // --- Event Listeners ---
-
-    // 1. Load credentials when the page loads
-    loadCredentials();
-
-    // 2. Add event listener for form submission
-    // This will save/clear credentials when the user attempts to log in
-    loginForm.addEventListener('submit', function(event) {
-      handleRememberMe();
-    });
-
-    // 3. Add event listener for the checkbox change
-    // This ensures the 'remember me' preference is saved even if the form isn't submitted immediately
-    rememberMeCheckbox.addEventListener('change', function() {
-      if (!this.checked) {
-        localStorage.removeItem(LS_EMAIL_KEY);
-        localStorage.removeItem(LS_PASSWORD_KEY);
-        localStorage.setItem(LS_REMEMBER_ME_CHECKED_KEY, 'false');
-      } else {
-        localStorage.setItem(LS_EMAIL_KEY, emailInput.value);
-        localStorage.setItem(LS_PASSWORD_KEY, passwordInput.value);
-        localStorage.setItem(LS_REMEMBER_ME_CHECKED_KEY, 'true');
-      }
-    });
-  });
-</script>
 {% endblock %}
