@@ -16,6 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from owner import views
+app_name = 'owner'
 
 urlpatterns = [
+    path('ownerhome',views.Ownerhomeview.as_view(),name='ownerhome'),
+    path('ownclients',views.OwnerClientsView.as_view(),name='ownclients')
 ]

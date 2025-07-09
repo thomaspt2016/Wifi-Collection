@@ -52,4 +52,5 @@ urlpatterns = [
              template_name='common/password_reset_complete.html'
          ),
          name='password_reset_complete'),
+    path('signout',views.SignoutView.as_view(),name='signout'),
 ]

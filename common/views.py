@@ -12,7 +12,11 @@ from .models import CustomUser
 
 class Homeview(View):
     def get(self,request):
-        return render(request, 'common/home.html')
+        if request.user.is_authenticated:
+            if request.user.role == "owner":
+                return redirect('owner:ownerhome')
+        else:
+            return render(request, 'common/home.html')
 
 class AboutUsview(View):
     def get(self,request):
@@ -91,11 +95,8 @@ class LoginformView(View):
         print(user)
         if user:
             login(request, user)
-            u = request.user
-            if user.is_superuser:
-                return HttpResponse("Login Successfull")
-            else:
-                return HttpResponse("Login Successfull")
+            if user.role == "owner":
+                return redirect('owner:ownerhome')
         else:
             print("Invalid user credentials")
             return HttpResponse("Invalid username or password")
@@ -103,3 +104,8 @@ class LoginformView(View):
 class ContactusView(View):
     def get(self, request):
         return render(request, 'common/contactus.html')
+
+class SignoutView(View):
+    def get(self,request):
+        logout(request)
+        return redirect('common:home')

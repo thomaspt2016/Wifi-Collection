@@ -14,9 +14,9 @@
     <nav class="bg-gradient-to-r from-blue-500 to-purple-600 p-4 shadow-md">
         <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto">
             {# Logo and site title #}
-            <a href="{% url 'common:aboutus' %}" class="flex items-center space-x-3 rtl:space-x-reverse">
+            <a href="{% url 'common:home' %}" class="flex items-center space-x-3 rtl:space-x-reverse">
                 {# Using Django's static tag for the image path #}
-                <img src="{% static 'Icons/wifi-svgrepo-com' %}.svg" class="h-8" alt="Connect Logo" />
+                <img src="{% static 'Icons/wifi-svgrepo-com.svg' %}" class="h-8" alt="Connect Logo" />
                 <span class="self-center text-2xl font-semibold whitespace-nowrap text-white">Connect</span>
             </a>
 
@@ -37,7 +37,7 @@
                     class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-blue-500 md:flex-row md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0 md:bg-transparent dark:bg-gray-800 md:dark:bg-transparent dark:border-gray-700">
                     <li>
                         {# Current page link - adjusted hover for consistency #}
-                        <a href="{% url 'common:aboutus' %}"
+                        <a href="{% url 'common:home' %}"
                             class="block py-2 px-3 text-white rounded-sm hover:bg-blue-700 md:hover:bg-blue-700 md:p-0"
                             aria-current="page">Home</a>
                     </li>
