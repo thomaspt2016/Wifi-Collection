@@ -21,5 +21,13 @@ app_name = 'owner'
 
 urlpatterns = [
     path('ownerhome',views.Ownerhomeview.as_view(),name='ownerhome'),
-    path('ownclients',views.OwnerClientsView.as_view(),name='ownclients')
+    path('ownclients',views.OwnerClientsView.as_view(),name='ownclients'),
+    path('collectionagents',views.CollectionAgentsView.as_view(),name='collectionagents'),
+    path('internetplans', views.InternetplansView.as_view(), name='internetplans'),
+    path('codeupload', views.CodeUploadView.as_view(), name='codeupload'),
+    path('codepoolstat', views.CodePoolStatView.as_view(), name='codepoolstat'),
+    path('payments', views.PaymentsView.as_view(), name='payments'),
+    path('reports', views.ReportsView.as_view(), name='reports'),
+    path('generalsetting', views.GeneralSettingView.as_view(), name='generalsetting'),
+    path('apisetting', views.APISettingView.as_view(), name='apisetting'),
 ]
