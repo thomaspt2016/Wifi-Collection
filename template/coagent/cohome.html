@@ -1,0 +1,279 @@
+<!doctype html>
+{% load static %}
+<html>
+
+<head>
+    {% block title %}
+    <title>Collection Agent Home</title>
+    {% endblock %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <style>
+        /* Set the default font for the body */
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Space blue to green gradient */
+            background: linear-gradient(to bottom, #0A192F, #1E40AF, #10B981); /* Deep Blue, Royal Blue, Emerald Green */
+            /* Ensure content is above the gradient */
+            position: relative;
+            z-index: 0;
+        }
+
+        /* Base styles for the sidebar when collapsed on small screens */
+        #main-sidebar {
+            width: 4rem;
+            /* Corresponds to Tailwind's w-16 for collapsed state */
+            padding-left: 0.5rem;
+            /* Corresponds to Tailwind's p-2 */
+            padding-right: 0.5rem;
+            /* Corresponds to Tailwind's p-2 */
+            /* Smooth transition for width and padding changes */
+            transition: width 0.3s ease-in-out, padding 0.3s ease-in-out;
+            overflow-y: hidden;
+            /* Hide vertical scrollbar when collapsed */
+        }
+
+        /* Hide text elements within the collapsed sidebar */
+        #main-sidebar .sidebar-text,
+        #main-sidebar .profile-text,
+        #main-sidebar .logo-text {
+            white-space: nowrap;
+            /* Prevent text wrapping */
+            opacity: 0;
+            /* Make text invisible */
+            width: 0;
+            /* Collapse text width */
+            overflow: hidden;
+            /* Hide overflowing text */
+            pointer-events: none;
+            /* Prevent interaction when hidden */
+            /* Smooth transition for opacity and width changes */
+            transition: opacity 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+
+        /* Media query for larger screens (e.g., 'lg' breakpoint, typically 1024px) */
+        @media (min-width: 1024px) {
+            /* Expand the sidebar on large screens */
+            #main-sidebar {
+                width: 16rem;
+                /* Corresponds to Tailwind's lg:w-64 - Always expanded */
+                padding-left: 1rem;
+                /* Corresponds to Tailwind's lg:p-4 */
+                padding-right: 1rem;
+                /* Corresponds to Tailwind's lg:p-4 */
+            }
+
+            /* Show text elements within the expanded sidebar */
+            #main-sidebar .sidebar-text,
+            #main-sidebar .profile-text,
+            #main-sidebar .logo-text {
+                opacity: 1;
+                /* Make text visible */
+                width: auto;
+                /* Allow text to take its natural width */
+                overflow: visible;
+                /* Show overflowing text */
+                pointer-events: auto;
+                /* Allow interaction */
+            }
+        }
+
+        /* Custom gradient for the footer */
+        .footer-gradient {
+            background-image: linear-gradient(to right, #1a202c, #2d3748, #1a202c);
+            /* A dark gray to slightly lighter gray and back for a subtle effect */
+        }
+
+        .dark .footer-gradient {
+            background-image: linear-gradient(to right, #1a202c, #0f172a, #1a202c);
+            /* Darker gradient for dark mode */
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col font-inter gap-y-2 dark:bg-gray-950">
+
+    <div class="flex flex-grow gap-x-4 p-2">
+        <aside id="main-sidebar"
+            class="bg-blue-gray-100 dark:bg-gray-900 flex-shrink-0 rounded-lg shadow-md shadow-teal-700">
+            <div class="h-full px-3 pb-4 flex flex-col">
+                <div class="flex items-center justify-between rtl:justify-end mb-8 pt-4">
+                    <a href="#" class="flex ms-2 md:me-24">
+                        <img src="{% static 'Icons/wifi-svgrepo-com.svg' %}" class="h-8 me-3" alt="Connect Logo" />
+                        <span
+                            class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white logo-text text-teal-800">Connect</span>
+                    </a>
+                </div>
+
+                <div class="flex flex-col items-center mb-10">
+                    <div class="mb-2">
+                        <button type="button"
+                            class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-teal-400 dark:focus:ring-teal-600"
+                            aria-expanded="false">
+                            <span class="sr-only">Profile picture</span>
+                            <img class="w-12 h-12 rounded-full" src="{% static 'Icons/wifi-svgrepo-com.svg' %}"
+                                alt="user photo">
+                        </button>
+                    </div>
+                    <div class="text-center profile-details">
+                        <p class="text-sm text-gray-900 dark:text-white profile-text" role="none">
+                            Agent Name
+                        </p>
+                        <p class="text-sm font-medium text-gray-700 truncate dark:text-gray-300 profile-text"
+                            role="none">
+                            agent.email@connect.com
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-300 dark:border-gray-700 my-4"></div>
+
+                <ul class="space-y-2 font-medium flex-grow overflow-y-auto">
+                    <li>
+                        <a href="#"
+                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-100 dark:hover:bg-gray-700 group">
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-600 transition duration-75 dark:text-gray-400 group-hover:text-teal-800 dark:group-hover:text-white"
+                                src="{% static 'owner icos/dashboard.svg' %}" alt="Dashboard icon" />
+                            <span class="flex-1 ms-3 whitespace-nowrap sidebar-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'coagents:coclients' %}"
+                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-100 dark:hover:bg-gray-700 group">
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-600 transition duration-75 dark:text-gray-400 group-hover:text-teal-800 dark:group-hover:text-white me-3"
+                                src="{% static 'coagent/user-6.svg' %}" alt="View Clients icon" />
+                            <span class="flex-1 whitespace-nowrap sidebar-text">Clients</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-100 dark:hover:bg-gray-700 group">
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-600 transition duration-75 dark:text-gray-400 group-hover:text-teal-800 dark:group-hover:text-white me-3"
+                                src="{% static 'coagent/wallet-money.svg' %}" alt="Pending Collections icon" />
+                            <span class="flex-1 whitespace-nowrap sidebar-text">Dues</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-100 dark:hover:bg-gray-700 group">
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-600 transition duration-75 dark:text-gray-400 group-hover:text-teal-800 dark:group-hover:text-white me-3"
+                                src="{% static 'coagent/passbolt-icon.svg' %}" alt="Code Pool" />
+                            <span class="flex-1 whitespace-nowrap sidebar-text">Code Pool</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-100 dark:hover:bg-gray-700 group">
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-600 transition duration-75 dark:text-gray-400 group-hover:text-teal-800 dark:group-hover:text-white me-3"
+                                src="{% static 'coagent/table-report.svg' %}"
+                                alt="Payment Records icon" />
+                            <span class="flex-1 whitespace-nowrap sidebar-text">Payment Records</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-100 dark:hover:bg-gray-700 group">
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-600 transition duration-75 dark:text-gray-400 group-hover:text-teal-800 dark:group-hover:text-white"
+                                src="{% static 'client icons/ticket.svg' %}" alt="Tickets icon" />
+                            <span class="flex-1 ms-3 whitespace-nowrap sidebar-text">Tickets</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#"
+                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-100 dark:hover:bg-gray-700 group">
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-600 transition duration-75 dark:text-gray-400 group-hover:text-teal-800 dark:group-hover:text-white"
+                                src="{% static 'coagent/person-24.svg' %}" alt="Tickets icon" />
+                            <span class="flex-1 ms-3 whitespace-nowrap sidebar-text">Personal</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="mt-auto pt-4 border-t border-gray-300 dark:border-gray-700">
+                    <a href="{% url 'common:signout' %}" class="flex items-center p-2 font-medium rounded-lg justify-center
+                                        bg-transparent border border-red-600 text-red-600
+                                        hover:bg-red-50 dark:text-red-500 dark:hover:bg-red-900 dark:hover:text-white
+                                        group">
+                        <span class="me-3 sidebar-text">Sign out</span>
+                        <img class="flex-shrink-0 w-5 h-5 text-red-600 transition duration-75 group-hover:text-red-700 dark:text-red-500 dark:group-hover:text-white"
+                            src="{% static 'owner icos/sign-out-alt.svg' %}" alt="Sign out icon" />
+                    </a>
+                </div>
+
+            </div>
+        </aside>
+
+        <main class="flex-grow bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md shadow-teal-700">
+            {% block content %}
+            <h2 class="text-2xl font-bold dark:text-white text-gray-800 mb-4">Welcome, Collection Agent!</h2>
+            <p class="text-gray-700 dark:text-gray-300">
+                This is your primary workspace. Here you can manage client collections, view payment records,
+                and handle support tickets.
+            </p>
+            <div class="mt-6">
+                <p class="text-gray-700 dark:text-gray-300">
+                    Utilize the sidebar navigation to access different features.
+                </p>
+            </div>
+            {% endblock content %}
+        </main>
+
+    </div>
+
+    <footer class="py-8 text-white text-center shadow-inner mt-auto rounded-lg footer-gradient">
+        <div class="max-w-screen-xl mx-auto px-4">
+            <p>&copy; 2025 Connect. All rights reserved.</p>
+            <div class="mt-4 flex justify-center space-x-6">
+                <a class="hover:text-teal-200">Privacy Policy</a>
+                <a class="hover:text-teal-200">Terms of Service</a>
+                <a class="hover:text-teal-200">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sidebar = document.getElementById('main-sidebar');
+
+            /**
+             * Handles the responsive state of the sidebar based on window width.
+             * Collapses sidebar on small screens, expands on large screens.
+             */
+            function handleSidebarResponsive() {
+                // Check if window width is less than the 'lg' breakpoint (1024px)
+                if (window.innerWidth < 1024) {
+                    // Small screens: Collapse the sidebar
+                    sidebar.classList.remove('lg:w-64', 'lg:p-4'); // Remove large screen styles
+                    sidebar.classList.add('w-16', 'p-2'); // Apply collapsed styles
+
+                    // Hide text for all sidebar items
+                    document.querySelectorAll('.sidebar-text, .profile-text, .logo-text').forEach(el => {
+                        el.classList.remove('lg:opacity-100', 'lg:w-auto', 'lg:overflow-visible', 'lg:pointer-events-auto');
+                        el.classList.add('opacity-0', 'w-0', 'overflow-hidden', 'pointer-events-none');
+                    });
+
+                } else {
+                    // Large screens: Expand the sidebar
+                    sidebar.classList.remove('w-16', 'p-2'); // Remove small screen styles
+                    sidebar.classList.add('lg:w-64', 'lg:p-4'); // Apply expanded styles
+
+                    // Show text for all sidebar items
+                    document.querySelectorAll('.sidebar-text, .profile-text, .logo-text').forEach(el => {
+                        el.classList.remove('opacity-0', 'w-0', 'overflow-hidden', 'pointer-events-none');
+                        el.classList.add('lg:opacity-100', 'lg:w-auto', 'lg:overflow-visible', 'lg:pointer-events-auto');
+                    });
+                }
+            }
+
+            // Initial call to set sidebar state on page load
+            handleSidebarResponsive();
+
+            // Listen for window resize events to adjust sidebar dynamically
+            window.addEventListener('resize', handleSidebarResponsive);
+        });
+    </script>
+</body>
+
+</html>

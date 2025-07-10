@@ -20,4 +20,6 @@ from . import views
 app_name = 'coagents'
 
 urlpatterns = [
+    path('cohome',views.CoHomeView.as_view(),name='cohome'),
+    path('coclients', views.CoClientsView.as_view(), name='coclients'),
 ]

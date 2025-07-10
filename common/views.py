@@ -17,6 +17,8 @@ class Homeview(View):
                 return redirect('owner:ownerhome')
             elif request.user.role == "client": # <-- Added this condition
                 return redirect('clients:clienthome') # <-- Redirect for clients
+            elif request.user.role == "Collection Agent": # <-- Added this condition
+                return redirect('coagents:cohome') # <-- Redirect for collection agents
             else:
                 return render(request, 'common/home.html')
         else:
@@ -103,6 +105,8 @@ class LoginformView(View):
                 return redirect('owner:ownerhome')
             elif user.role == "client":
                 return redirect ('clients:clienthome')
+            elif user.role == "Collection Agent":
+                return redirect ('coagents:cohome')
             else:
                 return HttpResponse("No valid Cred")
         else:
