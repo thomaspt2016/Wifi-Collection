@@ -22,7 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('common.urls')),
     path('common/', include('common.urls')),
-    path('clients/',include('clients.urls')),
+    path('clients/', include('clients.urls', namespace='clients')),
     path('coagents/',include('coagents.urls')),
     path('owner/', include('owner.urls')),
     path('auth/', include('common.urls', namespace='common')),

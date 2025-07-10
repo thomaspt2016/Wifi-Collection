@@ -8,34 +8,43 @@
     {% endblock %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Tailwind CSS v4 CDN for styling -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Flowbite CSS for UI components like dropdowns -->
     <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
     <style>
+        /* Set the default font for the body */
         body {
             font-family: 'Inter', sans-serif;
         }
 
-        /* Base styles for collapsed sidebar on small screens */
+        /* Base styles for the sidebar when collapsed on small screens */
         #logo-sidebar {
-            width: 4rem; /* w-16 for collapsed state */
-            padding-left: 0.5rem; /* p-2 */
-            padding-right: 0.5rem; /* p-2 */
+            width: 4rem;
+            /* Corresponds to Tailwind's w-16 for collapsed state */
+            padding-left: 0.5rem;
+            /* Corresponds to Tailwind's p-2 */
+            padding-right: 0.5rem;
+            /* Corresponds to Tailwind's p-2 */
+            /* Smooth transition for width and padding changes */
             transition: width 0.3s ease-in-out, padding 0.3s ease-in-out;
-            overflow-y: hidden;
+            overflow-y: hidden; /* Hide vertical scrollbar when collapsed */
         }
 
+        /* Hide text elements within the collapsed sidebar */
         #logo-sidebar .sidebar-text,
         #logo-sidebar .profile-text,
         #logo-sidebar .logo-text {
-            white-space: nowrap;
-            opacity: 0; /* Hidden by default */
-            width: 0; /* Collapsed by default */
-            overflow: hidden;
+            white-space: nowrap; /* Prevent text wrapping */
+            opacity: 0; /* Make text invisible */
+            width: 0; /* Collapse text width */
+            overflow: hidden; /* Hide overflowing text */
             pointer-events: none; /* Prevent interaction when hidden */
+            /* Smooth transition for opacity and width changes */
             transition: opacity 0.3s ease-in-out, width 0.3s ease-in-out;
         }
 
-        /* For dropdown sub-items: hide text but keep icon visible */
+        /* Specific styling for dropdown sub-items: hide text but keep icon visible */
         #logo-sidebar ul ul .sidebar-text {
             width: 0;
             opacity: 0;
@@ -44,21 +53,26 @@
             transition: opacity 0.3s ease-in-out, width 0.3s ease-in-out;
         }
 
-        /* Show sidebar text and expand sidebar on larger screens (e.g., lg breakpoint) */
-        @media (min-width: 1024px) { /* Equivalent to lg breakpoint in Tailwind CSS */
+        /* Media query for larger screens (e.g., 'lg' breakpoint, typically 1024px) */
+        @media (min-width: 1024px) {
+            /* Expand the sidebar on large screens */
             #logo-sidebar {
-                width: 16rem; /* lg:w-64 - Always expanded */
-                padding-left: 1rem; /* lg:p-4 */
-                padding-right: 1rem; /* lg:p-4 */
+                width: 16rem;
+                /* Corresponds to Tailwind's lg:w-64 - Always expanded */
+                padding-left: 1rem;
+                /* Corresponds to Tailwind's lg:p-4 */
+                padding-right: 1rem;
+                /* Corresponds to Tailwind's lg:p-4 */
             }
 
+            /* Show text elements within the expanded sidebar */
             #logo-sidebar .sidebar-text,
             #logo-sidebar .profile-text,
             #logo-sidebar .logo-text {
-                opacity: 1; /* Always visible */
-                width: auto; /* Always visible */
-                overflow: visible;
-                pointer-events: auto;
+                opacity: 1; /* Make text visible */
+                width: auto; /* Allow text to take its natural width */
+                overflow: visible; /* Show overflowing text */
+                pointer-events: auto; /* Allow interaction */
             }
 
             /* For dropdown sub-items on large screens, make text visible */
@@ -70,34 +84,51 @@
             }
         }
 
-        /* Ensure the arrow icon is visible only when the dropdown is toggled open */
+        /* Styling for the arrow icon in dropdowns */
         .arrow-icon {
-            transition: transform 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out; /* Smooth rotation transition */
         }
 
+        /* Class to rotate the arrow icon when dropdown is open */
         .arrow-icon.rotate-180 {
             transform: rotate(180deg);
         }
     </style>
 </head>
 
+<!--
+    Body tag with original background colors:
+    - bg-gray-100 for light mode
+    - dark:bg-gray-900 for dark mode
+-->
 <body class="min-h-screen flex flex-col font-inter gap-y-2 bg-gray-100 dark:bg-gray-900">
 
+    <!-- Main container for sidebar and content -->
     <div class="flex flex-grow gap-x-4 p-2">
-        <aside id="logo-sidebar" class="bg-white dark:bg-gray-800 flex-shrink-0 rounded-lg shadow-md shadow-blue-500">
+        <!--
+            Sidebar element:
+            - bg-beige-50 for light mode (a slightly darker beige than body)
+            - dark:bg-gray-900 for dark mode (a slightly darker gray than body in dark mode)
+            - flex-shrink-0 to prevent it from shrinking
+            - rounded-lg for rounded corners
+            - shadow-md and shadow-teal-500 for a teal-colored shadow
+        -->
+        <aside id="logo-sidebar" class="bg-beige-50 dark:bg-gray-900 flex-shrink-0 rounded-lg shadow-md shadow-teal-500">
             <div class="h-full px-3 pb-4 flex flex-col">
+                <!-- Logo section -->
                 <div class="flex items-center justify-between rtl:justify-end mb-8 pt-4">
                     <a href="{% url 'owner:ownerhome' %}" class="flex ms-2 md:me-24">
-                        <img src="{% static 'Icons/wifi-svgrepo-com.svg' %}" class="h-8 me-3" alt="FlowBite Logo" />
+                        <img src="{% static 'Icons/wifi-svgrepo-com.svg' %}" class="h-8 me-3" alt="Connect Logo" />
                         <span
                             class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white logo-text">Connect</span>
                     </a>
                 </div>
 
+                <!-- User profile section -->
                 <div class="flex flex-col items-center mb-10">
                     <div class="mb-2">
                         <button type="button"
-                            class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600"
+                            class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-teal-300 dark:focus:ring-teal-600"
                             aria-expanded="false">
                             <span class="sr-only">Profile picture</span>
                             <img class="w-12 h-12 rounded-full" src="{% static 'Icons/wifi-svgrepo-com.svg' %}"
@@ -115,44 +146,46 @@
                     </div>
                 </div>
 
+                <!-- Separator line -->
                 <div class="border-t border-gray-200 dark:border-gray-700 my-4"></div>
 
+                <!-- Navigation links and dropdowns -->
                 <ul class="space-y-2 font-medium flex-grow overflow-y-auto">
                     <li>
                         <a href="{% url 'owner:ownerhome' %}"
-                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group">
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
                                 src="{% static 'owner icos/dashboard.svg' %}" alt="Dashboard icon" />
                             <span class="flex-1 ms-3 whitespace-nowrap sidebar-text">Dashboard</span>
                         </a>
                     </li>
                     <li>
                         <button type="button"
-                            class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                            class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group"
                             aria-controls="dropdown-user-management" data-collapse-toggle="dropdown-user-management">
-                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
                                 src="{% static 'owner icos/user-multiple-02.svg' %}" alt="user-management icon" />
                             <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap sidebar-text">User
                                 Management</span>
                             <svg class="w-3 h-3 ms-auto arrow-icon" aria-hidden="true"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                        stroke-width="2" d="m1 1 4 4 4-4" />
+                                    stroke-width="2" d="m1 1 4 4 4-4" />
                             </svg>
                         </button>
                         <ul id="dropdown-user-management" class="hidden py-2 space-y-2">
                             <li>
                                 <a href="{% url 'owner:ownclients' %}"
-                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white me-3"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
                                         src="{% static 'owner icos/user-6.svg' %}" alt="Clients icon" />
                                     <span class="flex-1 whitespace-nowrap sidebar-text">Clients</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{% url 'owner:collectionagents' %}"
-                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white me-3"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
                                         src="{% static 'owner icos/argent.svg' %}" alt="Collection Agents icon" />
                                     <span class="flex-1 whitespace-nowrap sidebar-text">Collection Agents</span>
                                 </a>
@@ -161,10 +194,10 @@
                     </li>
                     <li>
                         <button type="button"
-                            class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                            class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group"
                             aria-controls="dropdown-service-plan-management"
                             data-collapse-toggle="dropdown-service-plan-management">
-                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
                                 src="{% static 'owner icos/wallet-money.svg' %}" alt="Service & Plan icon" />
                             <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap sidebar-text">Plan
                                 Management</span>
@@ -177,8 +210,8 @@
                         <ul id="dropdown-service-plan-management" class="hidden py-2 space-y-2">
                             <li>
                                 <a href="{% url 'owner:internetplans' %}"
-                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white me-3"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
                                         src="{% static 'owner icos/plans.svg' %}" alt="Internet Plans icon" />
                                     <span class="flex-1 whitespace-nowrap sidebar-text">Internet Plans</span>
                                 </a>
@@ -187,9 +220,9 @@
                     </li>
                     <li>
                         <button type="button"
-                            class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                            class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group"
                             aria-controls="dropdown-code-management" data-collapse-toggle="dropdown-code-management">
-                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
                                 src="{% static 'owner icos/passbolt-icon.svg' %}" alt="Code Management icon" />
                             <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap sidebar-text">Code
                                 Management</span>
@@ -202,16 +235,16 @@
                         <ul id="dropdown-code-management" class="hidden py-2 space-y-2">
                             <li>
                                 <a href="{% url 'owner:codeupload' %}"
-                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white me-3"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
                                         src="{% static 'owner icos/upload.svg' %}" alt="Upload Codes PDF icon" />
                                     <span class="flex-1 whitespace-nowrap sidebar-text">Upload Codes</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{% url 'owner:codepoolstat' %}"
-                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white me-3"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
                                         src="{% static 'owner icos/pola.svg' %}" alt="Code Pool Status icon" />
                                     <span class="flex-1 whitespace-nowrap sidebar-text">Code Pool Status</span>
                                 </a>
@@ -220,9 +253,9 @@
                     </li>
                     <li>
                         <button type="button"
-                            class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                            class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group"
                             aria-controls="dropdown-billing" data-collapse-toggle="dropdown-billing">
-                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
                                 src="{% static 'owner icos/bill-dollar.svg' %}" alt="Billing icon" />
                             <span
                                 class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap sidebar-text">Billing</span>
@@ -235,16 +268,16 @@
                         <ul id="dropdown-billing" class="hidden py-2 space-y-2">
                             <li>
                                 <a href="{% url 'owner:payments' %}"
-                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white me-3"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
                                         src="{% static 'owner icos/currency-exchange.svg' %}" alt="Payments icon" />
                                     <span class="flex-1 whitespace-nowrap sidebar-text">Payments</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{% url 'owner:reports' %}"
-                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white me-3"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
                                         src="{% static 'owner icos/finance.svg' %}" alt="Financial Reports icon" />
                                     <span class="flex-1 whitespace-nowrap sidebar-text">Financial Reports</span>
                                 </a>
@@ -253,9 +286,9 @@
                     </li>
                     <li>
                         <button type="button"
-                            class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
+                            class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group"
                             aria-controls="dropdown-system-settings" data-collapse-toggle="dropdown-system-settings">
-                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
                                 src="{% static 'owner icos/settings.svg' %}" alt="System Settings icon" />
                             <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap sidebar-text">System
                                 Settings</span>
@@ -268,16 +301,16 @@
                         <ul id="dropdown-system-settings" class="hidden py-2 space-y-2">
                             <li>
                                 <a href="{% url 'owner:generalsetting' %}"
-                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white me-3"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
                                         src="{% static 'owner icos/gear.svg' %}" alt="General Settings icon" />
                                     <span class="flex-1 whitespace-nowrap sidebar-text">General Settings</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{% url 'owner:apisetting' %}"
-                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">
-                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white me-3"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
                                         src="{% static 'owner icos/file-type-api-extractor.svg' %}"
                                         alt="Payment Gateway Config icon" />
                                     <span class="flex-1 whitespace-nowrap sidebar-text">API Config</span>
@@ -287,10 +320,11 @@
                     </li>
                 </ul>
 
+                <!-- Sign out button at the bottom -->
                 <div class="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
                     <a href="{% url 'common:signout' %}" class="flex items-center p-2 font-medium rounded-lg justify-center
                                      bg-transparent border border-red-600 text-red-600
-                                     hover:bg-red-100 dark:text-red-500 dark:hover:bg-red-900 dark:hover:text-white
+                                     hover:bg-red-50 dark:text-red-500 dark:hover:bg-red-900 dark:hover:text-white
                                      group">
                         <span class="me-3 sidebar-text">Sign out</span>
                         <img class="flex-shrink-0 w-5 h-5 text-red-600 transition duration-75 group-hover:text-red-700 dark:text-red-500 dark:group-hover:text-white"
@@ -301,7 +335,16 @@
             </div>
         </aside>
 
-        <main class="flex-grow bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md shadow-orange-500">
+        <!--
+            Main content area:
+            - flex-grow to take available space
+            - bg-beige-50 for light mode (a slightly darker beige than body)
+            - dark:bg-gray-900 for dark mode (a slightly darker gray than body in dark mode)
+            - p-4 for padding
+            - rounded-lg for rounded corners
+            - shadow-md and shadow-teal-600 for a teal-colored shadow
+        -->
+        <main class="flex-grow bg-beige-50 dark:bg-gray-900 p-4 rounded-lg shadow-md shadow-teal-600">
             {% block content %}
             <h2 class="text-2xl font-bold dark:text-white mb-4">Welcome to the Main Content Area!</h2>
             <p class="text-gray-700 dark:text-gray-300">
@@ -320,30 +363,45 @@
 
     </div>
 
+    <!--
+        Footer section:
+        - bg-gradient-to-r from-teal-500 to-cyan-600 for a teal-to-cyan gradient
+        - py-8 for vertical padding
+        - text-white for white text color
+        - text-center for centered text
+        - shadow-inner for an inner shadow
+        - mt-auto to push it to the bottom
+        - rounded-lg for rounded corners
+    -->
     <footer
-        class="bg-gradient-to-r from-blue-500 to-purple-600 py-8 text-white text-center shadow-inner mt-auto rounded-lg">
+        class="bg-gradient-to-r from-teal-500 to-cyan-600 py-8 text-white text-center shadow-inner mt-auto rounded-lg">
         <div class="max-w-screen-xl mx-auto px-4">
             <p>&copy; 2025 Connect. All rights reserved.</p>
             <div class="mt-4 flex justify-center space-x-6">
-                <a href="#" class="hover:text-blue-200">Privacy Policy</a>
-                <a href="#" class="hover:text-blue-200">Terms of Service</a>
-                <a href="{% url 'common:contactus'%}" class="hover:text-blue-200">Contact Us</a>
+                <a href="#" class="hover:text-teal-200">Privacy Policy</a>
+                <a href="#" class="hover:text-teal-200">Terms of Service</a>
+                <a href="{% url 'common:contactus'%}" class="hover:text-teal-200">Contact Us</a>
             </div>
         </div>
     </footer>
 
+    <!-- Flowbite JavaScript for interactive components -->
     <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const dropdownToggleButtons = document.querySelectorAll('[data-collapse-toggle]');
             const sidebar = document.getElementById('logo-sidebar');
 
+            /**
+             * Closes all currently open dropdowns in the sidebar.
+             */
             function closeAllDropdowns() {
                 dropdownToggleButtons.forEach(button => {
                     const targetId = button.getAttribute('data-collapse-toggle');
                     const dropdown = document.getElementById(targetId);
                     const arrowIcon = button.querySelector('.arrow-icon');
 
+                    // If a dropdown exists and is not hidden, hide it and rotate its arrow back
                     if (dropdown && !dropdown.classList.contains('hidden')) {
                         dropdown.classList.add('hidden');
                         if (arrowIcon) {
@@ -353,6 +411,7 @@
                 });
             }
 
+            // Add click event listener to each dropdown toggle button
             dropdownToggleButtons.forEach(button => {
                 button.addEventListener('click', function () {
                     const targetId = this.getAttribute('data-collapse-toggle');
@@ -361,11 +420,13 @@
 
                     const isClickedDropdownOpen = !clickedDropdown.classList.contains('hidden');
 
+                    // Close other dropdowns before toggling the clicked one
                     dropdownToggleButtons.forEach(otherButton => {
                         const otherTargetId = otherButton.getAttribute('data-collapse-toggle');
                         const otherDropdown = document.getElementById(otherTargetId);
                         const otherArrowIcon = otherButton.querySelector('.arrow-icon');
 
+                        // If it's not the currently clicked dropdown, and it's open, close it
                         if (otherTargetId !== targetId) {
                             if (otherDropdown && !otherDropdown.classList.contains('hidden')) {
                                 otherDropdown.classList.add('hidden');
@@ -376,6 +437,7 @@
                         }
                     });
 
+                    // Toggle the clicked dropdown's visibility and arrow icon rotation
                     if (clickedDropdown) {
                         if (isClickedDropdownOpen) {
                             clickedDropdown.classList.add('hidden');
@@ -392,30 +454,36 @@
                 });
             });
 
-            // Function to handle sidebar state based on screen width
+            /**
+             * Handles the responsive state of the sidebar based on window width.
+             * Collapses sidebar on small screens, expands on large screens.
+             */
             function handleSidebarResponsive() {
-                if (window.innerWidth < 1024) { // Tailwind's 'lg' breakpoint is typically 1024px
+                // Check if window width is less than the 'lg' breakpoint (1024px)
+                if (window.innerWidth < 1024) {
                     // Small screens: Collapse the sidebar
-                    sidebar.classList.remove('lg:w-64', 'lg:p-4');
-                    sidebar.classList.add('w-16', 'p-2');
-                    
+                    sidebar.classList.remove('lg:w-64', 'lg:p-4'); // Remove large screen styles
+                    sidebar.classList.add('w-16', 'p-2'); // Apply collapsed styles
+
+                    // Hide text for main sidebar items (direct children of ul > li > a/button)
                     document.querySelectorAll('#logo-sidebar > div > ul > li > a > .sidebar-text, #logo-sidebar > div > ul > li > button > .sidebar-text, .profile-text, .logo-text').forEach(el => {
                         el.classList.remove('lg:opacity-100', 'lg:w-auto', 'lg:overflow-visible', 'lg:pointer-events-auto');
                         el.classList.add('opacity-0', 'w-0', 'overflow-hidden', 'pointer-events-none');
                     });
-                    
+
                     // Specific handling for dropdown sub-items: hide text but keep icon visible
                     document.querySelectorAll('#logo-sidebar ul ul .sidebar-text').forEach(el => {
                         el.classList.add('opacity-0', 'w-0', 'overflow-hidden', 'pointer-events-none');
                         el.classList.remove('lg:opacity-100', 'lg:w-auto', 'lg:overflow-visible', 'lg:pointer-events-auto');
                     });
 
-                    closeAllDropdowns(); // Close dropdowns when collapsing
+                    closeAllDropdowns(); // Close any open dropdowns when collapsing
                 } else {
                     // Large screens: Expand the sidebar
-                    sidebar.classList.remove('w-16', 'p-2');
-                    sidebar.classList.add('lg:w-64', 'lg:p-4');
+                    sidebar.classList.remove('w-16', 'p-2'); // Remove small screen styles
+                    sidebar.classList.add('lg:w-64', 'lg:p-4'); // Apply expanded styles
 
+                    // Show text for all sidebar items
                     document.querySelectorAll('.sidebar-text, .profile-text, .logo-text').forEach(el => {
                         el.classList.remove('opacity-0', 'w-0', 'overflow-hidden', 'pointer-events-none');
                         el.classList.add('lg:opacity-100', 'lg:w-auto', 'lg:overflow-visible', 'lg:pointer-events-auto');
@@ -426,7 +494,7 @@
             // Initial call to set sidebar state on page load
             handleSidebarResponsive();
 
-            // Listen for window resize events to adjust sidebar
+            // Listen for window resize events to adjust sidebar dynamically
             window.addEventListener('resize', handleSidebarResponsive);
         });
     </script>

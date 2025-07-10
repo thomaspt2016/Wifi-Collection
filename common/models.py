@@ -8,7 +8,7 @@ class CustomUser(AbstractUser):
     lastname = models.CharField(max_length=100) 
     is_verified=models.BooleanField(default=False)#After verification it will set to True
     otp=models.CharField(max_length=10,null=True,blank=True)
-    role = models.CharField(max_length=100, null=True, blank=True,default="owner")
+    role = models.CharField(max_length=100, null=True, blank=True,default="client")
 
     def generate_otp(self):
         #for creating random otp number for verification

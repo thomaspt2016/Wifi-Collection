@@ -15,8 +15,13 @@ class Homeview(View):
         if request.user.is_authenticated:
             if request.user.role == "owner":
                 return redirect('owner:ownerhome')
-        else:
-            return render(request, 'common/home.html')
+            elif request.user.role == "client": # <-- Added this condition
+                return redirect('clients:clienthome') # <-- Redirect for clients
+            else:
+                # Handle other authenticated roles or a default authenticated view
+                # For now, let's just render the common home page for simplicity,
+                # or you might have a specific dashboard for other roles.
+                return render(request, 'common/home.html')
 
 class AboutUsview(View):
     def get(self,request):
@@ -97,6 +102,10 @@ class LoginformView(View):
             login(request, user)
             if user.role == "owner":
                 return redirect('owner:ownerhome')
+            elif user.role == "client":
+                return redirect ('clients:clienthome')
+            else:
+                return HttpResponse("No valid Cred")
         else:
             print("Invalid user credentials")
             return HttpResponse("Invalid username or password")

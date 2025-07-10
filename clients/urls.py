@@ -20,4 +20,13 @@ from . import views
 app_name = 'clients'
 
 urlpatterns = [
+    path('clienthome',views.ClientHomeView.as_view(),name='clienthome'),
+    path('clidevice', views.DeviceView.as_view(), name='clidevice'),
+    path('cliwificode', views.WificodesView.as_view(), name='cliwificode'),
+    path('clibill', views.CurrentBillView.as_view(), name='clibill'),
+    path('payhist', views.PaymenHistoryView.as_view(), name='payhist'),
+    path('raise', views.RaiseTicketView.as_view(), name='raise'),
+    path('faq', views.FAQView.as_view(), name='faq'),
+    path('contactagent', views.ContactAgentView.as_view(), name='contactagent'),
+    path('profile', views.ProfileView.as_view(), name='profile'),
 ]
