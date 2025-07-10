@@ -18,10 +18,9 @@ class Homeview(View):
             elif request.user.role == "client": # <-- Added this condition
                 return redirect('clients:clienthome') # <-- Redirect for clients
             else:
-                # Handle other authenticated roles or a default authenticated view
-                # For now, let's just render the common home page for simplicity,
-                # or you might have a specific dashboard for other roles.
                 return render(request, 'common/home.html')
+        else:
+            return render(request, 'common/home.html')
 
 class AboutUsview(View):
     def get(self,request):

@@ -1,0 +1,416 @@
+<!doctype html>
+{% load static %}
+<html>
+
+<head>
+    {% block title %}
+    <title>Home</title>
+    {% endblock %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet" />
+    <style>
+        /* Set the default font for the body */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Base styles for the sidebar when collapsed on small screens */
+        #main-sidebar {
+            width: 4rem;
+            /* Corresponds to Tailwind's w-16 for collapsed state */
+            padding-left: 0.5rem;
+            /* Corresponds to Tailwind's p-2 */
+            padding-right: 0.5rem;
+            /* Corresponds to Tailwind's p-2 */
+            /* Smooth transition for width and padding changes */
+            transition: width 0.3s ease-in-out, padding 0.3s ease-in-out;
+            overflow-y: hidden; /* Hide vertical scrollbar when collapsed */
+        }
+
+        /* Hide text elements within the collapsed sidebar */
+        #main-sidebar .sidebar-text,
+        #main-sidebar .profile-text,
+        #main-sidebar .logo-text {
+            white-space: nowrap; /* Prevent text wrapping */
+            opacity: 0; /* Make text invisible */
+            width: 0; /* Collapse text width */
+            overflow: hidden; /* Hide overflowing text */
+            pointer-events: none; /* Prevent interaction when hidden */
+            /* Smooth transition for opacity and width changes */
+            transition: opacity 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+
+        /* Specific styling for dropdown sub-items: hide text but keep icon visible */
+        #main-sidebar ul ul .sidebar-text {
+            width: 0;
+            opacity: 0;
+            overflow: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+
+        /* Media query for larger screens (e.g., 'lg' breakpoint, typically 1024px) */
+        @media (min-width: 1024px) {
+            /* Expand the sidebar on large screens */
+            #main-sidebar {
+                width: 16rem;
+                /* Corresponds to Tailwind's lg:w-64 - Always expanded */
+                padding-left: 1rem;
+                /* Corresponds to Tailwind's lg:p-4 */
+                padding-right: 1rem;
+                /* Corresponds to Tailwind's lg:p-4 */
+            }
+
+            /* Show text elements within the expanded sidebar */
+            #main-sidebar .sidebar-text,
+            #main-sidebar .profile-text,
+            #main-sidebar .logo-text {
+                opacity: 1; /* Make text visible */
+                width: auto; /* Allow text to take its natural width */
+                overflow: visible; /* Show overflowing text */
+                pointer-events: auto; /* Allow interaction */
+            }
+
+            /* For dropdown sub-items on large screens, make text visible */
+            #main-sidebar ul ul .sidebar-text {
+                width: auto;
+                opacity: 1;
+                overflow: visible;
+                pointer-events: auto;
+            }
+        }
+
+        /* Styling for the arrow icon in dropdowns */
+        .arrow-icon {
+            transition: transform 0.3s ease-in-out; /* Smooth rotation transition */
+        }
+
+        /* Class to rotate the arrow icon when dropdown is open */
+        .arrow-icon.rotate-180 {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col font-inter gap-y-2 bg-gray-100 dark:bg-gray-900">
+
+    <div class="flex flex-grow gap-x-4 p-2">
+        <aside id="main-sidebar" class="bg-blue-gray-50 dark:bg-gray-900 flex-shrink-0 rounded-lg shadow-md shadow-teal-500">
+    <div class="h-full px-3 pb-4 flex flex-col">
+                <div class="flex items-center justify-between rtl:justify-end mb-8 pt-4">
+                    <a href="{% url 'clients:clienthome' %}" class="flex ms-2 md:me-24">
+                        <img src="{% static 'Icons/wifi-svgrepo-com.svg' %}" class="h-8 me-3" alt="Connect Logo" />
+                        <span
+                            class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white logo-text">Connect</span>
+                    </a>
+                </div>
+
+                <div class="flex flex-col items-center mb-10">
+                    <div class="mb-2">
+                        <button type="button"
+                            class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-teal-300 dark:focus:ring-teal-600"
+                            aria-expanded="false">
+                            <span class="sr-only">Profile picture</span>
+                            <img class="w-12 h-12 rounded-full" src="{% static 'Icons/wifi-svgrepo-com.svg' %}"
+                                alt="user photo">
+                        </button>
+                    </div>
+                    <div class="text-center profile-details">
+                        <p class="text-sm text-gray-900 dark:text-white profile-text" role="none">
+                            Neil Sims
+                        </p>
+                        <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300 profile-text"
+                            role="none">
+                            neil.sims@flowbite.com
+                        </p>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 dark:border-gray-700 my-4"></div>
+
+                <ul class="space-y-2 font-medium flex-grow overflow-y-auto">
+                    <li>
+                        <a href="{% url 'clients:clienthome' %}"
+                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group">
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
+                                src="{% static 'owner icos/dashboard.svg' %}" alt="Dashboard icon" />
+                            <span class="flex-1 ms-3 whitespace-nowrap sidebar-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <button type="button"
+                            class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group"
+                            aria-controls="devices-codes-dropdown" data-collapse-toggle="devices-codes-dropdown">
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
+                                src="{% static 'client icons/device-hub.svg' %}" alt="Devices & Codes icon" />
+                            <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap sidebar-text">Devices & Codes</span>
+                            <svg class="w-3 h-3 ms-auto arrow-icon" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m1 1 4 4 4-4" />
+                            </svg>
+                        </button>
+                        <ul id="devices-codes-dropdown" class="hidden py-2 space-y-2">
+                            <li>
+                                <a href="{% url 'clients:clidevice' %}"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
+                                        src="{% static 'client icons/device.svg' %}" alt="My Devices icon" />
+                                    <span class="flex-1 whitespace-nowrap sidebar-text">My Devices</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'clients:cliwificode' %}"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
+                                        src="{% static 'client icons/passkey.svg' %}" alt="Wifi Codes icon" />
+                                    <span class="flex-1 whitespace-nowrap sidebar-text">Wifi codes</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <button type="button"
+                            class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group"
+                            aria-controls="bills-payments-dropdown"
+                            data-collapse-toggle="bills-payments-dropdown">
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
+                                src="{% static 'client icons/money-alt-1.svg' %}" alt="Bills & Payments icon" />
+                            <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap sidebar-text">My Bills & Payments</span>
+                            <svg class="w-3 h-3 ms-auto arrow-icon" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m1 1 4 4 4-4" />
+                            </svg>
+                        </button>
+                        <ul id="bills-payments-dropdown" class="hidden py-2 space-y-2">
+                            <li>
+                                <a href="{% url 'clients:clibill' %}"   
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
+                                        src="{% static 'client icons/bill-dollar.svg' %}" alt="Current Bill icon" />
+                                    <span class="flex-1 whitespace-nowrap sidebar-text">Current Bill</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'clients:payhist' %}"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
+                                        src="{% static 'client icons/mobile-payment-dollar.svg' %}" alt="Payment History icon" />
+                                    <span class="flex-1 whitespace-nowrap sidebar-text">Payment History</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <button type="button"
+                            class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group"
+                            aria-controls="support-dropdown" data-collapse-toggle="support-dropdown">
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
+                                src="{% static 'client icons/support.svg' %}" alt="Support icon" />
+                            <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap sidebar-text">Support</span>
+                            <svg class="w-3 h-3 ms-auto arrow-icon" aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
+                                    stroke-width="2" d="m1 1 4 4 4-4" />
+                            </svg>
+                        </button>
+                        <ul id="support-dropdown" class="hidden py-2 space-y-2">
+                            <li>
+                                <a href="{% url 'clients:raise' %}"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
+                                        src="{% static 'client icons/ticket.svg' %}" alt="Raise Ticket icon" />
+                                    <span class="flex-1 whitespace-nowrap sidebar-text">Raise Ticket</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'clients:faq' %}"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
+                                        src="{% static 'client icons/faq.svg' %}" alt="FAQ icon" />
+                                    <span class="flex-1 whitespace-nowrap sidebar-text">FAQ</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'clients:contactagent' %}"
+                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
+                                        src="{% static 'client icons/support-agent.svg' %}" alt="Contact Agent icon" />
+                                    <span class="flex-1 whitespace-nowrap sidebar-text">Contact Agent</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="{% url 'clients:profile' %}"
+                           class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group">
+                           <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
+                               src="{% static 'client icons/profile-card-outline.svg' %}" alt="My Profile icon" />
+                           <span class="flex-1 ms-3 whitespace-nowrap sidebar-text">My Profile</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="mt-auto pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <a href="{% url 'common:signout' %}" class="flex items-center p-2 font-medium rounded-lg justify-center
+                                            bg-transparent border border-red-600 text-red-600
+                                            hover:bg-red-50 dark:text-red-500 dark:hover:bg-red-900 dark:hover:text-white
+                                            group">
+                        <span class="me-3 sidebar-text">Sign out</span>
+                        <img class="flex-shrink-0 w-5 h-5 text-red-600 transition duration-75 group-hover:text-red-700 dark:text-red-500 dark:group-hover:text-white"
+                            src="{% static 'owner icos/sign-out-alt.svg' %}" alt="Sign out icon" />
+                    </a>
+                </div>
+
+            </div>
+        </aside>
+
+        <main class="flex-grow bg-beige-50 dark:bg-gray-900 p-4 rounded-lg shadow-md shadow-teal-600">
+            {% block content %}
+            <h2 class="text-2xl font-bold dark:text-white mb-4">Welcome to the Main Content Area!</h2>
+            <p class="text-gray-700 dark:text-gray-300">
+                This is where your primary content will be displayed. It will automatically adjust
+                to fill the available space above the footer,
+                without interfering with the sidebar layout.
+            </p>
+            <div class="mt-6">
+                <p class="text-gray-700 dark:text-gray-300">
+                    You can place any HTML content here, such as forms, tables, cards,
+                    or dynamic data from your Django views.
+                </p>
+            </div>
+            {% endblock content %}
+        </main>
+
+    </div>
+
+    <footer
+        class="bg-gradient-to-r from-teal-500 to-cyan-600 py-8 text-white text-center shadow-inner mt-auto rounded-lg">
+        <div class="max-w-screen-xl mx-auto px-4">
+            <p>&copy; 2025 Connect. All rights reserved.</p>
+            <div class="mt-4 flex justify-center space-x-6">
+                <a class="hover:text-teal-200">Privacy Policy</a>
+                <a class="hover:text-teal-200">Terms of Service</a>
+                <a class="hover:text-teal-200">Contact Us</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const dropdownToggleButtons = document.querySelectorAll('[data-collapse-toggle]');
+            const sidebar = document.getElementById('main-sidebar'); // Updated ID
+
+            /**
+             * Closes all currently open dropdowns in the sidebar.
+             */
+            function closeAllDropdowns() {
+                dropdownToggleButtons.forEach(button => {
+                    const targetId = button.getAttribute('data-collapse-toggle');
+                    const dropdown = document.getElementById(targetId);
+                    const arrowIcon = button.querySelector('.arrow-icon');
+
+                    // If a dropdown exists and is not hidden, hide it and rotate its arrow back
+                    if (dropdown && !dropdown.classList.contains('hidden')) {
+                        dropdown.classList.add('hidden');
+                        if (arrowIcon) {
+                            arrowIcon.classList.remove('rotate-180');
+                        }
+                    }
+                });
+            }
+
+            // Add click event listener to each dropdown toggle button
+            dropdownToggleButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const targetId = this.getAttribute('data-collapse-toggle');
+                    const clickedDropdown = document.getElementById(targetId);
+                    const clickedArrowIcon = this.querySelector('.arrow-icon');
+
+                    const isClickedDropdownOpen = !clickedDropdown.classList.contains('hidden');
+
+                    // Close other dropdowns before toggling the clicked one
+                    dropdownToggleButtons.forEach(otherButton => {
+                        const otherTargetId = otherButton.getAttribute('data-collapse-toggle');
+                        const otherDropdown = document.getElementById(otherTargetId);
+                        const otherArrowIcon = otherButton.querySelector('.arrow-icon');
+
+                        // If it's not the currently clicked dropdown, and it's open, close it
+                        if (otherTargetId !== targetId) {
+                            if (otherDropdown && !otherDropdown.classList.contains('hidden')) {
+                                otherDropdown.classList.add('hidden');
+                                if (otherArrowIcon) {
+                                    otherArrowIcon.classList.remove('rotate-180');
+                                }
+                            }
+                        }
+                    });
+
+                    // Toggle the clicked dropdown's visibility and arrow icon rotation
+                    if (clickedDropdown) {
+                        if (isClickedDropdownOpen) {
+                            clickedDropdown.classList.add('hidden');
+                            if (clickedArrowIcon) {
+                                clickedArrowIcon.classList.remove('rotate-180');
+                            }
+                        } else {
+                            clickedDropdown.classList.remove('hidden');
+                            if (clickedArrowIcon) {
+                                clickedArrowIcon.classList.add('rotate-180');
+                            }
+                        }
+                    }
+                });
+            });
+
+            /**
+             * Handles the responsive state of the sidebar based on window width.
+             * Collapses sidebar on small screens, expands on large screens.
+             */
+            function handleSidebarResponsive() {
+                // Check if window width is less than the 'lg' breakpoint (1024px)
+                if (window.innerWidth < 1024) {
+                    // Small screens: Collapse the sidebar
+                    sidebar.classList.remove('lg:w-64', 'lg:p-4'); // Remove large screen styles
+                    sidebar.classList.add('w-16', 'p-2'); // Apply collapsed styles
+
+                    // Hide text for main sidebar items (direct children of ul > li > a/button)
+                    document.querySelectorAll('#main-sidebar > div > ul > li > a > .sidebar-text, #main-sidebar > div > ul > li > button > .sidebar-text, .profile-text, .logo-text').forEach(el => {
+                        el.classList.remove('lg:opacity-100', 'lg:w-auto', 'lg:overflow-visible', 'lg:pointer-events-auto');
+                        el.classList.add('opacity-0', 'w-0', 'overflow-hidden', 'pointer-events-none');
+                    });
+
+                    // Specific handling for dropdown sub-items: hide text but keep icon visible
+                    document.querySelectorAll('#main-sidebar ul ul .sidebar-text').forEach(el => {
+                        el.classList.add('opacity-0', 'w-0', 'overflow-hidden', 'pointer-events-none');
+                        el.classList.remove('lg:opacity-100', 'lg:w-auto', 'lg:overflow-visible', 'lg:pointer-events-auto');
+                    });
+
+                    closeAllDropdowns(); // Close any open dropdowns when collapsing
+                } else {
+                    // Large screens: Expand the sidebar
+                    sidebar.classList.remove('w-16', 'p-2'); // Remove small screen styles
+                    sidebar.classList.add('lg:w-64', 'lg:p-4'); // Apply expanded styles
+
+                    // Show text for all sidebar items
+                    document.querySelectorAll('.sidebar-text, .profile-text, .logo-text').forEach(el => {
+                        el.classList.remove('opacity-0', 'w-0', 'overflow-hidden', 'pointer-events-none');
+                        el.classList.add('lg:opacity-100', 'lg:w-auto', 'lg:overflow-visible', 'lg:pointer-events-auto');
+                    });
+                }
+            }
+
+            // Initial call to set sidebar state on page load
+            handleSidebarResponsive();
+
+            // Listen for window resize events to adjust sidebar dynamically
+            window.addEventListener('resize', handleSidebarResponsive);
+        });
+    </script>
+</body>
+
+</html>
