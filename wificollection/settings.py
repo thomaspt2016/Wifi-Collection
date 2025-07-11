@@ -27,7 +27,8 @@ SECRET_KEY = 'django-insecure-en%trqsw@t%!7zhu(siy2+j8p7hsd-+3*662!flldtl8+ndk75
 DEBUG = True
 # settings.py
 
-LOGIN_URL = '/common/home/' # Or whatever your login URL is
+from django.urls import reverse_lazy
+LOGIN_URL = reverse_lazy('common:login') # Or whatever your login URL is
 ALLOWED_HOSTS = []
 
 
