@@ -53,6 +53,7 @@ class SignupView(View):
                 [user.email],
                 fail_silently=False,
                 )
+            messages.success(request, 'Signup successful! An OTP has been sent to your email for verification.')
             u = len(str(otp))
             lst = []
             for i in range(u):
@@ -60,6 +61,7 @@ class SignupView(View):
             return render(request,'common/otpverifiy.html',{'lenth':lst})
         else:
             print("form is not valid in signupview")
+            messages.error(request, 'Invalid form data. Please correct the errors.')
             return render(request, 'common/sighnup.html', {'form': form_instance})
         
 class OtpVerificationView(View):
@@ -102,15 +104,20 @@ class LoginformView(View):
         if user:
             login(request, user)
             if user.role == "owner":
+                messages.success(request, 'Login successful!')
                 return redirect('owner:ownerhome')
+    
             elif user.role == "client":
+                messages.success(request, 'Login successful!')
                 return redirect ('clients:clienthome')
             elif user.role == "Collection Agent":
+                messages.success(request, 'Login successful!')
                 return redirect ('coagents:cohome')
             else:
                 return HttpResponse("No valid Cred")
         else:
             print("Invalid user credentials")
+            messages.error(request, 'Invalid username or password. Please try again.')
             return HttpResponse("Invalid username or password")
 
 class ContactusView(View):
