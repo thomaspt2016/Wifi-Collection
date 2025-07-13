@@ -58,7 +58,7 @@ ROOT_URLCONF = 'wificollection.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'template')],
+        'DIRS': [os.path.join(BASE_DIR,'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -131,8 +131,8 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'  # Example: Gmail SMTP server
+EMAIL_HOST = 'smtp.gmail.com'   # Example: Gmail SMTP server
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'thomaspt2016@gmail.com'  # Your email address
-EMAIL_HOST_PASSWORD = "sitc iahe xmci btlf"  # Your email password (use app
+EMAIL_HOST_USER = 'thomaspt2016@gmail.com'   # Your email address
+EMAIL_HOST_PASSWORD = "sitc iahe xmci btlf"   # Your email password (use app password for security)

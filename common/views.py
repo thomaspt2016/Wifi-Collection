@@ -1,23 +1,31 @@
 from django.views import View
-from .forms import SignupForm
+from .forms import SignupForm,ProfileForm
 from django.shortcuts import render,redirect
 from django.views import View
 from django.http import HttpResponse
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.contrib.auth import authenticate,login,logout
-from .models import CustomUser
+from .models import CustomUser,Profile
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
 
 class Homeview(View):
     def get(self,request):
         if request.user.is_authenticated:
+            prof = Profile.objects.get(user=request.user)
             if request.user.role == "owner":
+                if prof.profile_comp ==False:
+                    return redirect('common:profile')
                 return redirect('owner:ownerhome')
-            elif request.user.role == "client": # <-- Added this condition
-                return redirect('clients:clienthome') # <-- Redirect for clients
-            elif request.user.role == "Collection Agent": # <-- Added this condition
+            elif request.user.role == "client":
+                if prof.profile_comp ==False:
+                    return redirect('common:profile')
+                return redirect('clients:clienthome')
+            elif request.user.role == "Collection Agent":
+                if prof.profile_comp ==False:
+                    return redirect('common:profile')
                 return redirect('coagents:cohome') # <-- Redirect for collection agents
             else:
                 return render(request, 'common/home.html')
@@ -65,6 +73,9 @@ class SignupView(View):
             return render(request, 'common/sighnup.html', {'form': form_instance})
         
 class OtpVerificationView(View):
+    def get(self, request):
+        return render(request, 'common/otpverifiy.html')
+
     def post(self,request):
         otp1 = request.POST.get('otp1', '')
         otp2 = request.POST.get('otp2', '')
@@ -80,6 +91,12 @@ class OtpVerificationView(View):
             return redirect('common:verify') # Redirect back to the verification page
         try:
             u=CustomUser.objects.get(otp=totp)
+            try:
+                Profile.objects.create(user=u)
+            except Exception as e:
+                messages.error(request, 'Profile already exists.')
+                print(e)
+                return redirect('common:verify')
             u.is_active=True
             u.is_verified=True
             u.otp=None
@@ -102,19 +119,30 @@ class LoginformView(View):
         user = authenticate(username=name, password=pwd)
         print(user)
         if user:
+            prof = Profile.objects.get(user=user)
             login(request, user)
             if user.role == "owner":
+                if prof.profile_comp ==False:
+                    return redirect('common:profile')
                 messages.success(request, 'Login successful!')
                 return redirect('owner:ownerhome')
     
             elif user.role == "client":
-                messages.success(request, 'Login successful!')
-                return redirect ('clients:clienthome')
+                if prof.profile_comp ==False:
+                    return redirect('common:profile')
+                else:
+                    messages.success(request, 'Login successful!')
+                    return redirect ('clients:clienthome')
+            
             elif user.role == "Collection Agent":
-                messages.success(request, 'Login successful!')
-                return redirect ('coagents:cohome')
+                if prof.profile_comp ==False:
+                    return redirect('common:profile')
+                else:
+                    messages.success(request, 'Login successful!')
+                    return redirect ('coagents:cohome')
             else:
                 return HttpResponse("No valid Cred")
+            
         else:
             print("Invalid user credentials")
             messages.error(request, 'Invalid username or password. Please try again.')
@@ -128,3 +156,9 @@ class SignoutView(View):
     def get(self,request):
         logout(request)
         return redirect('common:home')
+
+class ProfileView(View,LoginRequiredMixin):
+    def get(self,request):
+        form_instance = ProfileForm()
+        prof_pic = Profile.objects.get(user=request.user) 
+        return render(request, 'common/profile.html', {'form': form_instance,"page_title":"Profile",'pic':prof_pic})

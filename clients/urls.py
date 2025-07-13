@@ -28,5 +28,4 @@ urlpatterns = [
     path('raise', views.RaiseTicketView.as_view(), name='raise'),
     path('faq', views.FAQView.as_view(), name='faq'),
     path('contactagent', views.ContactAgentView.as_view(), name='contactagent'),
-    path('profile', views.ProfileView.as_view(), name='profile'),
 ]

@@ -39,7 +39,3 @@ class FAQView(LoginRequiredMixin, View):
 class ContactAgentView(LoginRequiredMixin,View):
     def get(self,request):
         return render(request, 'client/agent.html')
-
-class ProfileView(LoginRequiredMixin, View):
-    def get(self, request):
-        return render(request, 'client/profile.html')
