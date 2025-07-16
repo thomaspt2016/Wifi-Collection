@@ -37,13 +37,13 @@
         </div>
         {% endif %}
 
-        <div class="mb-8">
-            {% if user.profile.profpic %}
-                <img src="{{ user.profile.profpic.url }}" alt="Profile Picture" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
-            {% else %}
-                <img src="{% static 'images/default_profile.png' %}" alt="Default Profile Picture" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
-            {% endif %}
-        </div>
+      <div class="mb-8">
+          {% if pic.profpic %} {# Check if the profpic field has a value #}
+              <img src="{{ pic.profpic.url }}" alt="Profile Picture" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
+          {% else %}
+              <img src="{% static 'images/default_profile.png' %}" alt="Default Profile Picture" class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
+          {% endif %}
+      </div>
 
         <form class="max-w-md mx-auto w-full" method="post" enctype="multipart/form-data">
           {% csrf_token %}
@@ -55,17 +55,34 @@
               {% endfor %}
           </div>
           {% endif %}
+<div class="flex flex-col md:flex-row md:space-x-4 w-full"> {# Flex container for dropdowns #}
+  <div class="relative z-0 w-full mb-5 group">
+    <label for="floating_building" class="block mb-2 text-base text-white">Building</label>
+    {# Updated class for the select element #}
+    {% render_field form.bulding class="block w-full text-sm py-3 px-4 rounded-md appearance-none bg-[#4a4a7a] text-white border border-[#6a6a9a] focus:outline-none focus:ring-0 focus:border-[#8a8add] peer" %}
+    {% if form.bulding.errors %}
+    <p class="text-red-500 text-xs italic mt-1">{{ form.bulding.errors.as_text }}</p>
+    {% endif %}
+  </div>
 
-          <div class="relative z-0 w-full mb-5 group">
-              {% render_field form.buildingid name="buildingid" id="floating_buildingid" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " %}
-              <label for="floating_buildingid"
-                  class="peer-focus:font-medium absolute text-base text-white duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
-                  Room ID</label>
-              {% if form.buildingid.errors %}
-              <p class="text-red-500 text-xs italic mt-1">{{ form.buildingid.errors.as_text }}</p>
-              {% endif %}
-          </div>
+  <div class="relative z-0 w-full mb-5 group">
+    <label for="floating_floor" class="block mb-2 text-base text-white">Floor</label>
+    {# Updated class for the select element #}
+    {% render_field form.floor class="block w-full text-sm py-3 px-4 rounded-md appearance-none bg-[#4a4a7a] text-white border border-[#6a6a9a] focus:outline-none focus:ring-0 focus:border-[#8a8add] peer" %}
+    {% if form.floor.errors %}
+    <p class="text-red-500 text-xs italic mt-1">{{ form.floor.errors.as_text }}</p>
+    {% endif %}
+  </div>
 
+  <div class="relative z-0 w-full mb-5 group">
+    <label for="floating_room" class="block mb-2 text-base text-white">Room</label>
+    {# Updated class for the select element #}
+    {% render_field form.room class="block w-full text-sm py-3 px-4 rounded-md appearance-none bg-[#4a4a7a] text-white border border-[#6a6a9a] focus:outline-none focus:ring-0 focus:border-[#8a8add] peer" %}
+    {% if form.room.errors %}
+    <p class="text-red-500 text-xs italic mt-1">{{ form.room.errors.as_text }}</p>
+    {% endif %}
+  </div>
+</div>
           <div class="relative z-0 w-full mb-5 group">
               {% render_field form.phone type="text" name="phone" id="floating_phone" placeholder=" " class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" %}
               <label for="floating_phone"

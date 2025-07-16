@@ -23,7 +23,7 @@ class CustomUser(AbstractUser):
 
 
 class Building(models.Model):
-    building_id = models.CharField(max_length=10, primary_key=True)
+    building_id = models.AutoField(primary_key=True)
     building_name = models.CharField(max_length=2)
     floors = models.CharField(max_length=10)
     rooms = models.IntegerField()
@@ -35,7 +35,6 @@ class InternetPlan(models.Model):
     plan_name = models.CharField(max_length=20)
     plan_price = models.IntegerField()
     plan_type = models.CharField(max_length=20)
-    plan_period = models.CharField(max_length=20)
     is_Active = models.BooleanField(default=True)
     Num_Devices = models.IntegerField()
 
@@ -62,7 +61,10 @@ class CodePoool(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,related_name="profileuser")
-    buildingid = models.ForeignKey(Building, on_delete=models.CASCADE, null=True, blank=True,related_name='usrbuld')
+    builing_id = models.ForeignKey(Building, on_delete=models.CASCADE,null=True,blank=True, related_name='building')
+    bulding = models.CharField()
+    floor = models.CharField()
+    room = models.CharField()
     phone = models.CharField(max_length=20)
     profpic = models.ImageField(upload_to='profile_pics', null=True, blank=True, default='profile_pics/default_profile.webp')
     is_billable = models.BooleanField(default=True)
@@ -72,3 +74,4 @@ class Profile(models.Model):
 
     def __str__(self):
         return f"Profile of {self.user.username}"
+    

@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.contrib.auth import authenticate,login,logout
-from .models import CustomUser,Profile
+from .models import CustomUser,Profile,Building
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
@@ -23,7 +23,7 @@ class Homeview(View):
                 if prof.profile_comp ==False:
                     return redirect('common:profile')
                 return redirect('clients:clienthome')
-            elif request.user.role == "Collection Agent":
+            elif request.user.role == "coagent":
                 if prof.profile_comp ==False:
                     return redirect('common:profile')
                 return redirect('coagents:cohome') # <-- Redirect for collection agents
@@ -134,7 +134,7 @@ class LoginformView(View):
                     messages.success(request, 'Login successful!')
                     return redirect ('clients:clienthome')
             
-            elif user.role == "Collection Agent":
+            elif user.role == "coagent":
                 if prof.profile_comp ==False:
                     return redirect('common:profile')
                 else:
@@ -162,3 +162,30 @@ class ProfileView(View,LoginRequiredMixin):
         form_instance = ProfileForm()
         prof_pic = Profile.objects.get(user=request.user) 
         return render(request, 'common/profile.html', {'form': form_instance,"page_title":"Profile",'pic':prof_pic})
+    
+    def post(self,request):
+        print(request.POST)
+        profin = Profile.objects.get(user=request.user)
+        if request.FILES:
+            forminst = ProfileForm(request.POST, request.FILES,instance=profin)
+            if forminst.is_valid():
+                print("form is valid")
+                prof = forminst.save(commit=False)
+                prof.profile_comp = True
+                prof.builing_id = Building.objects.get(building_name=request.POST.get('bulding'),
+                                                       floors=request.POST.get('floor'),
+                                                       rooms=request.POST.get('room'))
+                prof.save()
+                return redirect('common:home')
+        else:
+            forminst = ProfileForm(request.POST,instance=profin)
+            if forminst.is_valid():
+                print("form is valid")
+                prof = forminst.save(commit=False)
+                prof.profile_comp = True
+                prof.builing_id = Building.objects.get(building_name=request.POST.get('bulding'),
+                                                       floors=request.POST.get('floor'),
+                                                       rooms=request.POST.get('room'))
+                prof.profpic = f'profile_pics/default_profile.webp'
+                prof.save()
+                return redirect('common:home')

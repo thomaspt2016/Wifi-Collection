@@ -14,10 +14,18 @@ class Ownerhomeview(LoginRequiredMixin,View):
         return render(request, 'owner/ownhom.html')
     
 
-class OwnerClientsView(LoginRequiredMixin,View):
-    def get(self,request):
-        clint = CustomUser.objects.filter(role='client')
-        return render(request, 'owner/clients.html',{'client':clint})
+class OwnerClientsView(LoginRequiredMixin, View):
+    def get(self, request):
+        # Fetch CustomUser objects (clients) and prefetch related Profile, Building, and Agent data.
+        # 'profileuser' is the related_name from CustomUser to Profile.
+        # 'building' is the related_name from Profile to Building.
+        # 'Agent' is the field name on Building that links to CustomUser.
+        clients = CustomUser.objects.filter(role='client').select_related(
+            'profileuser',                      # Prefetches the Profile object for each CustomUser
+            'profileuser__builing_id',         # Prefetches the Building object linked via profileuser's building_id ForeignKey
+            'profileuser__builing_id__Agent'   # Prefetches the Agent (CustomUser) object linked via the Building's Agent ForeignKey
+        )
+        return render(request, 'owner/clients.html', {'client': clients})
 
 class CollectionAgentsView(LoginRequiredMixin,View):
     def get(self,request):
