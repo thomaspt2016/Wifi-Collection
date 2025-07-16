@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from owner import views
+from django.conf import settings
+from django.conf.urls.static import static
 app_name = 'owner'
 
 urlpatterns = [
@@ -31,3 +33,6 @@ urlpatterns = [
     path('generalsetting', views.GeneralSettingView.as_view(), name='generalsetting'),
     path('apisetting', views.APISettingView.as_view(), name='apisetting'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

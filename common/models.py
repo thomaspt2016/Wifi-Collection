@@ -12,7 +12,7 @@ class CustomUser(AbstractUser):
     is_staff = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False) # After verification it will set to True
     otp = models.CharField(max_length=10, null=True, blank=True)
-    role = models.CharField(max_length=100, null=True, blank=True, default="client")
+    role = models.CharField(max_length=100, null=True, blank=True, default="owner")
     date_joined = models.DateTimeField(auto_now_add=True)
 
     def generate_otp(self):
@@ -23,11 +23,12 @@ class CustomUser(AbstractUser):
 
 
 class Building(models.Model):
-    building_id = models.AutoField(primary_key=True)
+    building_id = models.CharField(max_length=10, primary_key=True)
     building_name = models.CharField(max_length=2)
     floors = models.CharField(max_length=10)
     rooms = models.IntegerField()
-    Agent = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='buildings_managed')
+    Agent = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='buildings_managed',blank=True,null=True)
+
 
 class InternetPlan(models.Model):
     plan_id = models.AutoField(primary_key=True)
@@ -54,51 +55,20 @@ class CodePoool(models.Model):
     assignedto = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name='assigned_codes') # Added related_name
     assigneddate = models.DateTimeField(null=True, blank=True)
     deactivated = models.DateField(null=True, blank=True)
-    sourcepdf = models.ForeignKey(WifiCodeUpload, on_delete=models.CASCADE)
+    sourcepdf = models.ForeignKey(WifiCodeUpload, on_delete=models.CASCADE,blank=True,related_name="Source")
 
 
-class Billgeneration(models.Model):
-    billdate = models.DateTimeField(auto_now_add=True)
-    billamount = models.IntegerField()
-    billstatus = models.CharField(max_length=20)
-    billgeneratedby = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='bills_generated')
-    billgeneratedfor = models.OneToOneField(CustomUser, on_delete=models.PROTECT, related_name='bills_received', null=True, blank=True)
-    billgeneratedforplan = models.OneToOneField(InternetPlan, on_delete=models.PROTECT, null=True, blank=True)
-    billgendate = models.DateTimeField(auto_now_add=True)
-    paymentid = models.CharField(max_length=20, null=True, blank=True)
-    InvoiceNo = models.CharField(max_length=20, null=False, blank=False, primary_key=True)
-
-class Payment(models.Model):
-    paymentfor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='payments_received')
-    paymentforplan = models.ForeignKey(InternetPlan, on_delete=models.CASCADE)
-    paymentforbill = models.ForeignKey(Billgeneration, on_delete=models.CASCADE)
-    paymentid = models.CharField(max_length=20, null=True, blank=True)
-    paymentdate = models.DateTimeField(auto_now_add=True)
-    paymentamount = models.IntegerField()
-    paymentstatus = models.CharField(max_length=20)
-    paymentmode = models.CharField(max_length=20)
-    collectedby = models.CharField()
-
-class Ticket(models.Model):
-    agent = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tickets_assigned')
-    raised = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tickets_raised')
-    ticketid = models.AutoField(primary_key=True)
-    ticketdate = models.DateTimeField(auto_now_add=True)
-    ticketstatus = models.CharField(max_length=20)
-    ticketsub = models.CharField(max_length=100)
-    priority = models.CharField(max_length=20, default="Low")
-    ticketdesc = models.CharField(max_length=100)
-    ticketupdate = models.DateField(auto_now_add=True)
-    attachment = models.FileField(upload_to='ticket_attachments', null=True, blank=True)
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
-    buildingid = models.ForeignKey(Building, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE,related_name="profileuser")
+    buildingid = models.ForeignKey(Building, on_delete=models.CASCADE, null=True, blank=True,related_name='usrbuld')
     phone = models.CharField(max_length=20)
     profpic = models.ImageField(upload_to='profile_pics', null=True, blank=True, default='profile_pics/default_profile.webp')
     is_billable = models.BooleanField(default=True)
     profile_comp = models.BooleanField(default=False)
+    plan = models.ForeignKey(InternetPlan, on_delete=models.CASCADE, null=True, blank=True,related_name='plan')
+    plan_start_date = models.DateField(null=True, blank=True)
 
     def __str__(self):
         return f"Profile of {self.user.username}"

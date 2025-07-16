@@ -125,27 +125,28 @@
                 </div>
 
                 <!-- User profile section -->
+                 {% if pass %}
                 <div class="flex flex-col items-center mb-10">
                     <div class="mb-2">
                         <button type="button"
                             class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-teal-300 dark:focus:ring-teal-600"
                             aria-expanded="false">
                             <span class="sr-only">Profile picture</span>
-                            <img class="w-12 h-12 rounded-full" src="{% static 'Icons/wifi-svgrepo-com.svg' %}"
+                            <img class="w-12 h-12 rounded-full" src="{{pass.profpic.url}}"
                                 alt="user photo">
                         </button>
                     </div>
                     <div class="text-center profile-details">
                         <p class="text-sm text-gray-900 dark:text-white profile-text" role="none">
-                            Neil Sims
+                            {{pass.user.first_name}} {{pass.user.last_name}}
                         </p>
                         <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300 profile-text"
                             role="none">
-                            neil.sims@flowbite.com
+                            {{pass.user.email}}
                         </p>
                     </div>
                 </div>
-
+                {% endif %}
                 <!-- Separator line -->
                 <div class="border-t border-gray-200 dark:border-gray-700 my-4"></div>
 

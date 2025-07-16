@@ -5,7 +5,6 @@
     {% endblock %}
 {% block content %}
 <div class="relative shadow-md sm:rounded-lg mt-8">
-    {# Removed bg-white and dark:bg-gray-900 from this div #}
     <div class="flex items-center justify-end flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4">
         <label for="table-search" class="sr-only">Search</label>
         <div class="relative">
@@ -26,10 +25,13 @@
                         Name
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Position
+                        Room
                     </th>
                     <th scope="col" class="px-6 py-3">
-                        Status
+                        Phone Number
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Agent
                     </th>
                     <th scope="col" class="px-6 py-3">
                         Action
@@ -37,306 +39,38 @@
                 </tr>
             </thead>
             <tbody>
+                {% for c in client %}
                 <tr class="border-b dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
                     <th scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-1.jpg" alt="Jese image">
+                        <img class="w-10 h-10 rounded-full" src="{{ c.profileuser.profpic.url}}" alt="Jese image">
                         <div class="ps-3">
-                            <div class="text-base font-semibold">Neil Sims</div>
-                            <div class="font-normal text-gray-500">neil.sims@flowbite.com</div>
+                            <div class="text-base font-semibold">{{c.profileuser.user.first_name}} {{c.profileuser.user.last_name}}</div>
+                            <div class="font-normal text-gray-500">{{c.profileuser.user.email}}</div>
                         </div>
                     </th>
                     <td class="px-6 py-4">
-                        React Developer
+                        {{c.usrbuld.Building.building_id}}
                     </td>
                     <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
-                        </div>
+                        
+                        {% if c.phone %}
+                        {{ c.phone }}
+                        {% else %}
+                        Not Available
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if c.profileuser.buildingid.Agent %}
+                        {{ c.profileuser.buildingid.Agent.first_name }} {{ c.profileuser.buildingid.Agent.last_name }}
+                        {% else %}
+                        Not Available
+                        {% endif %}
                     </td>
                     <td class="px-6 py-4">
                         <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
                     </td>
                 </tr>
-                <tr class="border-b dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-3.jpg" alt="Jese image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">Bonnie Green</div>
-                            <div class="font-normal text-gray-500">bonnie@flowbite.com</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        Designer
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
-                <tr class="border-b dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-2.jpg" alt="Jese image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">Jese Leos</div>
-                            <div class="font-normal text-gray-500">jese@flowbite.com</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        Vue JS Developer
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
-                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-4.jpg" alt="Jese image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">Leslie Livingston</div>
-                            <div class="font-normal text-gray-500">leslie@flowbite.com</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        SEO Specialist
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-red-500 me-2"></div> Offline
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
-                <tr class="border-b dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-5.jpg" alt="Thomas image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">Thomas Lean</div>
-                            <div class="font-normal text-gray-500">thomas@flowbite.com</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        UI/UX Designer
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
-                <tr class="border-b dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-1.jpg" alt="Karen image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">Karen Nelson</div>
-                            <div class="font-normal text-gray-500">karen@flowbite.com</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        Front-end Developer
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-red-500 me-2"></div> Offline
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
-                <tr class="border-b dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-3.jpg" alt="Michael image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">Michael Gough</div>
-                            <div class="font-normal text-gray-500">michael@flowbite.com</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        Product Manager
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
-                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-4.jpg" alt="Lana image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">Lana Byrd</div>
-                            <div class="font-normal text-gray-500">lana@flowbite.com</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        Marketing Specialist
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-red-500 me-2"></div> Offline
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
-                <tr class="border-b dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-5.jpg" alt="Robert image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">Robert Brown</div>
-                            <div class="font-normal text-gray-500">robert@flowbite.com</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        Quality Assurance
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
-                <tr class="border-b dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-1.jpg" alt="Emily image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">Emily White</div>
-                            <div class="font-normal text-gray-500">emily@flowbite.com</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        Data Scientist
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
-                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-2.jpg" alt="David image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">David Green</div>
-                            <div class="font-normal text-gray-500">david@flowbite.com</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        DevOps Engineer
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-red-500 me-2"></div> Offline
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
-                <tr class="border-b dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-1.jpg" alt="Jese image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">Neil Sims</div>
-                            <div class="font-normal text-gray-500">neil.sims@flowbite.com</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        React Developer
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
-                <tr class="border-b dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-3.jpg" alt="Jese image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">Bonnie Green</div>
-                            <div class="font-normal text-gray-500">bonnie@flowbite.com</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        Designer
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
-                <tr class="border-b dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-2.jpg" alt="Jese image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">Jese Leos</div>
-                            <div class="font-normal text-gray-500">jese@flowbite.com</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        Vue JS Developer
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> Online
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
-                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="/docs/images/people/profile-picture-4.jpg" alt="Jese image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">Leslie Livingston</div>
-                            <div class="font-normal text-gray-500">leslie@flowbite.com</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        SEO Specialist
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="h-2.5 w-2.5 rounded-full bg-red-500 me-2"></div> Offline
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
