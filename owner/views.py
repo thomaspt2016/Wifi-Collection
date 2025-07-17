@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin # ADD THIS INSTEAD
 from common.models import Profile,CustomUser
+from django.template.loader import render_to_string
 
 # Create your views here.
 class Ownerhomeview(LoginRequiredMixin,View):
@@ -16,14 +17,10 @@ class Ownerhomeview(LoginRequiredMixin,View):
 
 class OwnerClientsView(LoginRequiredMixin, View):
     def get(self, request):
-        # Fetch CustomUser objects (clients) and prefetch related Profile, Building, and Agent data.
-        # 'profileuser' is the related_name from CustomUser to Profile.
-        # 'building' is the related_name from Profile to Building.
-        # 'Agent' is the field name on Building that links to CustomUser.
         clients = CustomUser.objects.filter(role='client').select_related(
-            'profileuser',                      # Prefetches the Profile object for each CustomUser
-            'profileuser__builing_id',         # Prefetches the Building object linked via profileuser's building_id ForeignKey
-            'profileuser__builing_id__Agent'   # Prefetches the Agent (CustomUser) object linked via the Building's Agent ForeignKey
+            'profileuser',                      
+            'profileuser__builing_id',
+            'profileuser__builing_id__Agent'
         )
         return render(request, 'owner/clients.html', {'client': clients})
 
@@ -58,3 +55,29 @@ class GeneralSettingView(LoginRequiredMixin,View):
 class APISettingView(LoginRequiredMixin,View):
     def get(self,request):
         return render(request, 'owner/apiset.html')
+
+class AcountDisable(LoginRequiredMixin,View):
+    def post(self,request,id):
+        # 1. Get the specific user
+        us = CustomUser.objects.get(id = id)
+        
+        # 2. Update the user's active status based on the checkbox state
+        # The 'value="true"' in your HTML input means 'is_active' will be present in POST if checked.
+        # If unchecked, 'is_active' will not be in request.POST.
+        if 'is_active' in request.POST:
+            us.is_active = True
+        else:
+            us.is_active = False
+        us.save()
+        
+        # 3. Re-fetch the entire list of clients with updated data
+        # This is crucial because hx-target="#tabletaget" expects the full table body content
+        clients = CustomUser.objects.filter(role='client').select_related(
+            'profileuser',                      
+            'profileuser__builing_id',
+            'profileuser__builing_id__Agent'
+        )
+        
+        # 4. Render the partial template with the complete, updated list of clients
+        # Now only passing 'client' as 'usrrow.html' no longer checks for 'userobjects'
+        return render(request, 'owner/partials/usrrow.html', {'client': clients})

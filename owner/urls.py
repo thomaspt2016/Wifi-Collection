@@ -32,6 +32,7 @@ urlpatterns = [
     path('reports', views.ReportsView.as_view(), name='reports'),
     path('generalsetting', views.GeneralSettingView.as_view(), name='generalsetting'),
     path('apisetting', views.APISettingView.as_view(), name='apisetting'),
+    path('activecheck/<int:id>', views.AcountDisable.as_view(), name='activecheck'),
 ]
 
 if settings.DEBUG:

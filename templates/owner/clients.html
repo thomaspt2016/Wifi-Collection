@@ -34,43 +34,14 @@
                         Agent
                     </th>
                     <th scope="col" class="px-6 py-3">
+                        Acc Status
+                    </th>
+                    <th scope="col" class="px-6 py-3">
                         Action
                     </th>
                 </tr>
             </thead>
-            <tbody>
-                {% for c in client %}
-                <tr class="border-b dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-                    <th scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
-                        <img class="w-10 h-10 rounded-full" src="{{ c.profileuser.profpic.url}}" alt="Jese image">
-                        <div class="ps-3">
-                            <div class="text-base font-semibold">{{c.first_name}} {{c.last_name}}</div>
-                            <div class="font-normal text-gray-500">{{c.email}}</div>
-                        </div>
-                    </th>
-                    <td class="px-6 py-4">
-                        {{c.profileuser.bulding}}-{{c.profileuser.floor}}-{{c.profileuser.room}}
-                    </td>
-                    <td class="px-6 py-4">
-                        {% if c.profileuser.phone %}
-                        {{ c.profileuser.phone }}
-                        {% else %}
-                        Not Available
-                        {% endif %}
-                    </td>
-                    <td class="px-6 py-4">
-                        {% if c.profileuser.builing_id.Agent %}
-                        {{ c.profileuser.builing_id.Agent.first_name }} {{ c.profileuser.builing_id.Agent.last_name }}
-                        {% else %}
-                        Not Available
-                        {% endif %}
-                    </td>
-                    <td class="px-6 py-4">
-                        <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Edit user</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
+            {% include 'owner/partials/usrrow.html' %}
         </table>
     </div>
 </div>
