@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin # ADD THIS INSTEAD
 from common.models import Profile,CustomUser
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
 
 # Create your views here.
 class Ownerhomeview(LoginRequiredMixin,View):
@@ -99,18 +100,30 @@ class AcountDisable(LoginRequiredMixin,View):
     def post(self,request,id):
         # 1. Get the specific user
         us = CustomUser.objects.get(id = id)
+        
+        # 2. Update the user's active status based on the checkbox state
+        # The 'value="true"' in your HTML input means 'is_active' will be present in POST if checked.
+        # If unchecked, 'is_active' will not be in request.POST.
         if 'is_active' in request.POST:
             us.is_active = True
         else:
             us.is_active = False
         us.save()
+        
+        # 3. Re-fetch the entire list of clients with updated data
+        # This is crucial because hx-target="#tabletaget" expects the full table body content
+        clients = CustomUser.objects.filter(role='client').select_related(
+            'profileuser',                      
+            'profileuser__builing_id',
+            'profileuser__builing_id__Agent'
+        )
+        
+        # 4. Render the partial template with the complete, updated list of clients
+        # Now only passing 'client' as 'usrrow.html' no longer checks for 'userobjects'
         updated_client = CustomUser.objects.filter(id=id).select_related(
             'profileuser__builing_id__Agent'
         ).first()
         return render(request, 'owner/partials/usrrow.html', {'client': [updated_client]})
-    
-
-from django.db.models import Q
 
 class SearchUserView(LoginRequiredMixin, View):
     def get(self, request):
@@ -131,9 +144,11 @@ class SearchUserView(LoginRequiredMixin, View):
                 Q(first_name__icontains=query) |
                 Q(last_name__icontains=query) |
                 Q(email__icontains=query) |
-                Q(profileuser__phone__icontains=query)
+                Q(profileuser__phone__icontains=query) |
+                Q(profileuser__bulding__icontains=query) |
+                Q(profileuser__room__icontains=query)
             )
-            
+
         paginator = Paginator(clients_qs, 10)
 
         try:
@@ -142,7 +157,7 @@ class SearchUserView(LoginRequiredMixin, View):
             clients = paginator.page(1)
         except EmptyPage:
             clients = paginator.page(paginator.num_pages)
-        
+
         if not clients.object_list.exists() and query: 
             pass
         return render(request, 'owner/partials/usrrow.html', {'client': clients})
