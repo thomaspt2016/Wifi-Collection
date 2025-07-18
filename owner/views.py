@@ -110,7 +110,6 @@ class AcountDisable(LoginRequiredMixin,View):
         return render(request, 'owner/partials/usrrow.html', {'client': [updated_client]})
     
 
-
 from django.db.models import Q
 
 class SearchUserView(LoginRequiredMixin, View):
@@ -132,9 +131,7 @@ class SearchUserView(LoginRequiredMixin, View):
                 Q(first_name__icontains=query) |
                 Q(last_name__icontains=query) |
                 Q(email__icontains=query) |
-                Q(profileuser__phone__icontains=query) |
-                Q(profileuser__bulding__icontains=query) |
-                Q(profileuser__room__icontains=query)
+                Q(profileuser__phone__icontains=query)
             )
             
         paginator = Paginator(clients_qs, 10)
