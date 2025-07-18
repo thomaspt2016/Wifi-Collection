@@ -13,7 +13,12 @@
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                 </svg>
             </div>
-            <input type="text" id="table-search-users" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search for users">
+            <input type="text" id="table-search-users" 
+            class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+            placeholder="Name or Phone Number" name="q" hx-get = "{% url 'owner:searchuser' %}"
+            hx-trigger="keyup changed delay:500ms, search"
+            hx-target="#client-table-scroll-area tbody"
+            hx-swap="innerHTML">
         </div>
     </div>
     {# This is the div that needs the overflow-y-auto and a max-height, and now the ID for styling #}
@@ -41,7 +46,9 @@
                     </th>
                 </tr>
             </thead>
+             <tbody id="client-table-tbody">
             {% include 'owner/partials/usrrow.html' %}
+            </tbody>
         </table>
     </div>
 </div>
@@ -51,33 +58,42 @@
         <span class="font-semibold text-gray-900 dark:text-white">{{ client.end_index }}</span> of
         <span class="font-semibold text-gray-900 dark:text-white">{{ client.paginator.count }}</span>
     </span>
-    <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+<ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+    {# Get the current search query, if any #}
+    {% with request.GET.q as current_q %}
         {% if client.has_previous %}
         <li>
-            <a href="?page={{ client.previous_page_number }}" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
+            <a href="?page={{ client.previous_page_number }}{% if current_q %}&q={{ current_q }}{% endif %}"
+               hx-get="{% url 'owner:searchuser' %}" hx-target="#client-table-scroll-area tbody" hx-swap="innerHTML"
+               class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
         </li>
         {% endif %}
 
-        {# Loop through page range for page numbers #}
         {% for num in client.paginator.page_range %}
             {% if client.number == num %}
-            {# Current page - active state #}
             <li>
-                <a href="?page={{ num }}" aria-current="page" class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">{{ num }}</a>
+                <a href="?page={{ num }}{% if current_q %}&q={{ current_q }}{% endif %}" aria-current="page"
+                   hx-get="{% url 'owner:searchuser' %}" hx-target="#client-table-scroll-area tbody" hx-swap="innerHTML"
+                   class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">{{ num }}</a>
             </li>
-            {% elif num > client.number|add:'-3' and num < client.number|add:'3' %} {# Show a limited range of pages around the current #}
+            {% elif num > client.number|add:'-3' and num < client.number|add:'3' %}
             <li>
-                <a href="?page={{ num }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ num }}</a>
+                <a href="?page={{ num }}{% if current_q %}&q={{ current_q }}{% endif %}"
+                   hx-get="{% url 'owner:searchuser' %}" hx-target="#client-table-scroll-area tbody" hx-swap="innerHTML"
+                   class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ num }}</a>
             </li>
             {% endif %}
         {% endfor %}
 
         {% if client.has_next %}
         <li>
-            <a href="?page={{ client.next_page_number }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
+            <a href="?page={{ client.next_page_number }}{% if current_q %}&q={{ current_q }}{% endif %}"
+               hx-get="{% url 'owner:searchuser' %}" hx-target="#client-table-scroll-area tbody" hx-swap="innerHTML"
+               class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
         </li>
         {% endif %}
-    </ul>
+    {% endwith %}
+</ul>
 </nav>
 
 {# Custom Scrollbar Styles #}
