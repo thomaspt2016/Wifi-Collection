@@ -45,6 +45,40 @@
         </table>
     </div>
 </div>
+<nav class="flex items-center flex-column flex-wrap md:flex-row justify-between pt-4" aria-label="Table navigation">
+    <span class="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 md:mb-0 block w-full md:w-auto">
+        Showing <span class="font-semibold text-gray-900 dark:text-white">{{ client.start_index }}</span>-
+        <span class="font-semibold text-gray-900 dark:text-white">{{ client.end_index }}</span> of
+        <span class="font-semibold text-gray-900 dark:text-white">{{ client.paginator.count }}</span>
+    </span>
+    <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+        {% if client.has_previous %}
+        <li>
+            <a href="?page={{ client.previous_page_number }}" class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 rounded-s-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Previous</a>
+        </li>
+        {% endif %}
+
+        {# Loop through page range for page numbers #}
+        {% for num in client.paginator.page_range %}
+            {% if client.number == num %}
+            {# Current page - active state #}
+            <li>
+                <a href="?page={{ num }}" aria-current="page" class="flex items-center justify-center px-3 h-8 text-blue-600 border border-gray-300 bg-blue-50 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white">{{ num }}</a>
+            </li>
+            {% elif num > client.number|add:'-3' and num < client.number|add:'3' %} {# Show a limited range of pages around the current #}
+            <li>
+                <a href="?page={{ num }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">{{ num }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if client.has_next %}
+        <li>
+            <a href="?page={{ client.next_page_number }}" class="flex items-center justify-center px-3 h-8 leading-tight text-gray-500 bg-white border border-gray-300 rounded-e-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">Next</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
 
 {# Custom Scrollbar Styles #}
 <style>

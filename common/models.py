@@ -12,7 +12,7 @@ class CustomUser(AbstractUser):
     is_staff = models.BooleanField(default=False)
     is_verified = models.BooleanField(default=False) # After verification it will set to True
     otp = models.CharField(max_length=10, null=True, blank=True)
-    role = models.CharField(max_length=100, null=True, blank=True, default="owner")
+    role = models.CharField(max_length=100, null=True, blank=True, default="client")
     date_joined = models.DateTimeField(auto_now_add=True)
 
     def generate_otp(self):

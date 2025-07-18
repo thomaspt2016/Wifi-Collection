@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin # ADD THIS INSTEAD
 from common.models import Profile,CustomUser
-from django.template.loader import render_to_string
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 # Create your views here.
 class Ownerhomeview(LoginRequiredMixin,View):
@@ -15,13 +15,52 @@ class Ownerhomeview(LoginRequiredMixin,View):
         return render(request, 'owner/ownhom.html')
     
 
+
+
 class OwnerClientsView(LoginRequiredMixin, View):
     def get(self, request):
+        # Fields needed for CustomUser (client) directly
+        customuser_fields = [
+            'id', 'first_name', 'last_name', 'email', 'is_active', # Assuming these are directly on CustomUser
+            # Add any other CustomUser fields you use in the template
+        ]
+
+        # Fields needed from ProfileUser (related via select_related)
+        profileuser_fields = [
+            'profileuser__profpic', # For the image URL
+            'profileuser__bulding',
+            'profileuser__floor',
+            'profileuser__room',
+            'profileuser__phone',
+        ]
+
+        # Fields needed from Building (related via select_related)
+        building_fields = [
+            'profileuser__builing_id__Agent__first_name', # For Agent's first name
+            'profileuser__builing_id__Agent__last_name',  # For Agent's last name
+        ]
+
         clients = CustomUser.objects.filter(role='client').select_related(
-            'profileuser',                      
-            'profileuser__builing_id',
-            'profileuser__builing_id__Agent'
-        )
+            'profileuser__builing_id__Agent' # Keep this for efficient joins
+        ).only(
+            *customuser_fields,
+            *profileuser_fields,
+            *building_fields
+        ).order_by('last_name', 'first_name')
+                # --- Pagination Logic ---
+        paginator = Paginator(clients, 10)  # Show 10 clients per page. Adjust this number!
+
+        page_number = request.GET.get('page') # Get the current page number from the URL
+        try:
+            clients = paginator.page(page_number)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            clients = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g., 9999), deliver last page of results.
+            clients = paginator.page(paginator.num_pages)
+        # --- End Pagination Logic ---
+
         return render(request, 'owner/clients.html', {'client': clients})
 
 class CollectionAgentsView(LoginRequiredMixin,View):
