@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin # ADD THIS INSTEAD
-from common.models import Profile,CustomUser
+from common.models import Profile,CustomUser,Building
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 
@@ -64,9 +64,26 @@ class OwnerClientsView(LoginRequiredMixin, View):
 
         return render(request, 'owner/clients.html', {'client': clients})
 
-class CollectionAgentsView(LoginRequiredMixin,View):
-    def get(self,request):
-        return render(request, 'owner/colla.html')
+class CollectionAgentsView(LoginRequiredMixin, View):
+    def get(self, request):
+        collection_agents = CustomUser.objects.filter(role='coagent')
+
+        # Create a list of dictionaries, where each dictionary contains
+        # an agent object and their unique building names
+        agents_data = []
+        for agent in collection_agents:
+            # Use values_list to get only the 'building_name', then flat=True for a simple list,
+            # and finally distinct() to ensure unique names.
+            unique_building_names = agent.buildings_managed.all().values_list('building_name', flat=True).distinct()
+            
+            agents_data.append({
+                'agent': agent,
+                'unique_buildings': unique_building_names
+            })
+
+        # Pass this prepared data to your template
+        return render(request, 'owner/colla.html', {'agents_data': agents_data})
+
 
 class InternetplansView(LoginRequiredMixin,View):
     def get(self, request):
@@ -144,9 +161,7 @@ class SearchUserView(LoginRequiredMixin, View):
                 Q(first_name__icontains=query) |
                 Q(last_name__icontains=query) |
                 Q(email__icontains=query) |
-                Q(profileuser__phone__icontains=query) |
-                Q(profileuser__bulding__icontains=query) |
-                Q(profileuser__room__icontains=query)
+                Q(profileuser__phone__icontains=query)
             )
 
         paginator = Paginator(clients_qs, 10)
