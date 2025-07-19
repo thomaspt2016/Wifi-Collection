@@ -6,9 +6,10 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin # ADD THIS INSTEAD
-from common.models import Profile,CustomUser,Building
+from common.models import Profile,CustomUser,Building,InternetPlan
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
+from common.forms import InternetPlanForm
 
 # Create your views here.
 class Ownerhomeview(LoginRequiredMixin,View):
@@ -85,9 +86,25 @@ class CollectionAgentsView(LoginRequiredMixin, View):
         return render(request, 'owner/colla.html', {'agents_data': agents_data})
 
 
-class InternetplansView(LoginRequiredMixin,View):
+class InternetplansView(LoginRequiredMixin, View):
     def get(self, request):
-        return render(request, 'owner/intrplans.html')
+        form = InternetPlanForm()
+        plans = InternetPlan.objects.all().order_by('plan_name')  # Fetch all plans for display
+        return render(request, 'owner/intrplans.html', {'form': form, 'all_plans': plans})
+
+    def post(self, request):
+        form = InternetPlanForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Plan Added Successfully')
+            # After successful save, re-fetch plans to include the newly added one
+            plans = InternetPlan.objects.all().order_by('plan_name')
+            return render(request, 'owner/intrplans.html', {'form': form, 'all_plans': plans}) # Render with updated plans
+        else:
+            messages.error(request, 'Please correct the errors below.')
+            # If form is invalid, still fetch all plans to display the table
+            plans = InternetPlan.objects.all().order_by('plan_name')
+            return render(request, 'owner/intrplans.html', {'form': form, 'all_plans': plans})
     
 class CodeUploadView(LoginRequiredMixin, View):
     def get(self, request):

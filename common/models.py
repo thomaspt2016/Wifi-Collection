@@ -32,11 +32,22 @@ class Building(models.Model):
 
 class InternetPlan(models.Model):
     plan_id = models.AutoField(primary_key=True)
-    plan_name = models.CharField(max_length=20)
-    plan_price = models.IntegerField()
-    plan_type = models.CharField(max_length=20)
-    is_Active = models.BooleanField(default=True)
-    Num_Devices = models.IntegerField()
+    PLAN_TYPE_CHOICES = [
+        ('monthly', 'Monthly'),
+        ('temporary', 'Temporary'),
+    ]
+
+    plan_name = models.CharField(max_length=100)
+    plan_price = models.DecimalField(max_digits=10, decimal_places=0)
+    plan_type = models.CharField(
+        max_length=10,
+        choices=PLAN_TYPE_CHOICES,
+        default='monthly', # Set a default value if desired
+    )
+    Num_Devices = models.IntegerField() # Assuming number of devices is an integer
+
+    def __str__(self):
+        return self.plan_name
 
 class WifiCodeUpload(models.Model):
     codeupid = models.AutoField(primary_key=True)

@@ -1,5 +1,5 @@
 from django import forms
-from .models import CustomUser,Profile,Building
+from .models import CustomUser,Profile,Building,InternetPlan
 from django.contrib.auth.forms import UserCreationForm
 
 
@@ -38,3 +38,8 @@ class ProfileForm(forms.ModelForm):
         self.fields['bulding'].choices.insert(0, ('', ' '))
         self.fields['floor'].choices.insert(0, ('', ' '))
         self.fields['room'].choices.insert(0, ('', ' '))
+
+class InternetPlanForm(forms.ModelForm):
+    class Meta:
+        model = InternetPlan
+        fields = ['plan_name', 'plan_price', 'plan_type', 'Num_Devices']
