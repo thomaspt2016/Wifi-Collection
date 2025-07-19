@@ -82,6 +82,9 @@ class Profile(models.Model):
     profile_comp = models.BooleanField(default=False)
     plan = models.ForeignKey(InternetPlan, on_delete=models.CASCADE, null=True, blank=True,related_name='plan')
     plan_start_date = models.DateField(null=True, blank=True)
+    next_billdate = models.DateField(null=True, blank=True)
+    planenddate = models.DateField(null=True, blank=True)
+
 
     def __str__(self):
         return f"Profile of {self.user.username}"

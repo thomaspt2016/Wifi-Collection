@@ -10,7 +10,7 @@
 <div class="flex flex-col flex-grow bg-gray-100 dark:bg-gray-800">
 
   {# Top Row/Section: The form for adding internet plans #}
-  <section class="bg-gray-100 dark:bg-gray-800 flex-grow py-0 px-4 flex items-center justify-center"> {# Changed py-3 to py-0 #}
+  <section class="bg-gray-100 dark:bg-gray-800 flex-grow py-0 px-4 flex items-center justify-center">
     {# Moved container and centering classes to this div #}
     <div class="container mx-auto px-4 py-6 flex-grow flex flex-col h-full w-full max-w-screen-xl items-stretch justify-center">
 
@@ -26,7 +26,7 @@
         <div class="flex flex-col md:flex-row md:gap-4 w-full items-end">
           {# Plan Name Field #}
           <div class="relative z-0 w-full mb-5 group md:w-1/4">
-            {% render_field form.plan_name type="text" name="plan_name" id="floating_plan_name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required="required" %}
+            {% render_field form.plan_name type="text" name="plan_name" id="floating_plan_name" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:focus:border-blue-600 peer" placeholder=" " required="required" %}
             <label for="floating_plan_name" class="peer-focus:font-medium absolute text-sm text-blue-600 dark:text-blue-300 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Plan Name</label>
             {% if form.plan_name.errors %}
             <ul class="text-red-300 text-xs mt-1">
@@ -117,7 +117,7 @@
   {% endif %}
 
   {# New Section for displaying all plans in a table #}
-  <section class="bg-gray-100 dark:bg-gray-800 py-0 px-4 flex items-center justify-center"> {# Changed py-3 to py-0 #}
+  <section class="bg-gray-100 dark:bg-gray-800 py-0 px-4 flex items-center justify-center">
     <div class="container mx-auto px-4 py-6 w-full max-w-screen-xl">
       <div class="bg-white dark:bg-gray-700 rounded-lg shadow-lg p-6">
         <h2 class="mb-4 text-3xl font-extrabold text-gray-900 dark:text-white text-center">Available Internet Plans</h2>
@@ -139,6 +139,9 @@
                   Devices
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                  No Users
+                </th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -153,20 +156,22 @@
                   QAR{{ plan.plan_price }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                  {{ plan.get_plan_type_display }} {# Use get_FOO_display for choices #}
+                  {{ plan.get_plan_type_display }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
                   {{ plan.Num_Devices }}
                 </td>
-                    <td class="px-6 py-4">
-                        <a href="" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
-                            <img class="w-5 h-5" src="{% static 'owner icos/client/edit-alt.svg' %}" alt="Edit icon" />
-                        </a>
-                        <a href="" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
-                            <img class="w-5 h-5" src="{% static 'owner icos/client/roller-coaster.svg' %}" alt="promo icon" />
-                        </a>
-                    </td>
-                </tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                  {{ plan.No_Users}}
+                </td>
+                <td class="px-6 py-4">
+                  <a href="" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
+                    <img class="w-5 h-5" src="{% static 'owner icos/client/edit-alt.svg' %}" alt="Edit icon" />
+                  </a>
+                  <a href="" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
+                    <img class="w-5 h-5" src="{% static 'owner icos/client/roller-coaster.svg' %}" alt="promo icon" />
+                  </a>
+                </td>
               </tr>
               {% endfor %}
             </tbody>
@@ -195,7 +200,7 @@
         message.addEventListener('transitionend', () => {
           message.remove();
         }, { once: true }); // Ensure the event listener is only called once
-      }, delay);
+      }, 1000);
     });
   });
 </script>

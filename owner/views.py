@@ -8,7 +8,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin # ADD THIS INSTEAD
 from common.models import Profile,CustomUser,Building,InternetPlan
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import Q
+from django.db.models import Q,Count
 from common.forms import InternetPlanForm
 
 # Create your views here.
@@ -89,7 +89,8 @@ class CollectionAgentsView(LoginRequiredMixin, View):
 class InternetplansView(LoginRequiredMixin, View):
     def get(self, request):
         form = InternetPlanForm()
-        plans = InternetPlan.objects.all().order_by('plan_name')  # Fetch all plans for display
+        # Annotate each InternetPlan with the count of related Profiles
+        plans = InternetPlan.objects.annotate(No_Users=Count('plan')).order_by('plan_name')
         return render(request, 'owner/intrplans.html', {'form': form, 'all_plans': plans})
 
     def post(self, request):
@@ -97,14 +98,15 @@ class InternetplansView(LoginRequiredMixin, View):
         if form.is_valid():
             form.save()
             messages.success(request, 'Plan Added Successfully')
-            # After successful save, re-fetch plans to include the newly added one
-            plans = InternetPlan.objects.all().order_by('plan_name')
-            return render(request, 'owner/intrplans.html', {'form': form, 'all_plans': plans}) # Render with updated plans
+            # After successful save, re-fetch and annotate plans to include the newly added one
+            plans = InternetPlan.objects.annotate(No_Users=Count('plan')).order_by('plan_name')
+            return render(request, 'owner/intrplans.html', {'form': form, 'all_plans': plans})
         else:
             messages.error(request, 'Please correct the errors below.')
-            # If form is invalid, still fetch all plans to display the table
-            plans = InternetPlan.objects.all().order_by('plan_name')
+            # If form is invalid, still fetch and annotate all plans to display the table
+            plans = InternetPlan.objects.annotate(No_Users=Count('plan')).order_by('plan_name')
             return render(request, 'owner/intrplans.html', {'form': form, 'all_plans': plans})
+
     
 class CodeUploadView(LoginRequiredMixin, View):
     def get(self, request):
