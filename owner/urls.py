@@ -33,7 +33,8 @@ urlpatterns = [
     path('generalsetting', views.GeneralSettingView.as_view(), name='generalsetting'),
     path('apisetting', views.APISettingView.as_view(), name='apisetting'),
     path('activecheck/<int:id>', views.AcountDisable.as_view(), name='activecheck'),
-    path('searchuser',views.SearchUserView.as_view(),name='searchuser')
+    path('searchuser',views.SearchUserView.as_view(),name='searchuser'),
+    path('download/<int:upload_id>/', views.download_file_view, name='downloadfile'),
 ]
 
 if settings.DEBUG:

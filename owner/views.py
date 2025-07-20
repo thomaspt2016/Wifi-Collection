@@ -6,10 +6,18 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.contrib.auth.mixins import LoginRequiredMixin # ADD THIS INSTEAD
-from common.models import Profile,CustomUser,Building,InternetPlan
+from common.models import Profile,CustomUser,Building,InternetPlan,CodePoool,WifiCodeUpload
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q,Count
 from common.forms import InternetPlanForm
+import PyPDF2
+import re
+from django.core.files.storage import FileSystemStorage
+from django.conf import settings 
+import os
+from django.http import HttpResponse, Http404
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 class Ownerhomeview(LoginRequiredMixin,View):
@@ -110,7 +118,133 @@ class InternetplansView(LoginRequiredMixin, View):
     
 class CodeUploadView(LoginRequiredMixin, View):
     def get(self, request):
-        return render(request, 'owner/codup.html')
+        ta = WifiCodeUpload.objects.all()
+        if ta:
+            ta = ta.order_by('-uploadeddate')
+            return render(request, 'owner/codup.html',{'codeuploaddata': ta})
+        else:
+            return render(request, 'owner/codup.html')
+    
+    def post(self, request):
+        if 'codefile' not in request.FILES:
+            messages.error(request, 'No file was uploaded.')
+            codeuploaddata = WifiCodeUpload.objects.all().order_by('-uploadeddate')
+            return render(request, 'owner/codup.html', {'codeuploaddata': codeuploaddata})
+
+        uploaded_file = request.FILES['codefile']
+        remarks = request.POST.get('remarks', "Havent Provided any remarks")
+
+        wifi_code_upload_instance = None
+        file_absolute_path_for_pypdf = None
+
+        try:
+            wifi_code_upload_instance = WifiCodeUpload.objects.create(
+                uploadstatus="Processing",
+                uploadedby=request.user,
+                uploadedto=uploaded_file,
+                remarks=remarks
+            )
+
+            file_absolute_path_for_pypdf = wifi_code_upload_instance.uploadedto.path
+
+            pdf_content = self.read_pdf_pypdf2(file_absolute_path_for_pypdf)
+            pattern = r'\b6may\d{6}\b'
+            codes = re.findall(pattern, pdf_content)
+
+            new_codes_count = 0
+            duplicate_codes_count = 0
+            found_duplicates = False # Flag to track if any duplicates were found
+
+            if codes:
+                for code_str in codes:
+                    try:
+                        CodePoool.objects.get(code=code_str)
+                        messages.error(request, f'Code {code_str} already exists in the database.')
+                        duplicate_codes_count += 1
+                        found_duplicates = True
+                    except CodePoool.DoesNotExist:
+                        CodePoool.objects.create(
+                            code=code_str,
+                            sourcepdf=wifi_code_upload_instance
+                        )
+                        new_codes_count += 1
+                
+                # Determine upload status based on duplicate findings
+                if found_duplicates and new_codes_count > 0:
+                    upload_status_db = 'Completed (with Duplicates)'
+                    messages.warning(request, f'File uploaded. {new_codes_count} new codes saved, {duplicate_codes_count} codes already existed.')
+                elif found_duplicates and new_codes_count == 0:
+                    upload_status_db = 'All Codes Existed'
+                    messages.warning(request, f'File uploaded. All {duplicate_codes_count} codes already existed and none were added.')
+                else: # No duplicates, all codes were new
+                    upload_status_db = 'Completed'
+                    messages.success(request, f'File uploaded and {len(codes)} new codes extracted and saved successfully.')
+            else:
+                upload_status_db = 'No Codes Found'
+                messages.warning(request, 'File uploaded, but no matching codes were found.')
+
+            wifi_code_upload_instance.uploadstatus = upload_status_db
+            wifi_code_upload_instance.save()
+
+        except PyPDF2.errors.PdfReadError:
+            upload_status_db = 'PDF Error'
+            error_remarks = 'The uploaded file is not a valid PDF or is corrupted.'
+            messages.error(request, error_remarks)
+            if wifi_code_upload_instance:
+                wifi_code_upload_instance.uploadstatus = upload_status_db
+                wifi_code_upload_instance.remarks = error_remarks
+                wifi_code_upload_instance.save()
+            else:
+                WifiCodeUpload.objects.create(
+                    uploadstatus=upload_status_db,
+                    uploadedby=request.user,
+                    remarks=error_remarks
+                )
+
+        except Exception as e:
+            upload_status_db = 'Processing Error'
+            error_remarks = f'An unexpected error occurred during PDF processing: {e}'
+            messages.error(request, error_remarks)
+            if wifi_code_upload_instance:
+                wifi_code_upload_instance.uploadstatus = upload_status_db
+                wifi_code_upload_instance.remarks = error_remarks
+                wifi_code_upload_instance.save()
+            else:
+                WifiCodeUpload.objects.create(
+                    uploadstatus=upload_status_db,
+                    uploadedby=request.user,
+                    remarks=error_remarks
+                )
+        finally:
+            pass
+
+        codeuploaddata = WifiCodeUpload.objects.all().order_by('-uploadeddate')
+        return render(request, 'owner/codup.html', {'codeuploaddata': codeuploaddata})
+
+    def read_pdf_pypdf2(self, filepath):
+        text = ""
+        with open(filepath, 'rb') as file:
+            reader = PyPDF2.PdfReader(file)
+            for page_num in range(len(reader.pages)):
+                text += reader.pages[page_num].extract_text()
+        return text
+
+
+@login_required(login_url='common:login')
+def download_file_view(request, upload_id):
+    try:
+        upload_instance = get_object_or_404(WifiCodeUpload, codeupid=upload_id)
+        file_path = upload_instance.uploadedto.path
+    except Http404:
+        messages.error(request, 'File not found.')
+        return redirect('code_upload_url_name')
+
+    if os.path.exists(file_path):
+        with open(file_path, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/pdf")
+            response['Content-Disposition'] = 'attachment; filename="%s"' % os.path.basename(file_path)
+            return response
+    raise Http404
     
 class CodePoolStatView(LoginRequiredMixin,View):
     def get(self,request):

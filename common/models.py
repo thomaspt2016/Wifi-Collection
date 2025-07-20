@@ -60,10 +60,10 @@ class WifiCodeUpload(models.Model):
 class CodePoool(models.Model):
     codeid = models.AutoField(primary_key=True)
     code = models.CharField(max_length=20)
-    device = models.CharField(max_length=20)
     is_used = models.BooleanField(default=False)
     assignedto = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name='assigned_codes') # Added related_name
     assigneddate = models.DateTimeField(null=True, blank=True)
+    exiprydate = models.DateField(null=True, blank=True)
     deactivated = models.DateField(null=True, blank=True)
     sourcepdf = models.ForeignKey(WifiCodeUpload, on_delete=models.CASCADE,blank=True,related_name="Source")
 

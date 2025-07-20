@@ -1,0 +1,51 @@
+{% load static %}
+
+{% for item in agents_data %}
+    {# 'item' here is the dictionary {'agent': CustomUser_object, 'unique_buildings': list_of_names} #}
+    {% with c=item.agent %} {# Assign 'item.agent' to 'c' for easier access to agent details #}
+    <tr id="client-row-{{ c.id }}" class="border-b dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
+        <th scope="row" class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white">
+            <img class="w-10 h-10 rounded-full" src="{{ c.profileuser.profpic.url}}" alt="Jese image">
+            <div class="ps-3">
+                <div class="text-base font-semibold">{{c.first_name}} {{c.last_name}}</div>
+                <div class="font-normal text-gray-500">{{c.email}}</div>
+            </div>
+        </th>
+        <td class="px-6 py-4">
+            {# Iterate over the list of unique building names #}
+            {% for building_name in item.unique_buildings %}
+                {{ building_name }}{% if not forloop.last %}, {% endif %}
+            {% empty %}
+                No buildings assigned.
+            {% endfor %}
+        </td>
+        <td class="px-6 py-4">
+            {% if c.profileuser.phone %}
+            {{ c.profileuser.phone }}
+            {% else %}
+            Not Available
+            {% endif %}
+        </td>
+        <td class="px-6 py-4">
+            <label class="inline-flex items-center cursor-pointer">
+                <input type="checkbox" value="true" class="sr-only peer" {% if c.is_active %}checked{% endif %} hx-post="{% url 'owner:activecheck' c.id %}" hx-target="#client-row-{{ c.id }}" name="is_active" hx-swap="outerHTML">
+                <div
+                    class="relative w-11 h-6 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600
+                    {% if c.is_active %}bg-green-600 dark:bg-green-700{% else %}bg-red-600 dark:bg-red-700{% endif %}">
+                </div>
+                <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                    {% if c.is_active %}Active{% else %}Inactive{% endif %}
+                </span>
+            </label>
+        </td>
+        <td class="px-6 py-4">
+            <a href="" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
+                <img class="w-5 h-5" src="{% static 'owner icos/client/edit-alt.svg' %}" alt="Edit icon" />
+            </a>
+            <a href="" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
+                <img class="w-5 h-5" src="{% static 'owner icos/client/down-square.svg' %}" alt="Edit icon" />
+            </a>
+        </td>
+    </tr>
+    {% endwith %}
+{% endfor %}
