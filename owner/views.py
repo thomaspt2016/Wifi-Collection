@@ -76,22 +76,32 @@ class OwnerClientsView(LoginRequiredMixin, View):
 class CollectionAgentsView(LoginRequiredMixin, View):
     def get(self, request):
         collection_agents = CustomUser.objects.filter(role='coagent')
-
-        # Create a list of dictionaries, where each dictionary contains
-        # an agent object and their unique building names
         agents_data = []
         for agent in collection_agents:
-            # Use values_list to get only the 'building_name', then flat=True for a simple list,
-            # and finally distinct() to ensure unique names.
             unique_building_names = agent.buildings_managed.all().values_list('building_name', flat=True).distinct()
             
             agents_data.append({
                 'agent': agent,
                 'unique_buildings': unique_building_names
             })
-
-        # Pass this prepared data to your template
         return render(request, 'owner/colla.html', {'agents_data': agents_data})
+    
+class SearchViewPool(LoginRequiredMixin,View):
+    def post(self, request):
+        search_query = request.POST.get('search_query', '').strip()
+        if search_query:
+            # codes = CodePoool.objects.filter(code__icontains=search_query)
+            # profiles = Profile.objects.filter(code__in=codes)
+            # users = CustomUser.objects.filter(profileuser__in=profiles)
+            # search_results = list(codes) + list(profiles) + list(users)
+            # search_results = list(set(search_results))
+            clintls= CustomUser.objects.exclude(role='owner').select_related(
+                'profileuser',
+                'profileuser__plan'
+            )
+        else:
+            search_results = []
+        return render(request, 'owner/search_results.html', {'search_results': search_results})
 
 
 class InternetplansView(LoginRequiredMixin, View):
@@ -248,8 +258,13 @@ def download_file_view(request, upload_id):
     
 class CodePoolStatView(LoginRequiredMixin,View):
     def get(self,request):
-        return render(request, 'owner/codepoo.html')
-    
+        codepool_data = CodePoool.objects.exclude(is_used=False).select_related('assignedto', 'sourcepdf','assignedto__profileuser__plan').all().order_by('-is_used')
+
+        context = {
+            'codepool_data': codepool_data
+        }
+        return render(request, 'owner/codepoo.html', context)
+   
 class PaymentsView(LoginRequiredMixin,View):
     def get(self,request):
         return render(request, 'owner/payments.html')
@@ -268,28 +283,17 @@ class APISettingView(LoginRequiredMixin,View):
 
 class AcountDisable(LoginRequiredMixin,View):
     def post(self,request,id):
-        # 1. Get the specific user
         us = CustomUser.objects.get(id = id)
-        
-        # 2. Update the user's active status based on the checkbox state
-        # The 'value="true"' in your HTML input means 'is_active' will be present in POST if checked.
-        # If unchecked, 'is_active' will not be in request.POST.
         if 'is_active' in request.POST:
             us.is_active = True
         else:
             us.is_active = False
         us.save()
-        
-        # 3. Re-fetch the entire list of clients with updated data
-        # This is crucial because hx-target="#tabletaget" expects the full table body content
         clients = CustomUser.objects.filter(role='client').select_related(
             'profileuser',                      
             'profileuser__builing_id',
             'profileuser__builing_id__Agent'
         )
-        
-        # 4. Render the partial template with the complete, updated list of clients
-        # Now only passing 'client' as 'usrrow.html' no longer checks for 'userobjects'
         updated_client = CustomUser.objects.filter(id=id).select_related(
             'profileuser__builing_id__Agent'
         ).first()

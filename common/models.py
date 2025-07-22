@@ -53,7 +53,7 @@ class WifiCodeUpload(models.Model):
     codeupid = models.AutoField(primary_key=True)
     uploadeddate = models.DateTimeField(auto_now_add=True)
     uploadstatus = models.CharField(max_length=20, default="Initiated")
-    uploadedby = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='uploaded_wifi_codes') # Added related_name
+    uploadedby = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='uploaded_wifi_codes')
     uploadedto = models.FileField(upload_to='wifi_codes')
     remarks = models.CharField(max_length=100, null=True, blank=True)
 
@@ -61,13 +61,12 @@ class CodePoool(models.Model):
     codeid = models.AutoField(primary_key=True)
     code = models.CharField(max_length=20)
     is_used = models.BooleanField(default=False)
-    assignedto = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name='assigned_codes') # Added related_name
+    assignedto = models.ForeignKey(CustomUser, on_delete=models.CASCADE, null=True, blank=True, related_name='assigned_codes')
     assigneddate = models.DateTimeField(null=True, blank=True)
     exiprydate = models.DateField(null=True, blank=True)
     deactivated = models.DateField(null=True, blank=True)
+    is_deactivated = models.BooleanField(default=False)
     sourcepdf = models.ForeignKey(WifiCodeUpload, on_delete=models.CASCADE,blank=True,related_name="Source")
-
-
 
 
 class Profile(models.Model):

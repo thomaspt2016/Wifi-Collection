@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles','clients','coagents','common','owner','widget_tweaks'
+    'django.contrib.staticfiles','clients','coagents','common','owner','widget_tweaks','compressor'
 ]
 
 MIDDLEWARE = [
@@ -52,7 +52,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+COMPRESS_ROOT = BASE_DIR / 'static'
 
+COMPRESS_ENABLED = True
+
+STATICFILES_FINDERS = ('compressor.finders.CompressorFinder',)
 ROOT_URLCONF = 'wificollection.urls'
 
 TEMPLATES = [
