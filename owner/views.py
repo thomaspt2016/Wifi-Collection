@@ -4,20 +4,18 @@ from django.shortcuts import render,redirect
 from django.views import View
 from django.http import HttpResponse
 from django.contrib import messages
-from django.core.mail import send_mail
-from django.contrib.auth.mixins import LoginRequiredMixin # ADD THIS INSTEAD
-from common.models import Profile,CustomUser,Building,InternetPlan,CodePoool,WifiCodeUpload
+from django.contrib.auth.mixins import LoginRequiredMixin
+from common.models import CustomUser,InternetPlan,CodePoool,WifiCodeUpload
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q,Count
 from common.forms import InternetPlanForm
 import PyPDF2
 import re
-from django.core.files.storage import FileSystemStorage
-from django.conf import settings 
 import os
 from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+import datetime
 
 # Create your views here.
 class Ownerhomeview(LoginRequiredMixin,View):
@@ -90,11 +88,6 @@ class SearchViewPool(LoginRequiredMixin,View):
     def post(self, request):
         search_query = request.POST.get('search_query', '').strip()
         if search_query:
-            # codes = CodePoool.objects.filter(code__icontains=search_query)
-            # profiles = Profile.objects.filter(code__in=codes)
-            # users = CustomUser.objects.filter(profileuser__in=profiles)
-            # search_results = list(codes) + list(profiles) + list(users)
-            # search_results = list(set(search_results))
             clintls= CustomUser.objects.exclude(role='owner').select_related(
                 'profileuser',
                 'profileuser__plan'
@@ -258,7 +251,7 @@ def download_file_view(request, upload_id):
     
 class CodePoolStatView(LoginRequiredMixin,View):
     def get(self,request):
-        codepool_data = CodePoool.objects.exclude(is_used=False
+        codepool_data = CodePoool.objects.filter(is_used=True,is_deactivated=False
                                                   ).select_related('assignedto', 
                                                                 'sourcepdf','assignedto__profileuser__plan'
                                                                 ).all().order_by('assignedto')
@@ -277,16 +270,73 @@ class CodePoolStatView(LoginRequiredMixin,View):
             )
         ).order_by('plan_name')
 
+        # --- Pagination Implementation ---
+        items_per_page = 10 # Define how many items you want per page
+        paginator = Paginator(codepool_data, items_per_page) # Create a Paginator object
+
+        page_number = request.GET.get('page') # Get the current page number from the URL
+        try:
+            codepool_data_paginated = paginator.page(page_number) # Get the Page object
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            codepool_data_paginated = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            codepool_data_paginated = paginator.page(paginator.num_pages)
+        # --- End Pagination Implementation ---
+
         context = {
-            'codepool_data': codepool_data,
+            'codepool_data': codepool_data_paginated, # Pass the paginated data
             'distinct_users_count': usr,
             'active_codes_count': activcodes,
             'total_used_codes_count': totalcodes,
             'plan_counts': plan_code_counts,
         }
         return render(request, 'owner/codepoo.html', context)
+
+class SearchViewCodes(LoginRequiredMixin,View):
+    def get(self, request):
+        search_query = request.GET.get('q', '').strip() 
+        clients_qs = CodePoool.objects.filter(is_used=True,is_deactivated=False
+                                                  ).select_related(
+            'assignedto', 
+            'sourcepdf',
+            'assignedto__profileuser__plan'
+        ).all().order_by('assignedto')
+
+        if search_query:
+            # Corrected Q object filters
+            clients_qs = clients_qs.filter(
+                Q(assignedto__first_name__icontains=search_query) |
+                Q(assignedto__email__icontains=search_query) |
+                Q(assignedto__profileuser__phone__icontains=search_query) |
+                Q(assignedto__profileuser__plan__plan_name__icontains=search_query) |
+                Q(code__icontains=search_query)
+            )
         
+        context = {
+            'codepool_data': clients_qs # Pass the filtered queryset to the template
+        }
+        return render(request, 'owner/partials/coderow.html', context)
    
+class CodeDeactivation(LoginRequiredMixin,View):
+    def post(self, request, id):
+        user_to_deactivate_codes_for = get_object_or_404(CustomUser, pk=id)
+        user_to_deactivate_codes_for.assigned_codes.all().update(is_deactivated=True,deactivated = datetime.datetime.today())
+        # clients = CodePoool.objects.exclude(is_used=False, is_deactivated=True).select_related(
+        #     'assignedto',
+        #     'sourcepdf',
+        #     'assignedto__profileuser__plan'
+        # ).all().order_by('assignedto')
+        clients = CodePoool.objects.filter(is_used=True,is_deactivated=False
+                                                  ).select_related('assignedto', 
+                                                                'sourcepdf','assignedto__profileuser__plan'
+                                                                ).all().order_by('assignedto')
+
+        return render(request, 'owner/partials/coderow.html', {'codepool_data': clients})
+    
+
+
 class PaymentsView(LoginRequiredMixin,View):
     def get(self,request):
         return render(request, 'owner/payments.html')

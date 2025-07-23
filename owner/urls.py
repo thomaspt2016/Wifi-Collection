@@ -35,6 +35,8 @@ urlpatterns = [
     path('activecheck/<int:id>', views.AcountDisable.as_view(), name='activecheck'),
     path('searchuser',views.SearchUserView.as_view(),name='searchuser'),
     path('download/<int:upload_id>/', views.download_file_view, name='downloadfile'),
+    path('codesearch',views.SearchViewCodes.as_view(),name='codesearch' ),
+    path('codedeactivation/<int:id>', views.CodeDeactivation.as_view(), name='codedeactivation'),
 ]
 
 if settings.DEBUG:

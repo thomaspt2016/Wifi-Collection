@@ -1,10 +1,10 @@
 {% load static %}
-
 {% for code_obj in codepool_data %}
 <tr id="client-row-{{ code_obj.id }}"
     class="border-b dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
     <td class="px-6 py-4">{{ code_obj.code }}</td>
-    <td class="px-6 py-4">{{ code_obj.assignedto.username|default:"N/A" }}</td>
+    <td class="px-6 py-4">{{ code_obj.assignedto.first_name|default:"N/A" }}
+        {{code_obj.assignedto.last_name|default:"N/A" }}</td>
     <td class="px-6 py-4">{{ code_obj.assignedto.profileuser.plan.plan_name|default:"N/A" }}</td>
     <td class="px-6 py-4">{{ code_obj.assignedto.profileuser.plan.Num_Devices|default:"N/A" }}</td>
     <td class="px-6 py-4">{{ code_obj.assigneddate|date:"Y-m-d"|default:"N/A" }}</td>
@@ -13,9 +13,15 @@
         {% if code_obj.is_used %}
         <label class="inline-flex items-center cursor-pointer">
             <input type="checkbox" value="true" class="sr-only peer" {% if code_obj.is_deactivated %}checked{% endif %}
-                hx-post="" hx-target="#client-row-{{ c.id }}" name="is_deactivated " hx-swap="outerHTML">
-            <div class="relative w-11 h-6 rounded-full peer peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600
-    {% if code_obj.is_deactivated %}bg-red-600 dark:bg-red-700{% else %}bg-green-600 dark:bg-green-700{% endif %}">
+                hx-post="{% url 'owner:codedeactivation' id=code_obj.assignedto.id %}"
+                hx-target="#client-table-scroll-area tbody" name="is_deactivated" hx-swap="innerHTML"
+                hx-confirm="{% if not code_obj.is_deactivated %}Are you sure you want to DEACTIVATE this code and ALL other codes assigned to 
+                {{ code_obj.assignedto.first_name }} {{code_obj.assignedto.last_name|default:'This' }}? This action cannot be undone.{% endif %}">
+            <div class="relative w-11 h-6 rounded-full peer peer-focus:ring-4
+                 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600
+                            {% if code_obj.is_deactivated %}
+                            bg-red-600 dark:bg-red-700{% else %}bg-green-600 dark:bg-green-700
+                            {% endif %}">
             </div>
             <span class="ms-3 text-sm font-medium text-gray-900 dark:text-gray-300">
                 {% if code_obj.is_deactivated %}Deactivate{% else %}Active{% endif %}
