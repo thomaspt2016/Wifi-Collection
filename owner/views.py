@@ -258,12 +258,34 @@ def download_file_view(request, upload_id):
     
 class CodePoolStatView(LoginRequiredMixin,View):
     def get(self,request):
-        codepool_data = CodePoool.objects.exclude(is_used=False).select_related('assignedto', 'sourcepdf','assignedto__profileuser__plan').all().order_by('-is_used')
+        codepool_data = CodePoool.objects.exclude(is_used=False
+                                                  ).select_related('assignedto', 
+                                                                'sourcepdf','assignedto__profileuser__plan'
+                                                                ).all().order_by('assignedto')
+        usr = CodePoool.objects.filter(assignedto__isnull=False).values('assignedto').distinct().count()
+        activcodes = CodePoool.objects.filter(is_used=True, is_deactivated=False).count()
+        totalcodes = CodePoool.objects.all().count()
+
+        plan_code_counts = InternetPlan.objects.annotate(
+            assigned_code_count=Count(
+                'plan__user__assigned_codes',
+                filter=Q(
+                    plan__user__assigned_codes__is_used=True,
+                    plan__user__assigned_codes__is_deactivated=False
+                ),
+                distinct=True
+            )
+        ).order_by('plan_name')
 
         context = {
-            'codepool_data': codepool_data
+            'codepool_data': codepool_data,
+            'distinct_users_count': usr,
+            'active_codes_count': activcodes,
+            'total_used_codes_count': totalcodes,
+            'plan_counts': plan_code_counts,
         }
         return render(request, 'owner/codepoo.html', context)
+        
    
 class PaymentsView(LoginRequiredMixin,View):
     def get(self,request):

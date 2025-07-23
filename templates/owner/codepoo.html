@@ -5,41 +5,42 @@
     {% endblock %}
 {% block content %}
 <div class="relative shadow-md sm:rounded-lg mt-8">
-    <div class="flex items-center justify-end flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4">
-        {# Add the cards here #}
-        <a href="#" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 mr-4">
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Code Details</h5>
-            <p class="font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-            <p class="font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-            <p class="font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-        </a>
-        <a href="#" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 mr-4">
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Code Details</h5>
-            <p class="font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-        </a>        
-        <a href="#" class="block max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 mr-4">
-            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Code Details</h5>
-            <p class="font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.</p>
-        </a>
+    <div class="flex items-center flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 gap-x-4">
         
+        {# Removed background color classes #}
+        <a href="#" class="block p-6 border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex-1"> 
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">User Summary</h5>
+            {# Adjusted dark mode text color for better visibility on a neutral background #}
+            <p class="font-normal text-gray-700 dark:text-gray-400">No of users : {{distinct_users_count}}</p>
+            <p class="font-normal text-gray-700 dark:text-gray-400">Active Codes : {{active_codes_count}}</p>
+            <p class="font-normal text-gray-700 dark:text-gray-400">Total No  Codes : {{total_used_codes_count}}</p>
+        </a>
+        {# Removed background color classes #}
+        <a href="#" class="block p-6 border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:hover:bg-gray-700 flex-1"> 
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Plan Summary</h5>
+            {% for plan in plan_counts %}
+            {# Adjusted dark mode text color for better visibility on a neutral background #}
+            <p class="font-normal text-gray-700 dark:text-gray-400">{{ plan.plan_name }}: {{ plan.assigned_code_count }} codes</p>
+            {% empty %}
+            <p class="font-normal text-gray-700 dark:text-gray-400">No plans with active assigned codes.</p>
+            {% endfor %}
+        </a>
+
         <label for="table-search" class="sr-only">Search</label>
-        {# ADDED mt-4 HERE #}
-        <div class="relative ml-4 mt-4"> 
+        <div class="relative flex-1"> 
             <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
                 <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                 </svg>
             </div>
-            <input type="text" id="table-search-users" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-            
+            <input type="text" id="table-search-users" class="block p-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-full bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
             placeholder="Name or Phone Number" name="q" hx-get = ""
             hx-trigger="keyup changed delay:500ms, search"
             hx-target="#client-table-scroll-area tbody"
             hx-swap="innerHTML">
         </div>
     </div>
-    {# This is the div that needs the overflow-y-auto and a max-height, and now the ID for styling #}
-    <div id="client-table-scroll-area" class="overflow-y-auto max-h-[calc(100vh-200px)]">
+    <div id="client-table-scroll-area" class="overflow-y-auto max-h-[calc(100vh-200px)] mt-8">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 sticky top-0">
                 <tr>
@@ -61,30 +62,30 @@
 
 {# Custom Scrollbar Styles #}
 <style>
-    /* For Webkit browsers (Chrome, Safari, Edge, Opera) */
+    /* For Webkit browsers (Chrome, Safari, Safari) */
     #client-table-scroll-area::-webkit-scrollbar {
-        width: 12px; /* Increased width to 12px */
+        width: 12px;
     }
 
     #client-table-scroll-area::-webkit-scrollbar-track {
-        background-color: #f0f0f0; /* Slightly lighter gray track */
-        border-radius: 6px; /* Slightly larger radius */
+        background-color: #f0f0f0;
+        border-radius: 6px;
     }
 
     #client-table-scroll-area::-webkit-scrollbar-thumb {
-        background-color: #2cb877; /* Green color for the thumb */
-        border-radius: 6px; /* Slightly larger radius */
+        background-color: #2cb877;
+        border-radius: 6px;
     }
 
     /* Hover effect for the thumb */
     #client-table-scroll-area::-webkit-scrollbar-thumb:hover {
-        background-color: #2cb877; /* Darker green on hover */
+        background-color: #2cb877;
     }
 
     /* For Firefox */
     #client-table-scroll-area {
-        scrollbar-width: thin; /* 'auto' | 'thin' | 'none' - 'thin' is usually enough */
-        scrollbar-color: #2cb877 #f0f0f0; /* thumb color track color (Green and light gray) */
+        scrollbar-width: thin;
+        scrollbar-color: #2cb877 #f0f0f0;
     }
 </style>
 {% endblock %}
