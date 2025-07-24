@@ -33,13 +33,18 @@ class ProfileForm(forms.ModelForm):
         self.fields['bulding'].choices = list(Building.objects.values_list('building_name', 'building_name').distinct())
         self.fields['floor'].choices = list(Building.objects.values_list('floors', 'floors').distinct())
         self.fields['room'].choices = list(Building.objects.values_list('rooms', 'rooms').distinct())
-
-        # Add an "empty" choice at the beginning (optional, but often good for dropdowns)
         self.fields['bulding'].choices.insert(0, ('', ' '))
         self.fields['floor'].choices.insert(0, ('', ' '))
         self.fields['room'].choices.insert(0, ('', ' '))
+
+class UserForm(forms.ModelForm):
+    class Meta:
+        model = CustomUser
+        fields = ['first_name', 'last_name', 'email']
+
 
 class InternetPlanForm(forms.ModelForm):
     class Meta:
         model = InternetPlan
         fields = ['plan_name', 'plan_price', 'plan_type', 'Num_Devices']
+

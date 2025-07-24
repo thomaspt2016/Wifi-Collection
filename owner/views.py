@@ -5,7 +5,7 @@ from django.views import View
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from common.models import CustomUser,InternetPlan,CodePoool,WifiCodeUpload
+from common.models import CustomUser,InternetPlan,CodePoool,WifiCodeUpload,Profile
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q,Count
 from common.forms import InternetPlanForm
@@ -323,11 +323,12 @@ class CodeDeactivation(LoginRequiredMixin,View):
     def post(self, request, id):
         user_to_deactivate_codes_for = get_object_or_404(CustomUser, pk=id)
         user_to_deactivate_codes_for.assigned_codes.all().update(is_deactivated=True,deactivated = datetime.datetime.today())
-        # clients = CodePoool.objects.exclude(is_used=False, is_deactivated=True).select_related(
-        #     'assignedto',
-        #     'sourcepdf',
-        #     'assignedto__profileuser__plan'
-        # ).all().order_by('assignedto')
+        Profile.objects.filter(user=user_to_deactivate_codes_for).update(
+            is_billable=False,
+            next_billdate=None,
+            planenddate=None,
+            plan=None
+        )
         clients = CodePoool.objects.filter(is_used=True,is_deactivated=False
                                                   ).select_related('assignedto', 
                                                                 'sourcepdf','assignedto__profileuser__plan'

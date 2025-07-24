@@ -1,5 +1,5 @@
 from django.views import View
-from .forms import SignupForm,ProfileForm
+from .forms import SignupForm,ProfileForm,UserForm
 from django.shortcuts import render,redirect
 from django.views import View
 from django.http import HttpResponse
@@ -189,3 +189,68 @@ class ProfileView(View,LoginRequiredMixin):
                 prof.profpic = f'profile_pics/default_profile.webp'
                 prof.save()
                 return redirect('common:home')
+
+class ProfileEditView(View, LoginRequiredMixin):
+    def get(self, request, id):
+        try:
+            userd = CustomUser.objects.get(id=id)
+            prof = Profile.objects.get(user=userd)
+        except (CustomUser.DoesNotExist, Profile.DoesNotExist):
+            return redirect('common:home') # Redirect if user/profile doesn't exist (e.g., a 404 page or dashboard)
+
+        form_instance = ProfileForm(instance=prof)
+        forminst2 = UserForm(instance=userd)
+
+        context = {
+            'form': form_instance,
+            'form2': forminst2,
+            'pic': prof,
+            'page_title': 'Edit Profile',
+        }
+
+        if request.user.role == "owner":
+            return render(request, 'owner/editprofile.html', context)
+        elif request.user.role == "client":
+            return render(request, 'clients/editprofile.html', context)
+        elif request.user.role == "coagent":
+            return render(request, 'coagents/editprofile.html', context)
+        else:
+            # Handle cases where role is not recognized
+            return redirect('common:home')
+
+    def post(self, request, id):
+        try:
+            userd = CustomUser.objects.get(id=id)
+            prof = Profile.objects.get(user=userd)
+        except (CustomUser.DoesNotExist, Profile.DoesNotExist):
+            return redirect('common:home')
+
+        if 'submit_user_form' in request.POST:
+            forminst2 = UserForm(request.POST, instance=userd)
+            if forminst2.is_valid():
+                forminst2.save()
+        elif 'submit_profile_form' in request.POST:
+            form_instance = ProfileForm(request.POST, request.FILES, instance=prof)
+            if form_instance.is_valid():
+                form_instance.save()
+        
+        # Re-fetch forms with updated instances (or errors) for rendering
+        form_instance = ProfileForm(instance=prof)
+        forminst2 = UserForm(instance=userd) # Re-instantiate with potentially updated userd
+
+        context = {
+            'form': form_instance,
+            'form2': forminst2,
+            'pic': prof,
+            'page_title': 'Edit Profile',
+        }
+
+        # Render the appropriate template based on role after POST
+        if request.user.role == "owner":
+            return render(request, 'owner/editprofile.html', context)
+        elif request.user.role == "client":
+            return render(request, 'clients/editprofile.html', context)
+        elif request.user.role == "coagent":
+            return render(request, 'coagents/editprofile.html', context)
+        else:
+            return redirect('common:home')

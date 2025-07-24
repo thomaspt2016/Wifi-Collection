@@ -16,7 +16,7 @@ class CustomUser(AbstractUser):
     date_joined = models.DateTimeField(auto_now_add=True)
 
     def generate_otp(self):
-        otp_number=str(randint(1000,9999))+str(self.id)
+        otp_number=str(randint(1000,9999))
         self.otp=otp_number
         self.save()
         return otp_number
@@ -80,7 +80,7 @@ class Profile(models.Model):
     is_billable = models.BooleanField(default=True)
     profile_comp = models.BooleanField(default=False)
     plan = models.ForeignKey(InternetPlan, on_delete=models.CASCADE, null=True, blank=True,related_name='plan')
-    plan_start_date = models.DateField(null=True, blank=True)
+    plan_start_date = models.DateField(null=True, blank=True,)
     next_billdate = models.DateField(null=True, blank=True)
     planenddate = models.DateField(null=True, blank=True)
 

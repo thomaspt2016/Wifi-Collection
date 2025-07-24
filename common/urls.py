@@ -30,10 +30,10 @@ urlpatterns = [
     path('verify',views.OtpVerificationView.as_view(),name='verify'),
     path('password_reset/',
          auth_views.PasswordResetView.as_view(
-             template_name='common/forgotpassword.html', # <--- Points to your custom template
-             email_template_name='common/password_reset_email.html', # Template for the email body
+             template_name='common/forgotpassword.html',
+             email_template_name='common/password_reset_email.html',
              subject_template_name='common/password_reset_subject.txt',
-             success_url=reverse_lazy('common:password_reset_done') # <--- ADD THIS LINE
+             success_url=reverse_lazy('common:password_reset_done')
          ),
          name='password_reset'),
     path('password_reset/done/',
@@ -44,7 +44,7 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/',
          auth_views.PasswordResetConfirmView.as_view(
              template_name='common/password_reset_confirm.html',
-             success_url=reverse_lazy('common:password_reset_complete') # <--- ADD THIS LINE
+             success_url=reverse_lazy('common:password_reset_complete')
          ),
          name='password_reset_confirm'),
     path('reset/done/',
@@ -54,4 +54,5 @@ urlpatterns = [
          name='password_reset_complete'),
     path('signout',views.SignoutView.as_view(),name='signout'),
     path('profile', views.ProfileView.as_view(), name='profile'),
+    path('profileupdate/<int:id>', views.ProfileEditView.as_view(), name='profileupdate'),
 ]
