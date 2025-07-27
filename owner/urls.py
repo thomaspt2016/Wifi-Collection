@@ -37,6 +37,7 @@ urlpatterns = [
     path('download/<int:upload_id>/', views.download_file_view, name='downloadfile'),
     path('codesearch',views.SearchViewCodes.as_view(),name='codesearch' ),
     path('codedeactivation/<int:id>', views.CodeDeactivation.as_view(), name='codedeactivation'),
+    path('userupanddown/<int:id>',views.UserPromotions.as_view(),name='userupanddown')
 ]
 
 if settings.DEBUG:

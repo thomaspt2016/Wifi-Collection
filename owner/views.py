@@ -16,7 +16,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 import datetime
-
+from helper import get_next_month_25th
 # Create your views here.
 class Ownerhomeview(LoginRequiredMixin,View):
     def get(self,request):
@@ -406,3 +406,19 @@ class SearchUserView(LoginRequiredMixin, View):
         if not clients.object_list.exists() and query: 
             pass
         return render(request, 'owner/partials/usrrow.html', {'client': clients})
+class UserPromotions(LoginRequiredMixin, View):
+    def get(self, request,id):
+        user = get_object_or_404(CustomUser, pk=id)
+        prof = Profile.objects.get(user=user)
+
+        if user.role=="client":
+            user.role = "coagent"
+            prof.is_billable = False
+            prof.next_billdate = None
+            prof.planenddate = None
+        elif user.role=="coagent":
+            user.role = "client"#need to call billing
+        user.save()
+        prof.save()
+
+        return redirect('owner:ownclients')

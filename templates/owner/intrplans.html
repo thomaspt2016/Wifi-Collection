@@ -168,9 +168,15 @@
                   <a href="" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
                     <img class="w-5 h-5" src="{% static 'owner icos/client/edit-alt.svg' %}" alt="Edit icon" />
                   </a>
-                  <a href="" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
-                    <img class="w-5 h-5" src="{% static 'owner icos/client/roller-coaster.svg' %}" alt="promo icon" />
-                  </a>
+                  {% if plan.planstatus %}
+                    <a href="" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
+                        <img class="w-5 h-5" src="{% static 'owner icos/client/pause-button.svg' %}" alt="Pause Plan"/>
+                    </a>
+                {% else %}
+                    <a href="" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
+                        <img class="w-5 h-5" src="{% static 'owner icos/client/play-button.svg' %}" alt="Activate Plan"/>
+                    </a>
+                {% endif %}
                 </td>
               </tr>
               {% endfor %}

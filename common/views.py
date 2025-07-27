@@ -83,7 +83,6 @@ class OtpVerificationView(View):
         otp4 = request.POST.get('otp4', '')
         otp5 = request.POST.get('otp5', '')
         otp6 = request.POST.get('otp6', '')
-        
         try:
             totp = int(f"{otp1}{otp2}{otp3}{otp4}{otp5}{otp6}")
         except ValueError:

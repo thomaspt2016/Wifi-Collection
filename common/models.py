@@ -45,6 +45,7 @@ class InternetPlan(models.Model):
         default='monthly', # Set a default value if desired
     )
     Num_Devices = models.IntegerField() # Assuming number of devices is an integer
+    planstatus = models.BooleanField(default=False) 
 
     def __str__(self):
         return self.plan_name
