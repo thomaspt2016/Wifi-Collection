@@ -16,7 +16,7 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 import datetime
-from helper import get_next_month_25th
+from .helper import get_next_month_25th
 # Create your views here.
 class Ownerhomeview(LoginRequiredMixin,View):
     def get(self,request):
@@ -417,7 +417,7 @@ class UserPromotions(LoginRequiredMixin, View):
             prof.next_billdate = None
             prof.planenddate = None
         elif user.role=="coagent":
-            user.role = "client"#need to call billing
+            user.role = "client"
         user.save()
         prof.save()
 

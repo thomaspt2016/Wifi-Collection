@@ -55,7 +55,7 @@
     {% endfor %}
   </div>
 {% endif %}
-        <div class="text-sm text-slate-500 mt-4 dark:text-gray-400">Didn't receive code? <a class="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-600" href="#0">Resend</a></div>
+        <div class="text-sm text-slate-500 mt-4 dark:text-gray-400">Didn't receive code? <a class="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-500 dark:hover:text-blue-600" href="{% url 'common:resendotp' useris%}">Resend</a></div>
     </div>
 </div>
 <script>

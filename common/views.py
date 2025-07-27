@@ -66,11 +66,32 @@ class SignupView(View):
             lst = []
             for i in range(u):
                 lst.append("otp"+str(i+1))
-            return render(request,'common/otpverifiy.html',{'lenth':lst})
+            return render(request,'common/otpverifiy.html',{'lenth':lst,'useris':user.id})
         else:
             print("form is not valid in signupview")
             messages.error(request, 'Invalid form data. Please correct the errors.')
             return render(request, 'common/sighnup.html', {'form': form_instance})
+class OTPResendView(View):
+    def get(self, request,id):
+        try:
+            user = CustomUser.objects.get(id=id)
+            otp = user.generate_otp()
+            send_mail(
+                'OTP Test',
+                otp,
+                'thomaspt2016@example.com',
+                [user.email],
+                fail_silently=False,
+                )
+            messages.success(request, 'OTP resent successfully!')
+            u = len(str(otp))
+            lst = []
+            for i in range(u):
+                lst.append("otp"+str(i+1))
+            return render(request, 'common/otpverifiy.html', {'lenth':lst, 'useris':user.id})
+        except CustomUser.DoesNotExist:
+            messages.error(request, 'User not found.')
+            return redirect('common:signup')
         
 class OtpVerificationView(View):
     def get(self, request):
@@ -232,10 +253,9 @@ class ProfileEditView(View, LoginRequiredMixin):
             form_instance = ProfileForm(request.POST, request.FILES, instance=prof)
             if form_instance.is_valid():
                 form_instance.save()
-        
-        # Re-fetch forms with updated instances (or errors) for rendering
+
         form_instance = ProfileForm(instance=prof)
-        forminst2 = UserForm(instance=userd) # Re-instantiate with potentially updated userd
+        forminst2 = UserForm(instance=userd)
 
         context = {
             'form': form_instance,

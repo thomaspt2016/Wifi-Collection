@@ -1,5 +1,17 @@
 from datetime import datetime, date
 from dateutil.relativedelta import relativedelta
+import os
+import django
+
+# --- Django Setup ---
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wificollection.settings')
+
+try:
+    django.setup()
+    print("Django environment successfully set up.")
+except Exception as e:
+    print(f"Error setting up Django environment: {e}")
+    exit(1)
 
 def get_next_month_25th():
     today = date.today()
