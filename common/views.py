@@ -216,7 +216,7 @@ class ProfileEditView(View, LoginRequiredMixin):
             userd = CustomUser.objects.get(id=id)
             prof = Profile.objects.get(user=userd)
         except (CustomUser.DoesNotExist, Profile.DoesNotExist):
-            return redirect('common:home') # Redirect if user/profile doesn't exist (e.g., a 404 page or dashboard)
+            return redirect('common:home')
 
         form_instance = ProfileForm(instance=prof)
         forminst2 = UserForm(instance=userd)
@@ -231,9 +231,10 @@ class ProfileEditView(View, LoginRequiredMixin):
         if request.user.role == "owner":
             return render(request, 'owner/editprofile.html', context)
         elif request.user.role == "client":
-            return render(request, 'clients/editprofile.html', context)
+            print("inside role")
+            return render(request, 'client/editprofile.html', context)
         elif request.user.role == "coagent":
-            return render(request, 'coagents/editprofile.html', context)
+            return render(request, 'coagent/editprofile.html', context)
         else:
             # Handle cases where role is not recognized
             return redirect('common:home')
@@ -268,8 +269,8 @@ class ProfileEditView(View, LoginRequiredMixin):
         if request.user.role == "owner":
             return render(request, 'owner/editprofile.html', context)
         elif request.user.role == "client":
-            return render(request, 'clients/editprofile.html', context)
+            return render(request, 'client/editprofile.html', context)
         elif request.user.role == "coagent":
-            return render(request, 'coagents/editprofile.html', context)
+            return render(request, 'coagent/editprofile.html', context)
         else:
             return redirect('common:home')

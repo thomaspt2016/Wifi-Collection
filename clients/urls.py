@@ -21,7 +21,6 @@ app_name = 'clients'
 
 urlpatterns = [
     path('clienthome',views.ClientHomeView.as_view(),name='clienthome'),
-    path('clidevice', views.DeviceView.as_view(), name='clidevice'),
     path('cliwificode', views.WificodesView.as_view(), name='cliwificode'),
     path('clibill', views.CurrentBillView.as_view(), name='clibill'),
     path('payhist', views.PaymenHistoryView.as_view(), name='payhist'),

@@ -110,71 +110,39 @@
                             class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white logo-text">Connect</span>
                     </a>
                 </div>
-
+                {% if pass %}
                 <div class="flex flex-col items-center mb-10">
                     <div class="mb-2">
                         <button type="button"
                             class="flex text-sm bg-gray-800 rounded-full focus:ring-4 focus:ring-teal-300 dark:focus:ring-teal-600"
                             aria-expanded="false">
                             <span class="sr-only">Profile picture</span>
-                            <img class="w-12 h-12 rounded-full" src="{% static 'Icons/wifi-svgrepo-com.svg' %}"
+                            <img class="w-12 h-12 rounded-full" src="{{pass.profpic.url}}"
                                 alt="user photo">
                         </button>
                     </div>
                     <div class="text-center profile-details">
                         <p class="text-sm text-gray-900 dark:text-white profile-text" role="none">
-                            Neil Sims
+                            {{pass.user.first_name}} {{pass.user.last_name}}
                         </p>
                         <p class="text-sm font-medium text-gray-900 truncate dark:text-gray-300 profile-text"
                             role="none">
-                            neil.sims@flowbite.com
+                            {{pass.user.email}}
                         </p>
                     </div>
                 </div>
-
+                {% endif %}
                 <div class="border-t border-gray-200 dark:border-gray-700 my-4"></div>
 
                 <ul class="space-y-2 font-medium flex-grow overflow-y-auto">
                     <li>
-                        <a href="{% url 'clients:clienthome' %}"
-                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group">
-                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
-                                src="{% static 'owner icos/dashboard.svg' %}" alt="Dashboard icon" />
-                            <span class="flex-1 ms-3 whitespace-nowrap sidebar-text">Dashboard</span>
-                        </a>
-                    </li>
-                    <li>
-                        <button type="button"
-                            class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group"
-                            aria-controls="devices-codes-dropdown" data-collapse-toggle="devices-codes-dropdown">
-                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
-                                src="{% static 'client icons/device-hub.svg' %}" alt="Devices & Codes icon" />
-                            <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap sidebar-text">Devices & Codes</span>
-                            <svg class="w-3 h-3 ms-auto arrow-icon" aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                    stroke-width="2" d="m1 1 4 4 4-4" />
-                            </svg>
-                        </button>
-                        <ul id="devices-codes-dropdown" class="hidden py-2 space-y-2">
-                            <li>
-                                <a href="{% url 'clients:clidevice' %}"
-                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
-                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
-                                        src="{% static 'client icons/device.svg' %}" alt="My Devices icon" />
-                                    <span class="flex-1 whitespace-nowrap sidebar-text">My Devices</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'clients:cliwificode' %}"
-                                    class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
-                                    <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
-                                        src="{% static 'client icons/passkey.svg' %}" alt="Wifi Codes icon" />
-                                    <span class="flex-1 whitespace-nowrap sidebar-text">Wifi codes</span>
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
+                    <a href="{% url 'clients:cliwificode' %}"
+                        class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
+                        <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
+                            src="{% static 'client icons/passkey.svg' %}" alt="Wifi Codes icon" />
+                        <span class="flex-1 whitespace-nowrap sidebar-text">Wifi codes</span>
+                    </a>
+                </li>
                     <li>
                         <button type="button"
                             class="flex items-center w-full p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group"
@@ -182,7 +150,7 @@
                             data-collapse-toggle="bills-payments-dropdown">
                             <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
                                 src="{% static 'client icons/money-alt-1.svg' %}" alt="Bills & Payments icon" />
-                            <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap sidebar-text">My Bills & Payments</span>
+                            <span class="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap sidebar-text">My Plan</span>
                             <svg class="w-3 h-3 ms-auto arrow-icon" aria-hidden="true"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                                 <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
@@ -194,15 +162,15 @@
                                 <a href="{% url 'clients:clibill' %}"   
                                     class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
                                     <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
-                                        src="{% static 'client icons/bill-dollar.svg' %}" alt="Current Bill icon" />
-                                    <span class="flex-1 whitespace-nowrap sidebar-text">Current Bill</span>
+                                        src="{% static 'client icons/processing.svg' %}" alt="Current Bill icon" />
+                                    <span class="flex-1 whitespace-nowrap sidebar-text">Upgrade</span>
                                 </a>
                             </li>
                             <li>
                                 <a href="{% url 'clients:payhist' %}"
                                     class="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-6 group hover:bg-teal-50 dark:text-white dark:hover:bg-gray-700">
                                     <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white me-3"
-                                        src="{% static 'client icons/mobile-payment-dollar.svg' %}" alt="Payment History icon" />
+                                        src="{% static 'client icons/history-28.svg' %}" alt="Payment History icon" />
                                     <span class="flex-1 whitespace-nowrap sidebar-text">Payment History</span>
                                 </a>
                             </li>
@@ -249,7 +217,7 @@
                         </ul>
                     </li>
                     <li>
-                        <a href=""
+                        <a href="{% url 'common:profileupdate' pass.user.id %}"
                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-50 dark:hover:bg-gray-700 group">
                            <img class="flex-shrink-0 w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-teal-900 dark:group-hover:text-white"
                                src="{% static 'client icons/profile-card-outline.svg' %}" alt="My Profile icon" />

@@ -1,22 +1,50 @@
 {% extends 'client/clienthome.html' %}
-
 {% load static %}
 {% block title %}
-<title>Codes</title>
+<title>Bill</title>
 {% endblock %}
 {% block content %}
 <div>
-    <h2 class="text-2xl font-bold dark:text-white mb-4">Welcome to the Main Content Area!</h2>
+    <h2 class="text-2xl font-bold dark:text-white mb-4">Your Current Plan</h2>
     <p class="text-gray-700 dark:text-gray-300">
-        Wifi Code Client Page
+        This page displays details about your current internet plan and billing information.
     </p>
-    <div class="mt-6">
-        <p class="text-gray-700 dark:text-gray-300">
-            You can place any HTML content here, such as forms, tables, cards,
-            or dynamic data from your Django views.
+
+    {# Check if there are any code objects (plans) to display #}
+    {% if codeobject %}
+        <div class="flex flex-wrap md:flex-nowrap gap-6 mt-6"> {# Added flex container here #}
+            {# Iterate directly over the codeobject QuerySet #}
+            {% for co in codeobject %}
+                {# Removed the outer div with mt-6 as the gap will handle spacing #}
+                <div class="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow-sm md:flex-row md:max-w-xs dark:border-gray-700 dark:bg-gray-800 flex-shrink-0">
+                    <div class="flex flex-col justify-between p-4 leading-normal">
+                        {# Display dynamic data from the 'co' (CodePoool) object and its relations #}
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                            Plan: {{ co.assignedto.profileuser.plan.plan_name }}
+                        </h5>
+                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            Code: <strong>{{ co.code }}</strong>
+                        </p>
+                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            Price: <strong>₹{{ co.assignedto.profileuser.plan.plan_price }}</strong>
+                        </p>
+                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            Assigned Date: <strong>{{ co.assigneddate|date:"F d, Y" }}</strong>
+                        </p>
+                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            Expiry Date: <strong>{{ co.exiprydate|date:"F d, Y" }}</strong>
+                        </p>
+                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            Next Bill Date: <strong>{{ co.assignedto.profileuser.next_billdate|date:"F d, Y" }}</strong>
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="mt-6 text-gray-700 dark:text-gray-300">
+            No active plan found.
         </p>
-    </div>
+    {% endif %}
 </div>
-
-
 {% endblock %}

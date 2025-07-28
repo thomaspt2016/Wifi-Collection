@@ -86,6 +86,26 @@ class Profile(models.Model):
     planenddate = models.DateField(null=True, blank=True)
 
 
+class Payment(models.Model):
+    payment_id = models.AutoField(primary_key=True)
+    payment_date = models.DateField(auto_now_add=True)
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=50)
+    payment_status = models.CharField(max_length=20)
+    payment_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='paymentsusr')
+    payment_plan = models.ForeignKey(InternetPlan, on_delete=models.CASCADE, related_name='paymentsplan')
+
     def __str__(self):
-        return f"Profile of {self.user.username}"
-    
+        return f"Profile of {self.payment_user.username}"
+
+class BillingPlan(models.Model):
+    billingid = models.AutoField(primary_key=True)
+    paymentid = models.ForeignKey(Payment, on_delete=models.CASCADE, related_name='paymentid')
+    billingusr = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='billingusr')
+    billingplan = models.ForeignKey(InternetPlan, on_delete=models.CASCADE, related_name='billingplan')
+    billstartdate = models.DateField(null=True, blank=True)
+    billendate = models.DateField(null=True, blank=True)
+    PlanStatus = models.CharField(max_length=20, default="Upcoming")
+
+    def __str__(self):
+        return f"Profile of {self.billingusr.username}"

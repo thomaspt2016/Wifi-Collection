@@ -7,18 +7,20 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.mixins import LoginRequiredMixin
+from common import models
 
 class ClientHomeView(LoginRequiredMixin,View):#this is where dashboard codes comes in
     def get(self,request):
         return render(request, 'client/clienthome.html')
 
-class DeviceView(LoginRequiredMixin, View):
-    def get(self, request):
-        return render(request, 'client/clidevice.html')
 
 class WificodesView(LoginRequiredMixin, View):
     def get(self, request):
-        return render(request, 'client/cliwificode.html')
+        usr = request.user
+        print(usr.id)
+        codes = models.CodePoool.objects.filter(assignedto = usr)
+        print(codes)
+        return render(request, 'client/cliwificode.html',{'codeobject':codes})
     
 class CurrentBillView(LoginRequiredMixin, View):
     def get(self, request):
