@@ -1,22 +1,103 @@
 {% extends 'client/clienthome.html' %}
-
 {% load static %}
+
 {% block title %}
-<title>History</title>
+<title>Ticket Management</title>
 {% endblock %}
+
 {% block content %}
-<div>
-    <h2 class="text-2xl font-bold dark:text-white mb-4">Welcome to the Main Content Area!</h2>
-    <p class="text-gray-700 dark:text-gray-300">
-        Client ticket raising Page
-    </p>
-    <div class="mt-6">
-        <p class="text-gray-700 dark:text-gray-300">
-            You can place any HTML content here, such as forms, tables, cards,
-            or dynamic data from your Django views.
-        </p>
+<div class="p-4">
+    <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+        <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="ticket-tabs" data-tabs-toggle="#ticket-tabs-content" data-tabs-active-classes="text-purple-600 hover:text-purple-600 dark:text-purple-500 dark:hover:text-purple-500 border-purple-600 dark:border-purple-500" data-tabs-inactive-classes="dark:border-transparent text-gray-500 hover:text-gray-600 dark:text-gray-400 border-gray-100 hover:border-gray-300 dark:border-gray-700 dark:hover:text-gray-300" role="tablist">
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg text-purple-600 hover:text-purple-600 dark:text-purple-500 dark:hover:text-purple-500 border-purple-600 dark:border-purple-500" id="raise-ticket-tab" data-tabs-target="#raise-ticket-content" type="button" role="tab" aria-controls="raise-ticket" aria-selected="true">Raise Ticket</button>
+            </li>
+            <li class="me-2" role="presentation">
+                <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 dark:border-transparent text-gray-500 dark:text-gray-400" id="history-tab" data-tabs-target="#history-content" type="button" role="tab" aria-controls="history" aria-selected="false">History</button>
+            </li>
+        </ul>
+    </div>
+
+    <div id="ticket-tabs-content">
+        <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="raise-ticket-content" role="tabpanel" aria-labelledby="raise-ticket-tab">
+            {# --- Ticket Submission Form --- #}
+            <div class="max-w-4xl mx-auto w-full space-y-8 p-10 bg-white dark:bg-gray-700 rounded-lg shadow-xl border border-gray-200 dark:border-gray-600">
+                <div>
+                    <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
+                        Submit a New Ticket
+                    </h2>
+                    <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">
+                        Please provide details about your issue below.
+                    </p>
+                </div>
+                <form class="mt-8 space-y-6" action="#" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %} {# Django security token #}
+
+                    {# Subject Field #}
+                    <div>
+                        <label for="subject" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Subject
+                        </label>
+                        <input id="subject" name="subject" type="text" required
+                               class="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50 dark:bg-gray-700"
+                               placeholder="Brief summary of your issue">
+                    </div>
+
+                    {# Description Field #}
+                    <div>
+                        <label for="description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Description
+                        </label>
+                        <textarea id="description" name="description" rows="6" required
+                                  class="appearance-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50 dark:bg-gray-700"
+                                  placeholder="Provide a detailed description of the problem, including steps to reproduce if applicable."></textarea>
+                    </div>
+
+                    {# Priority Dropdown #}
+                    <div>
+                        <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Priority
+                        </label>
+                        <select id="priority" name="priority" required
+                                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50 dark:bg-gray-700">
+                            <option value="">Select Priority</option>
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+
+                    {# Attachment Field #}
+                    <div>
+                        <label for="attachment" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Attachment (Optional)
+                        </label>
+                        <input id="attachment" name="attachment" type="file"
+                               class="block w-full text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md cursor-pointer focus:outline-none focus:ring-blue-500 focus:border-blue-500 p-2">
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Max file size: 5MB (PDF, JPG, PNG)</p>
+                    </div>
+
+                    {# Submit Button #}
+                    <div>
+                        <button type="submit"
+                                class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800 dark:focus:ring-offset-gray-800">
+                            Submit Ticket
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {# --- End Ticket Submission Form --- #}
+        </div>
+
+        <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="history-content" role="tabpanel" aria-labelledby="history-tab">
+            <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content for the <strong class="font-medium text-gray-800 dark:text-white">History tab</strong>. You can display a list of past tickets here.</p>
+        </div>
     </div>
 </div>
+{% endblock %}
 
-
+{% block extra_js %}
+{# Flowbite JavaScript CDN - Essential for data-tabs-toggle functionality #}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 {% endblock %}

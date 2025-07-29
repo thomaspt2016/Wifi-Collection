@@ -24,7 +24,9 @@ class WificodesView(LoginRequiredMixin, View):
     
 class CurrentBillView(LoginRequiredMixin, View):
     def get(self, request):
-        return render(request, 'client/clibill.html')
+        planobj = models.InternetPlan.objects.all()
+        print(planobj)
+        return render(request, 'client/clibill.html',{'plan': planobj})
     
 class PaymenHistoryView(LoginRequiredMixin,View):
     def get(self, request):
