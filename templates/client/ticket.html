@@ -21,29 +21,25 @@
         </button>
     </div>
 
-    ---
-
-    {# Spacer for visual separation #}
     <div class="my-8"></div>
 
-    {# Previous Tickets Section #}
     <div class="w-full">
         {% if tickets %}
         <div class="bg-white dark:bg-gray-700 rounded-lg shadow-xl border border-gray-200 dark:border-gray-600 p-6">
             <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 text-center">
                 Your Previous Tickets
             </h2>
-            <div id="tickets-accordion" data-accordion="collapse"> {# Unique ID for the parent accordion container #}
+            <div id="tickets-accordion" data-accordion="collapse">
                 {% for tic in tickets %}
-                {# Use tic.ticketid to create unique IDs for each accordion item #}
                 <h2 id="accordion-heading-{{ tic.ticketid }}">
-                    <button type="button" class="flex items-center justify-between w-full p-5 font-medium rtl:text-right text-gray-500 border border-gray-200 {% if not forloop.last %}border-b-0{% endif %} rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-body-{{ tic.ticketid }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="accordion-body-{{ tic.ticketid }}">
-                        {# Use a div or flex container instead of <tr> for content inside button #}
+                    <button type="button" class="flex items-center justify-between w-full p-5 font-medium 
+                    rtl:text-right text-gray-500 border border-gray-200 {% if not forloop.last %}border-b-0{% endif %} 
+                    rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 
+                    hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-body-{{ tic.ticketid }}"
+                     aria-expanded="false" aria-controls="accordion-body-{{ tic.ticketid }}">
                         <div class="flex flex-wrap items-center justify-between w-full">
                             <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ tic.ticketsubj }}</span>
                             <h6 class="text-sm text-gray-600 dark:text-gray-400 ms-auto me-4">{{ tic.ticketdate|date:"M d, Y H:i" }}</h6>
-
-                            {# Ticket Status Badge #}
                             {% if tic.ticketstatus == "Open" %}
                             <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-purple-900 dark:text-purple-300">Open</span>
                             {% elif tic.ticketstatus == "Closed" %}
@@ -52,10 +48,8 @@
                             <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">In Progress</span>
                             {% endif %}
 
-                            {# Agent Name #}
                             <h6 class="text-sm text-blue-600 dark:text-blue-400 ms-4">Agent: {% if tic.ticketto %}{{ tic.ticketto.first_name }} {{ tic.ticketto.last_name }}{% else %}Unassigned{% endif %}</h6>
 
-                            {# Ticket Priority Badge #}
                             {% if tic.ticketpriority == "low" %}
                             <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-indigo-400 border border-indigo-400 ms-4">Low</span>
                             {% elif tic.ticketpriority == "medium" %}
@@ -70,12 +64,11 @@
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
                         </svg>
                     </button>
-                </h2>
+                <h2>
                 <div id="accordion-body-{{ tic.ticketid }}" class="hidden" aria-labelledby="accordion-heading-{{ tic.ticketid }}">
                     <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
                         <h4 class="text-md font-semibold text-gray-900 dark:text-white mb-2">Conversation:</h4>
 
-                        {# Initial Ticket Description (from Client) #}
                         <div class="flex justify-start mb-4">
                             <div class="bg-blue-100 dark:bg-blue-800 dark:bg-opacity-50 text-blue-900 dark:text-blue-200 p-3 rounded-lg max-w-2/3 shadow-sm">
                                 <p class="font-bold text-sm mb-1">You:</p>
@@ -88,10 +81,9 @@
                             </div>
                         </div>
 
-                        {# Ticket Updates (from Client or Agent) #}
                         {% if tic.updates.all %}
                             {% for update in tic.updates.all %}
-                                {% if update.ticketupdateby == tic.ticketraised %} {# If update is from the client #}
+                                {% if update.ticketupdateby == tic.ticketraised %}
                                     <div class="flex justify-start mb-4">
                                         <div class="bg-blue-100 dark:bg-blue-800 dark:bg-opacity-50 text-blue-900 dark:text-blue-200 p-3 rounded-lg max-w-2/3 shadow-sm">
                                             <p class="font-bold text-sm mb-1">You ({{ update.ticketupdate|date:"H:i" }}):</p>
@@ -120,29 +112,23 @@
                                 {% endif %}
                             {% endfor %}
                         {% endif %}
-
-                        {# Reply Form #}
-                        <form action="{% url 'clients:replay' tic.ticketid %}" method="POST" enctype="multipart/form-data" class="mt-6 p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex items-center space-x-2 rounded-b-lg -mx-5 -mb-5"> {# Adjusted padding and margins #}
+                        {% if tic.ticketstatus != "Closed" %} 
+                        <form action="{% url 'clients:replay' tic.ticketid %}" method="POST" enctype="multipart/form-data" class="mt-6 p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex items-center space-x-2 rounded-b-lg -mx-5 -mb-5">
                             {% csrf_token %}
                             
-                            {# Description input - full width, no label #}
                             {% render_field reply_form.ticketupdatedesc class="flex-grow p-2.5 text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Type your reply here..." rows="1" %}
 
-                            {# Hidden file input and visible button/icon to trigger it - MOVED POSITION #}
                             <label for="id_ticketupdatefile_{{ tic.ticketid }}" class="cursor-pointer text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
                                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"></path></svg>
                                 <span class="sr-only">Attach File</span>
                             </label>
-                            {# Make sure the ID matches the 'for' attribute in the label #}
                             <input type="file" name="{{ reply_form.ticketupdatefile.html_name }}" id="id_ticketupdatefile_{{ tic.ticketid }}" class="hidden" accept="application/pdf,image/jpeg,image/png">
                             
-                            {# Send Button #}
                             <button type="submit" class="inline-flex items-center p-2 rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800 dark:focus:ring-offset-gray-800">
                                 <svg class="w-5 h-5 rotate-90 rtl:-rotate-90" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l4.417-1.472l.879.914l3.867-2.129l4.414 1.471a1 1 0 001.169-1.409l-7-14z"></path></svg>
                                 <span class="sr-only">Send message</span>
                             </button>
                             
-                            {# Display errors if any, though ideally handled by JS for a cleaner UX #}
                             {% if reply_form.ticketupdatedesc.errors %}
                                 <p class="text-sm text-red-600 dark:text-red-500 w-full mt-1">{{ reply_form.ticketupdatedesc.errors }}</p>
                             {% endif %}
@@ -150,6 +136,7 @@
                                 <p class="text-sm text-red-600 dark:text-red-500 w-full mt-1">{{ reply_form.ticketupdatefile.errors }}</p>
                             {% endif %}
                         </form>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
@@ -163,8 +150,6 @@
         </div>
         {% endif %}
     </div>
-
-    ---
 
 </div>
 
@@ -183,9 +168,8 @@
                 </button>
             </div>
             <form class="p-4 md:p-5" action="{% url 'clients:raise' %}" method="POST" enctype="multipart/form-data">
-                {% csrf_token %} {# Django's CSRF token for security #}
+                {% csrf_token %}
                 <div class="grid gap-4 mb-4 grid-cols-2">
-                    {# Subject Field #}
                     <div class="col-span-2">
                         <label for="{{ form.ticketsubj.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.ticketsubj.label }}</label>
                         {% render_field form.ticketsubj class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Brief summary of your issue" %}
@@ -193,7 +177,6 @@
                             <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ form.ticketsubj.errors }}</p>
                         {% endif %}
                     </div>
-                    {# Description Field #}
                     <div class="col-span-2">
                         <label for="{{ form.ticketdesc.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.ticketdesc.label }}</label>
                         {% render_field form.ticketdesc class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Provide a detailed description of the problem..." rows="4" %}
@@ -201,7 +184,6 @@
                             <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ form.ticketdesc.errors }}</p>
                         {% endif %}
                     </div>
-                    {# Priority Dropdown #}
                     <div class="col-span-2">
                         <label for="{{ form.ticketpriority.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.ticketpriority.label }}</label>
                         {% render_field form.ticketpriority class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" %}
@@ -209,7 +191,6 @@
                             <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ form.ticketpriority.errors }}</p>
                         {% endif %}
                     </div>
-                    {# Attachment Field #}
                     <div class="col-span-2">
                         <label for="{{ form.ticketfile.id_for_label }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">{{ form.ticketfile.label }}</label>
                         {% render_field form.ticketfile class="block w-full text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer focus:outline-none focus:ring-blue-500 focus:border-blue-500 p-2.5" %}
@@ -227,9 +208,42 @@
         </div>
     </div>
 </div>
+    {% if messages %}
+        <div class="mb-4">
+            {% for message in messages %}
+                <div class="p-4 mb-4 text-sm rounded-lg message-alert
+                    {% if message.tags == 'success' %}
+                        bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200
+                    {% elif message.tags == 'error' %}
+                        bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-200
+                    {% elif message.tags == 'warning' %}
+                        bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200
+                    {% elif message.tags == 'info' %}
+                        bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200
+                    {% else %}
+                        bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200
+                    {% endif %}" role="alert">
+                    <span class="font-medium">{{ message }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 {% endblock %}
 
 {% block extra_js %}
-{# Flowbite JavaScript CDN - Essential for modal and accordion functionality #}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js" defer></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const messageAlerts = document.querySelectorAll('.message-alert');
+        messageAlerts.forEach(function(alert) {
+            setTimeout(function() {
+                alert.style.transition = 'opacity 0.5s ease-out';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 500); // Wait for the fade-out transition to complete
+            }, 1000); // 1 second delay before starting to fade
+        });
+    });
+</script>
 {% endblock %}
