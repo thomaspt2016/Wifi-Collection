@@ -26,5 +26,5 @@ urlpatterns = [
     path('payhist', views.PaymenHistoryView.as_view(), name='payhist'),
     path('raise', views.RaiseTicketView.as_view(), name='raise'),
     path('faq', views.FAQView.as_view(), name='faq'),
-    path('contactagent', views.ContactAgentView.as_view(), name='contactagent'),
+    path('replay/<int:ticket_id>', views.TicketReplyView.as_view(), name='replay')
 ]

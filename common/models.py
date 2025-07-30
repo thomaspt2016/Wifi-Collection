@@ -133,9 +133,12 @@ class Ticketing(models.Model):
 
     def __str__(self):
         return f"Ticket #{self.ticketid} - {self.ticketsubj} by {self.ticketraised.username}"
-
+    class Meta:
+        # Added ordering for consistent display of tickets
+        ordering = ['-ticketdate']
 
 class TicketUpdates(models.Model):
+    updateid = models.AutoField(primary_key=True)
     ticketid = models.ForeignKey(Ticketing, on_delete=models.CASCADE, related_name='updates')
     ticketupdate = models.DateTimeField(auto_now_add=True)
     ticketupdateby = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='updates_made_by_user')
@@ -143,4 +146,8 @@ class TicketUpdates(models.Model):
     ticketupdatedesc = models.TextField(null=True, blank=True)
 
     def __str__(self):
-        return f"Update for Ticket #{self.ticketid.ticketid} by {self.ticketupdateby.username})"
+        return f"Update for Ticket #{self.ticketid.ticketid} by {self.ticketupdateby.username}"
+    class Meta:
+        # Added ordering for consistent display of updates within a ticket
+        ordering = ['ticketupdate']
+        verbose_name_plural = "Ticket Updates"

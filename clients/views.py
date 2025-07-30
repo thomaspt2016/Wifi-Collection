@@ -8,7 +8,8 @@ from django.core.mail import send_mail
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from common import models
-from .forms import TicketRasing
+from .forms import TicketRasing,TicketReply
+import os
 
 class ClientHomeView(LoginRequiredMixin,View):#this is where dashboard codes comes in
     def get(self,request):
@@ -32,22 +33,43 @@ class CurrentBillView(LoginRequiredMixin, View):
 class PaymenHistoryView(LoginRequiredMixin,View):
     def get(self, request):
         return render(request, 'client/payhist.html')
-    
-class RaiseTicketView(LoginRequiredMixin,View):
+
+class RaiseTicketView(LoginRequiredMixin, View):
     def get(self, request):
         forminst = TicketRasing()
-        tickets = models.Ticketing.objects.filter(ticketraised=request.user
-                                                  ).prefetch_related(
-                                                      'updates'
-                                                  )
-        return render(request, 'client/ticket.html',{'form':forminst,'tickets':tickets})
+        reply_form = TicketReply()
+        tickets = models.Ticketing.objects.filter(ticketraised=request.user).order_by('-ticketdate').prefetch_related(
+            'updates__ticketupdateby',
+            'ticketto',
+            'ticketraised'         )
+        for ticket in tickets:
+            if ticket.ticketfile:
+                ticket.ticketfile_basename = os.path.basename(ticket.ticketfile.name)
+            else:
+                ticket.ticketfile_basename = None
+
+            for update in ticket.updates.all():
+                if update.ticketupdatefile:
+                    update.ticketupdatefile_basename = os.path.basename(update.ticketupdatefile.name)
+                else:
+                    update.ticketupdatefile_basename = None
+
+        context = {
+            'form': forminst,
+            'tickets': tickets,
+            'reply_form':reply_form
+        }
+        return render(request, 'client/ticket.html', context) # Make sure this template path is correct
 
     def post(self, request):
         usr = request.user
         forminst = TicketRasing(request.POST, request.FILES)
+
         if forminst.is_valid():
             ticket = forminst.save(commit=False)
             ticket.ticketraised = usr
+
+            # Check for building_id and Agent properly
             if hasattr(usr, 'profileuser') and usr.profileuser.builing_id:
                 if usr.profileuser.builing_id.Agent:
                     ticket.ticketto = usr.profileuser.builing_id.Agent
@@ -56,18 +78,77 @@ class RaiseTicketView(LoginRequiredMixin,View):
                     return redirect('clients:raise')
                 else:
                     messages.error(request, 'The associated building does not have an assigned agent. Please contact support.')
-                    return render(request, 'client/ticket.html', {'form': forminst})
+                    tickets = models.Ticketing.objects.filter(ticketraised=request.user).order_by('-ticketdate').prefetch_related(
+                        'updates__ticketupdateby',
+                        'ticketto',
+                        'ticketraised'
+                    )
+                    for tkt in tickets: # Need to process basenames again for the re-rendered page
+                        if tkt.ticketfile:
+                            tkt.ticketfile_basename = os.path.basename(tkt.ticketfile.name)
+                        else:
+                            tkt.ticketfile_basename = None
+                        for upd in tkt.updates.all():
+                            if upd.ticketupdatefile:
+                                upd.ticketupdatefile_basename = os.path.basename(upd.ticketupdatefile.name)
+                            else:
+                                upd.ticketupdatefile_basename = None
+                    return render(request, 'client/ticket.html', {'form': forminst, 'tickets': tickets})
             else:
                 messages.error(request, 'Your profile is incomplete or not linked to a building. Please contact support.')
-                return render(request, 'client/ticket.html', {'form': forminst})
+                # Re-render the form with errors and existing tickets
+                tickets = models.Ticketing.objects.filter(ticketraised=request.user).order_by('-ticketdate').prefetch_related(
+                    'updates__ticketupdateby',
+                    'ticketto',
+                    'ticketraised'
+                )
+                for tkt in tickets: # Need to process basenames again
+                    if tkt.ticketfile:
+                        tkt.ticketfile_basename = os.path.basename(tkt.ticketfile.name)
+                    else:
+                        tkt.ticketfile_basename = None
+                    for upd in tkt.updates.all():
+                        if upd.ticketupdatefile:
+                            upd.ticketupdatefile_basename = os.path.basename(upd.ticketupdatefile.name)
+                        else:
+                            upd.ticketupdatefile_basename = None
+                return render(request, 'client/ticket.html', {'form': forminst, 'tickets': tickets})
         else:
             messages.error(request, 'Please correct the errors below.')
-            return render(request, 'client/ticket.html', {'form': forminst})
+            # Re-render the form with errors and existing tickets
+            tickets = models.Ticketing.objects.filter(ticketraised=request.user).order_by('-ticketdate').prefetch_related(
+                'updates__ticketupdateby',
+                'ticketto',
+                'ticketraised'
+            )
+            for tkt in tickets: # Need to process basenames again
+                if tkt.ticketfile:
+                    tkt.ticketfile_basename = os.path.basename(tkt.ticketfile.name)
+                else:
+                    tkt.ticketfile_basename = None
+                for upd in tkt.updates.all():
+                    if upd.ticketupdatefile:
+                        upd.ticketupdatefile_basename = os.path.basename(upd.ticketupdatefile.name)
+                    else:
+                        upd.ticketupdatefile_basename = None
+            return render(request, 'client/ticket.html', {'form': forminst, 'tickets': tickets})
+
+class TicketReplyView(LoginRequiredMixin, View):
+    def post(self, request, ticket_id):
+        ticket = models.Ticketing.objects.get(ticketid=ticket_id)
+        reply_form = TicketReply(request.POST, request.FILES)
+        if reply_form.is_valid():
+            reply = reply_form.save(commit=False)
+            reply.ticketupdateby = request.user
+            reply.ticketid = ticket
+            ticket.ticketstatus = 'In Progress'
+            ticket.save()
+            reply.save()
+            messages.success(request, 'Reply sent successfully!')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+        return redirect('clients:raise')
 
 class FAQView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'client/faq.html')
-
-class ContactAgentView(LoginRequiredMixin,View):
-    def get(self,request):
-        return render(request, 'client/agent.html')

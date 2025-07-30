@@ -4,47 +4,80 @@
 <title>Bill</title>
 {% endblock %}
 {% block content %}
-<div>
-    <h2 class="text-2xl font-bold dark:text-white mb-4">Your Current Plan</h2>
-    <p class="text-gray-700 dark:text-gray-300">
+<div class="flex flex-col gap-8">
+    <h2 class="text-2xl font-bold dark:text-white mb-4 text-center">Your Current Plan</h2>
+    <p class="text-gray-700 dark:text-gray-300 text-center">
         This page displays details about your current internet plan and billing information.
     </p>
 
-    {# Check if there are any code objects (plans) to display #}
-    {% if codeobject %}
-        <div class="flex flex-wrap md:flex-nowrap gap-6 mt-6"> {# Added flex container here #}
-            {# Iterate directly over the codeobject QuerySet #}
-            {% for co in codeobject %}
-                {# Removed the outer div with mt-6 as the gap will handle spacing #}
-                <div class="flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow-sm md:flex-row md:max-w-xs dark:border-gray-700 dark:bg-gray-800 flex-shrink-0">
-                    <div class="flex flex-col justify-between p-4 leading-normal">
-                        {# Display dynamic data from the 'co' (CodePoool) object and its relations #}
-                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                            Plan: {{ co.assignedto.profileuser.plan.plan_name }}
-                        </h5>
-                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                            Code: <strong>{{ co.code }}</strong>
-                        </p>
-                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                            Price: <strong>₹{{ co.assignedto.profileuser.plan.plan_price }}</strong>
-                        </p>
-                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                            Assigned Date: <strong>{{ co.assigneddate|date:"F d, Y" }}</strong>
-                        </p>
-                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                            Expiry Date: <strong>{{ co.exiprydate|date:"F d, Y" }}</strong>
-                        </p>
-                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
-                            Next Bill Date: <strong>{{ co.assignedto.profileuser.next_billdate|date:"F d, Y" }}</strong>
-                        </p>
+    <div class="w-full">
+        {% if codeobject %}
+            {% with first_co=codeobject.first %}
+                {% if first_co.assignedto.profileuser.builing_id and first_co.assignedto.profileuser.builing_id.Agent %}
+                    {% with agent_user=first_co.assignedto.profileuser.builing_id.Agent %}
+                        <div class="flex flex-col items-center bg-white border-2 border-transparent rounded-lg shadow-sm md:flex-row md:max-w-md mx-auto dark:border-gray-700 dark:bg-gray-800 p-4"
+                             style="border-image: linear-gradient(to right, #8A2BE2, #00FF00) 1;">
+                            <div class="p-4 flex-shrink-0">
+                                <img class="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
+                                     src="{{ agent_user.profileuser.profpic.url|default:'https://placehold.co/96x96/cccccc/333333?text=Agent' }}"
+                                     alt="Agent Profile Picture">
+                            </div>
+                            <div class="flex flex-col justify-between p-4 leading-normal text-center md:text-left">
+                                <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                    Your Agent
+                                </h5>
+                                <p class="mb-1 font-normal text-gray-700 dark:text-gray-400">
+                                    Name: <strong>{{ agent_user.first_name }} {{ agent_user.last_name }}</strong>
+                                </p>
+                                <p class="mb-1 font-normal text-gray-700 dark:text-gray-400">
+                                    Phone: <strong>{{ agent_user.profileuser.phone }}</strong>
+                                </p>
+                                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                    Email: <strong>{{ agent_user.email }}</strong>
+                                </p>
+                            </div>
+                        </div>
+                    {% endwith %}
+                {% endif %}
+            {% endwith %}
+        {% endif %}
+    </div>
+
+    <div class="w-full">
+        {% if codeobject %}
+            <h3 class="text-xl font-bold dark:text-white mb-4">Your Active Plans</h3>
+            <div class="flex flex-wrap gap-6 justify-center">
+                {% for co in codeobject %}
+                    <div class="flex flex-col items-center bg-white border-2 border-transparent rounded-lg shadow-sm md:flex-row md:max-w-xs dark:border-gray-700 dark:bg-gray-800 flex-shrink-0"
+                         style="border-image: linear-gradient(to right, #008080, #00FF00) 1;">
+                        <div class="flex flex-col justify-between p-4 leading-normal">
+                            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                                Plan: {{ co.assignedto.profileuser.plan.plan_name }}
+                            </h5>
+                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Code: <strong>{{ co.code }}</strong>
+                            </p>
+                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Price: <strong>₹{{ co.assignedto.profileuser.plan.plan_price }}</strong>
+                            </p>
+                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Assigned Date: <strong>{{ co.assigneddate|date:"F d, Y" }}</strong>
+                            </p>
+                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Expiry Date: <strong>{{ co.exiprydate|date:"F d, Y" }}</strong>
+                            </p>
+                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Next Bill Date: <strong>{{ co.assignedto.profileuser.next_billdate|date:"F d, Y" }}</strong>
+                            </p>
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p class="mt-6 text-gray-700 dark:text-gray-300">
-            No active plan found.
-        </p>
-    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="mt-6 text-gray-700 dark:text-gray-300">
+                No active plan found.
+            </p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

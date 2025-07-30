@@ -11,3 +11,11 @@ class TicketRasing(forms.ModelForm):
             'ticketpriority': 'Priority',
             'ticketfile': 'Attachment (Optional)',
         }
+class TicketReply(forms.ModelForm):
+    class Meta:
+        model=models.TicketUpdates
+        fields=['ticketupdatefile','ticketupdatedesc']
+        labels = {
+            'ticketupdatefile': 'Attachment (Optional)',
+            'ticketupdatedesc': 'Description',
+        }

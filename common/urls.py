@@ -56,4 +56,5 @@ urlpatterns = [
     path('profile', views.ProfileView.as_view(), name='profile'),
     path('profileupdate/<int:id>', views.ProfileEditView.as_view(), name='profileupdate'),
     path('resendotp/<int:id>',views.OTPResendView.as_view(),name='resendotp'),
+    
 ]
