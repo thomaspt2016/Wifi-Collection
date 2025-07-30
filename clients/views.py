@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.mixins import LoginRequiredMixin
 from common import models
+from .forms import TicketRasing
 
 class ClientHomeView(LoginRequiredMixin,View):#this is where dashboard codes comes in
     def get(self,request):
@@ -34,7 +35,34 @@ class PaymenHistoryView(LoginRequiredMixin,View):
     
 class RaiseTicketView(LoginRequiredMixin,View):
     def get(self, request):
-        return render(request, 'client/ticket.html')
+        forminst = TicketRasing()
+        tickets = models.Ticketing.objects.filter(ticketraised=request.user
+                                                  ).prefetch_related(
+                                                      'updates'
+                                                  )
+        return render(request, 'client/ticket.html',{'form':forminst,'tickets':tickets})
+
+    def post(self, request):
+        usr = request.user
+        forminst = TicketRasing(request.POST, request.FILES)
+        if forminst.is_valid():
+            ticket = forminst.save(commit=False)
+            ticket.ticketraised = usr
+            if hasattr(usr, 'profileuser') and usr.profileuser.builing_id:
+                if usr.profileuser.builing_id.Agent:
+                    ticket.ticketto = usr.profileuser.builing_id.Agent
+                    ticket.save()
+                    messages.success(request, 'Ticket Raised Successfully!')
+                    return redirect('clients:raise')
+                else:
+                    messages.error(request, 'The associated building does not have an assigned agent. Please contact support.')
+                    return render(request, 'client/ticket.html', {'form': forminst})
+            else:
+                messages.error(request, 'Your profile is incomplete or not linked to a building. Please contact support.')
+                return render(request, 'client/ticket.html', {'form': forminst})
+        else:
+            messages.error(request, 'Please correct the errors below.')
+            return render(request, 'client/ticket.html', {'form': forminst})
 
 class FAQView(LoginRequiredMixin, View):
     def get(self, request):

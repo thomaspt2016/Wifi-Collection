@@ -107,5 +107,40 @@ class BillingPlan(models.Model):
     billendate = models.DateField(null=True, blank=True)
     PlanStatus = models.CharField(max_length=20, default="Upcoming")
 
+
+class Ticketing(models.Model):
+    ticketid = models.AutoField(primary_key=True)
+    ticketdate = models.DateTimeField(auto_now_add=True)
+    ticketstatus = models.CharField(max_length=20, default="Open")
+    ticketraised = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tickets_created_by_user')
+    ticketto = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='tickets_assigned_to_agent')
+    ticketdesc = models.TextField(null=True, blank=True)
+    ticketsubj = models.CharField(max_length=255, null=True, blank=True)
+    PRIORITY_CHOICES = [
+    ('low', 'Low'),
+    ('medium', 'Medium'),
+    ('high', 'High'),
+    ('urgent', 'Urgent'),
+]
+    ticketpriority = models.CharField(
+        max_length=10,
+        choices=PRIORITY_CHOICES,
+        default='medium',
+        null=True,
+        blank=True
+    )
+    ticketfile = models.FileField(upload_to='tickets', null=True, blank=True)
+
     def __str__(self):
-        return f"Profile of {self.billingusr.username}"
+        return f"Ticket #{self.ticketid} - {self.ticketsubj} by {self.ticketraised.username}"
+
+
+class TicketUpdates(models.Model):
+    ticketid = models.ForeignKey(Ticketing, on_delete=models.CASCADE, related_name='updates')
+    ticketupdate = models.DateTimeField(auto_now_add=True)
+    ticketupdateby = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='updates_made_by_user')
+    ticketupdatefile = models.FileField(upload_to='tickets', null=True, blank=True)
+    ticketupdatedesc = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"Update for Ticket #{self.ticketid.ticketid} by {self.ticketupdateby.username})"
