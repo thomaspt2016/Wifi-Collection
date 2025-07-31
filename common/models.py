@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from random import randint
+import datetime as dt
+import uuid
 # Create your models here.
 
 
@@ -85,18 +87,28 @@ class Profile(models.Model):
     next_billdate = models.DateField(null=True, blank=True)
     planenddate = models.DateField(null=True, blank=True)
 
+def generate_payment_id():
+    date_str = dt.date.today().strftime("%Y%m%d")
+    unique_str = uuid.uuid4().hex[:10]
+    return f"{date_str}-{unique_str}"
+
 
 class Payment(models.Model):
-    payment_id = models.AutoField(primary_key=True)
+    InvoiceId = models.CharField(primary_key=True, max_length=50, unique=True, default=generate_payment_id)
     payment_date = models.DateField(auto_now_add=True)
     payment_amount = models.DecimalField(max_digits=10, decimal_places=2)
     payment_method = models.CharField(max_length=50)
     payment_status = models.CharField(max_length=20)
     payment_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='paymentsusr')
     payment_plan = models.ForeignKey(InternetPlan, on_delete=models.CASCADE, related_name='paymentsplan')
+    online_payment_id = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return f"Profile of {self.payment_user.username}"
+        return self.payment_id
+    def save(self, *args, **kwargs):
+        if not self.payment_id:
+            self.payment_id = generate_payment_id()
+        super().save(*args, **kwargs)
 
 class BillingPlan(models.Model):
     billingid = models.AutoField(primary_key=True)
@@ -134,7 +146,6 @@ class Ticketing(models.Model):
     def __str__(self):
         return f"Ticket #{self.ticketid} - {self.ticketsubj} by {self.ticketraised.username}"
     class Meta:
-        # Added ordering for consistent display of tickets
         ordering = ['-ticketdate']
 
 class TicketUpdates(models.Model):

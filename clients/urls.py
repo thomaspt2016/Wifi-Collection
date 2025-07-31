@@ -26,5 +26,7 @@ urlpatterns = [
     path('payhist', views.PaymenHistoryView.as_view(), name='payhist'),
     path('raise', views.RaiseTicketView.as_view(), name='raise'),
     path('faq', views.FAQView.as_view(), name='faq'),
-    path('replay/<int:ticket_id>', views.TicketReplyView.as_view(), name='replay')
+    path('replay/<int:ticket_id>', views.TicketReplyView.as_view(), name='replay'),
+    path('orderform/<int:id>', views.OrderFormView.as_view(), name='orderform'),
+    path('cashsuc',views.CashSuccessView.as_view(),name='cashsuc')
 ]

@@ -10,6 +10,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from common import models
 from .forms import TicketRasing,TicketReply
 import os
+import razorpay
+
 
 class ClientHomeView(LoginRequiredMixin,View):#this is where dashboard codes comes in
     def get(self,request):
@@ -152,3 +154,48 @@ class TicketReplyView(LoginRequiredMixin, View):
 class FAQView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'client/faq.html')
+    
+class OrderFormView(LoginRequiredMixin, View):
+    def get(self, request,id):
+        planobj = models.InternetPlan.objects.get(plan_id=id)
+        prof = models.Profile.objects.get(user = request.user)
+        if prof.plan.plan_name == planobj.plan_name:
+            billing_action = 'Renew'
+        elif prof.plan.plan_name > planobj.plan_name:
+            billing_action = 'Downgrade'
+        else:
+            billing_action = 'Upgrade'
+        return render(request, 'client/orderfor.html', {'plan': planobj,'billing_action': billing_action})
+    def post(self, request, id):
+        planobj = models.InternetPlan.objects.get(plan_id=id)
+        usr = request.user
+        Mode = request.POST.get('payment_method')
+        print(request.POST)
+        if Mode == 'cash':
+                models.Payment.objects.create(
+                payment_user = usr,
+                payment_plan = planobj,
+                payment_amount = planobj.plan_price,
+                payment_method = 'Cash',
+                payment_status = 'Pending'
+            )
+                return redirect('clients:cashsuc')
+        if Mode == 'online':
+                    try:
+                        clinent = razorpay.Client(auth=("rzp_test_6q2Y2f2fYK3y1o", "k9k7lX1qj2f9W2o0J2o1Y4Y2"))
+                        payment = clinent.order.create({'amount': planobj.plan_price * 100, 'currency': 'INR', 'payment_capture': '1'})
+                        print(payment)
+                        
+                    except Exception as e:
+                        print(e)
+                        messages.error(request, "Currently items not available")
+                        return render(request, 'client/orderfor.html', {'plan': planobj})
+            
+                
+        return redirect('clients:cashsuc')
+
+        
+
+class CashSuccessView(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, 'client/paycashsuc.html')

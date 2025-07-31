@@ -8,6 +8,6 @@ admin.site.register(WifiCodeUpload)
 admin.site.register(CodePoool)
 admin.site.register(Profile)
 admin.site.register(Payment)
-admin.site.register(BillingPlan)
+admin.site.register(BillingPlan) 
 
 # Register your models here.

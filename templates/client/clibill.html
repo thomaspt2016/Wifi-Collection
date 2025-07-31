@@ -50,12 +50,12 @@
             </ul>
             {% if pl.plan_name == user.profileuser.plan.plan_name %}
             {# Renew Button (Cyan to Blue - SOLID Gradient) #}
-            <a href="#" class="inline-flex items-center justify-center p-2.5 px-5 py-2.5 text-sm font-medium text-white rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800 mt-4">
+            <a href="{% url 'clients:orderform' id=pl.plan_id %}" class="inline-flex items-center justify-center p-2.5 px-5 py-2.5 text-sm font-medium text-white rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800 mt-4">
                 Renew
             </a>
             {% else %}
             {# Upgrade Button (Purple to Blue - SOLID Gradient) #}
-            <a href="#" class="inline-flex items-center justify-center p-2.5 px-5 py-2.5 text-sm font-medium text-white rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 mt-4">
+            <a href="{% url 'clients:orderform' id=pl.plan_id %}" class="inline-flex items-center justify-center p-2.5 px-5 py-2.5 text-sm font-medium text-white rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 mt-4">
                 Upgrade
             </a>
             {% endif %}
