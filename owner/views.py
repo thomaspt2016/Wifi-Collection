@@ -251,7 +251,7 @@ def download_file_view(request, upload_id):
     
 class CodePoolStatView(LoginRequiredMixin,View):
     def get(self,request):
-        codepool_data = CodePoool.objects.filter(is_used=True,is_deactivated=False
+        codepool_data = CodePoool.objects.filter(is_deactivated=False
                                                   ).select_related('assignedto', 
                                                                 'sourcepdf','assignedto__profileuser__plan'
                                                                 ).all().order_by('assignedto')

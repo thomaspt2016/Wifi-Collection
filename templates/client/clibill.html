@@ -9,17 +9,20 @@
     <h1 class="text-4xl font-extrabold text-center text-gray-900 dark:text-white mb-8">
         Our Plans
     </h1>
-    ---
+    <hr class="my-8 border-gray-200 dark:border-gray-700"> {# Added a separator for better visual flow #}
+
     <div class="mt-6 flex flex-row flex-wrap justify-center gap-6">
         {% if plan %}
         {% for pl in plan %}
-        <div class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow dark:border-gray-600 xl:p-8 dark:bg-gray-800 dark:text-white">
+        <div
+            class="flex flex-col p-6 mx-auto max-w-lg text-center text-gray-900 bg-white rounded-lg border border-gray-100 shadow dark:border-gray-600 xl:p-8 dark:bg-gray-800 dark:text-white">
             <h3 class="mb-4 text-2xl font-semibold">{{pl.plan_name}}</h3>
             {% if pl.plan_name == "Starter" %}
             <p class="font-light text-gray-500 sm:text-lg dark:text-gray-400">Best option for personal use</p>
             {% endif %}
             {% if pl.plan_name == "Standard Plan" %}
-            <p class="font-light text-gray-500 sm:text-lg dark:text-gray-400">Want to Connect More Devices? We got you covered</p>
+            <p class="font-light text-gray-500 sm:text-lg dark:text-gray-400">Want to Connect More Devices? We got you
+                covered</p>
             {% endif %}
             {% if pl.plan_name == "Guest Pass" %}
             <p class="font-light text-gray-500 sm:text-lg dark:text-gray-400">Short Stay ???</p>
@@ -36,28 +39,63 @@
             </div>
             <ul role="list" class="mb-8 space-y-4 text-left">
                 <li class="flex items-center space-x-3">
-                    <svg class="flex-shrink-0 w-5 h-5 text-green-500 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                    <svg class="flex-shrink-0 w-5 h-5 text-green-500 dark:text-green-400" fill="currentColor"
+                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 v01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clip-rule="evenodd"></path>
+                    </svg>
                     <span>Unlimited Data</span>
                 </li>
                 <li class="flex items-center space-x-3">
-                    <svg class="flex-shrink-0 w-5 h-5 text-green-500 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                    <svg class="flex-shrink-0 w-5 h-5 text-green-500 dark:text-green-400" fill="currentColor"
+                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clip-rule="evenodd"></path>
+                    </svg>
                     <span>Connection Across the Campus</span>
                 </li>
                 <li class="flex items-center space-x-3">
-                    <svg class="flex-shrink-0 w-5 h-5 text-green-500 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                    <svg class="flex-shrink-0 w-5 h-5 text-green-500 dark:text-green-400" fill="currentColor"
+                        viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clip-rule="evenodd"></path>
+                    </svg>
                     <span>Devices : <span class="font-semibold">{{pl.Num_Devices}} Devices</span></span>
                 </li>
             </ul>
-            {% if pl.plan_name == user.profileuser.plan.plan_name %}
-            {# Renew Button (Cyan to Blue - SOLID Gradient) #}
-            <a href="{% url 'clients:orderform' id=pl.plan_id %}" class="inline-flex items-center justify-center p-2.5 px-5 py-2.5 text-sm font-medium text-white rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800 mt-4">
-                Renew
-            </a>
+            
+            {# Button Logic based on upcoming plan and active plan #}
+            {% if billplan %} {# Check if a billplan object exists (meaning there's an upcoming plan) #}
+                <p class="inline-flex items-center justify-center p-2.5 px-5 py-2.5 text-sm font-medium text-gray-700 rounded-lg bg-gray-100 border border-gray-200 mt-4 text-center cursor-not-allowed">
+                    You have an upcoming plan. Actions disabled.
+                </p>
             {% else %}
-            {# Upgrade Button (Purple to Blue - SOLID Gradient) #}
-            <a href="{% url 'clients:orderform' id=pl.plan_id %}" class="inline-flex items-center justify-center p-2.5 px-5 py-2.5 text-sm font-medium text-white rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 mt-4">
-                Upgrade
-            </a>
+                {# No upcoming plan, proceed with active plan check #}
+                {% if user.profileuser.plan == None %}
+                    {# User has no active plan #}
+                    <a href="{% url 'clients:orderform' id=pl.plan_id %}"
+                        class="inline-flex items-center justify-center p-2.5 px-5 py-2.5 text-sm font-medium text-white rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800 mt-4">
+                        Buy Now
+                    </a>
+                {% else %}
+                    {# User has an active plan #}
+                    {% if pl.plan_name == user.profileuser.plan.plan_name %}
+                        {# Renew Button #}
+                        <a href="{% url 'clients:orderform' id=pl.plan_id %}"
+                            class="inline-flex items-center justify-center p-2.5 px-5 py-2.5 text-sm font-medium text-white rounded-lg bg-gradient-to-br from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800 mt-4">
+                            Renew
+                        </a>
+                    {% else %}
+                        {# Upgrade Button #}
+                        <a href="{% url 'clients:orderform' id=pl.plan_id %}"
+                            class="inline-flex items-center justify-center p-2.5 px-5 py-2.5 text-sm font-medium text-white rounded-lg bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 mt-4">
+                            Upgrade
+                        </a>
+                    {% endif %}
+                {% endif %}
             {% endif %}
         </div>
         {% endfor %}

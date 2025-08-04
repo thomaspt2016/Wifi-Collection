@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Success!</title>
+</head>
+<body>
+    <p>Dear {{ user.first_name }} {{ user.last_name }},</p>
+    <p>Your payment for Order ID: <strong>{{ order_id }}</strong> (Payment ID: {{ payment_id }}) has been successfully processed for the <strong>{{ plan_name }}</strong> plan!</p>
+    
+    <p>Your billing period is from {{ billing_start_date }} to {{ billing_end_date }}.</p>
+
+    {% if assigned_codes %}
+        <p>Here are your assigned device codes:</p>
+        <ul>
+            {% for code in assigned_codes %}
+                <li><strong>{{ code.code }}</strong></li>
+            {% endfor %}
+        </ul>
+        <p>Please use these codes to activate your devices.</p>
+    {% else %}
+        <p>No device codes were assigned for this plan, or there was an issue retrieving them.</p>
+    {% endif %}
+
+    <p>Thank you for your purchase!</p>
+    <p>Sincerely,</p>
+    <p>Your Company Name</p>
+</body>
+</html>

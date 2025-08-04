@@ -10,12 +10,13 @@
         This page displays details about your current internet plan and billing information.
     </p>
 
-    <div class="w-full">
+    {# Container for Agent and Upcoming Billing Plan(s) to appear on the same line #}
+    <div class="w-full flex flex-wrap justify-center gap-6"> {# Using flex-wrap for responsiveness #}
         {% if codeobject %}
             {% with first_co=codeobject.first %}
                 {% if first_co.assignedto.profileuser.builing_id and first_co.assignedto.profileuser.builing_id.Agent %}
                     {% with agent_user=first_co.assignedto.profileuser.builing_id.Agent %}
-                        <div class="flex flex-col items-center bg-white border-2 border-transparent rounded-lg shadow-sm md:flex-row md:max-w-md mx-auto dark:border-gray-700 dark:bg-gray-800 p-4"
+                        <div class="flex flex-col items-center bg-white border-2 border-transparent rounded-lg shadow-sm md:flex-row md:max-w-md dark:border-gray-700 dark:bg-gray-800 p-4 flex-shrink-0"
                              style="border-image: linear-gradient(to right, #8A2BE2, #00FF00) 1;">
                             <div class="p-4 flex-shrink-0">
                                 <img class="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
@@ -41,9 +42,46 @@
                 {% endif %}
             {% endwith %}
         {% endif %}
-    </div>
 
-    <div class="w-full">
+        {# Upcoming Billing Plan(s) section - now inside the same flex container #}
+        {% if billingplan %}
+            {# Removed h3 here, as it's typically for a new block. If you want a title, consider it inside the card. #}
+            {% for bp in billingplan %}
+                <div class="flex flex-col items-center bg-white border-2 border-transparent rounded-lg shadow-sm md:flex-row md:max-w-xs dark:border-gray-700 dark:bg-gray-800 flex-shrink-0"
+                     style="border-image: linear-gradient(to right, #FFD700, #FFA500) 1;">
+                    <div class="flex flex-col justify-between p-4 leading-normal">
+                        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+                            Upcoming: {{ bp.billingplan.plan_name }}
+                        </h5>
+                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            Price: <strong>₹{{ bp.billingplan.plan_price }}</strong>
+                        </p>
+                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            Status: <strong>{{ bp.PlanStatus }}</strong>
+                        </p>
+                        {% if bp.billstartdate %}
+                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                Start Date: <strong>{{ bp.billstartdate|date:"F d, Y" }}</strong>
+                            </p>
+                        {% endif %}
+                        {% if bp.billendate %}
+                            <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                                End Date: <strong>{{ bp.billendate|date:"F d, Y" }}</strong>
+                            </p>
+                        {% endif %}
+                        <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">
+                            Invoice : <strong>{{ bp.paymentid.InvoiceId }}</strong>
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    {# End of container for Agent and Upcoming Billing Plan(s) #}
+
+
+    {# Your Active Plans section - remains in its own block #}
+    <div class="w-full mt-8">
         {% if codeobject %}
             <h3 class="text-xl font-bold dark:text-white mb-4">Your Active Plans</h3>
             <div class="flex flex-wrap gap-6 justify-center">
