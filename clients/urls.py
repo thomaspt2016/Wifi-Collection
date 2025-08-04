@@ -28,5 +28,8 @@ urlpatterns = [
     path('faq', views.FAQView.as_view(), name='faq'),
     path('replay/<int:ticket_id>', views.TicketReplyView.as_view(), name='replay'),
     path('orderform/<int:id>', views.OrderFormView.as_view(), name='orderform'),
-    path('cashsuc',views.CashSuccessView.as_view(),name='cashsuc')
+    path('cashsuc',views.CashSuccessView.as_view(),name='cashsuc'),
+    path('PaymentVerify/',views.PaymentVerify.as_view(),name='PaymentVerify'),
+    path('PaymentFailure/<str:i>', views.PayCancel.as_view(), name='PaymentFailure'),
+    path('ticketclose/<int:ticket_id>',views.TicketClose.as_view(),name='ticketclose'),
 ]

@@ -32,9 +32,9 @@
             <div id="tickets-accordion" data-accordion="collapse">
                 {% for tic in tickets %}
                 <h2 id="accordion-heading-{{ tic.ticketid }}">
-                    <button type="button" class="flex items-center justify-between w-full p-5 font-medium 
-                    rtl:text-right text-gray-500 border border-gray-200 {% if not forloop.last %}border-b-0{% endif %} 
-                    rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400 
+                    <button type="button" class="flex items-center justify-between w-full p-5 font-medium
+                    rtl:text-right text-gray-500 border border-gray-200 {% if not forloop.last %}border-b-0{% endif %}
+                    rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400
                     hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-body-{{ tic.ticketid }}"
                      aria-expanded="false" aria-controls="accordion-body-{{ tic.ticketid }}">
                         <div class="flex flex-wrap items-center justify-between w-full">
@@ -64,7 +64,7 @@
                             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
                         </svg>
                     </button>
-                <h2>
+                </h2>
                 <div id="accordion-body-{{ tic.ticketid }}" class="hidden" aria-labelledby="accordion-heading-{{ tic.ticketid }}">
                     <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
                         <h4 class="text-md font-semibold text-gray-900 dark:text-white mb-2">Conversation:</h4>
@@ -112,30 +112,39 @@
                                 {% endif %}
                             {% endfor %}
                         {% endif %}
-                        {% if tic.ticketstatus != "Closed" %} 
-                        <form action="{% url 'clients:replay' tic.ticketid %}" method="POST" enctype="multipart/form-data" class="mt-6 p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex items-center space-x-2 rounded-b-lg -mx-5 -mb-5">
-                            {% csrf_token %}
-                            
-                            {% render_field reply_form.ticketupdatedesc class="flex-grow p-2.5 text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Type your reply here..." rows="1" %}
 
-                            <label for="id_ticketupdatefile_{{ tic.ticketid }}" class="cursor-pointer text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
-                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"></path></svg>
-                                <span class="sr-only">Attach File</span>
-                            </label>
-                            <input type="file" name="{{ reply_form.ticketupdatefile.html_name }}" id="id_ticketupdatefile_{{ tic.ticketid }}" class="hidden" accept="application/pdf,image/jpeg,image/png">
-                            
-                            <button type="submit" class="inline-flex items-center p-2 rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800 dark:focus:ring-offset-gray-800">
-                                <svg class="w-5 h-5 rotate-90 rtl:-rotate-90" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l4.417-1.472l.879.914l3.867-2.129l4.414 1.471a1 1 0 001.169-1.409l-7-14z"></path></svg>
-                                <span class="sr-only">Send message</span>
-                            </button>
-                            
-                            {% if reply_form.ticketupdatedesc.errors %}
-                                <p class="text-sm text-red-600 dark:text-red-500 w-full mt-1">{{ reply_form.ticketupdatedesc.errors }}</p>
-                            {% endif %}
-                            {% if reply_form.ticketupdatefile.errors %}
-                                <p class="text-sm text-red-600 dark:text-red-500 w-full mt-1">{{ reply_form.ticketupdatefile.errors }}</p>
-                            {% endif %}
-                        </form>
+                        {% if tic.ticketstatus != "Closed" %}
+                        <div class="flex flex-col sm:flex-row justify-end items-end sm:items-center mt-6 p-3 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-b-lg -mx-5 -mb-5 space-y-2 sm:space-y-0 sm:space-x-2">
+                            <form action="{% url 'clients:replay' tic.ticketid %}" method="POST" enctype="multipart/form-data" class="flex-grow w-full sm:w-auto flex items-center space-x-2">
+                                {% csrf_token %}
+                                {% render_field reply_form.ticketupdatedesc class="flex-grow p-2.5 text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Type your reply here..." rows="1" %}
+
+                                <label for="id_ticketupdatefile_{{ tic.ticketid }}" class="cursor-pointer text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-500 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd"></path></svg>
+                                    <span class="sr-only">Attach File</span>
+                                </label>
+                                <input type="file" name="{{ reply_form.ticketupdatefile.html_name }}" id="id_ticketupdatefile_{{ tic.ticketid }}" class="hidden" accept="application/pdf,image/jpeg,image/png">
+
+                                <button type="submit" class="inline-flex items-center p-2 rounded-full text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800 dark:focus:ring-offset-gray-800">
+                                    <svg class="w-5 h-5 rotate-90 rtl:-rotate-90" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l4.417-1.472l.879.914l3.867-2.129l4.414 1.471a1 1 0 001.169-1.409l-7-14z"></path></svg>
+                                    <span class="sr-only">Send message</span>
+                                </button>
+                            </form>
+                            <form action="{% url 'clients:ticketclose' tic.ticketid %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:bg-red-700 dark:hover:bg-red-800 dark:focus:ring-offset-gray-800">
+                                    <svg class="me-2 -ms-1 w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+                                    Close Ticket
+                                </button>
+                            </form>
+                        </div>
+
+                        {% if reply_form.ticketupdatedesc.errors %}
+                            <p class="text-sm text-red-600 dark:text-red-500 w-full mt-1">{{ reply_form.ticketupdatedesc.errors }}</p>
+                        {% endif %}
+                        {% if reply_form.ticketupdatefile.errors %}
+                            <p class="text-sm text-red-600 dark:text-red-500 w-full mt-1">{{ reply_form.ticketupdatefile.errors }}</p>
+                        {% endif %}
                         {% endif %}
                     </div>
                 </div>

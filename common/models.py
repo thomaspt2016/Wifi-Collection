@@ -70,6 +70,7 @@ class CodePoool(models.Model):
     deactivated = models.DateField(null=True, blank=True)
     is_deactivated = models.BooleanField(default=False)
     sourcepdf = models.ForeignKey(WifiCodeUpload, on_delete=models.CASCADE,blank=True,related_name="Source")
+    Invoice = models.ForeignKey('Payment', on_delete=models.CASCADE, null=True, blank=True, related_name='Invoice')
 
 
 class Profile(models.Model):
@@ -104,10 +105,10 @@ class Payment(models.Model):
     online_payment_id = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
-        return self.payment_id
+        return self.InvoiceId
     def save(self, *args, **kwargs):
-        if not self.payment_id:
-            self.payment_id = generate_payment_id()
+        if not self.InvoiceId:
+            self.InvoiceId = generate_payment_id()
         super().save(*args, **kwargs)
 
 class BillingPlan(models.Model):

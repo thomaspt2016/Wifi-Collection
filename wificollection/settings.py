@@ -122,6 +122,8 @@ USE_I18N = True
 
 USE_TZ = True
 AUTH_USER_MODEL='common.CustomUser'
+RAZORPAY_KEY_ID = 'rzp_test_cvS1Hu5zkwJQud'
+RAZORPAY_KEY_SECRET='uEj70mAqVU0IhlyYzHqfLznq'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/

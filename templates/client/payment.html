@@ -1,0 +1,56 @@
+{% extends 'client/clienthome.html' %}
+
+{% load static %}
+{% block title %}
+<title>History</title>
+{% endblock %}
+{% block content %}
+<form action="{% url 'clients:PaymentVerify'%}" method="POST" id="paymentForm">
+    {% csrf_token %}
+
+    {# These hidden fields will store the payment details from Razorpay #}
+    <input type="hidden" id="razorpay_payment_id" name="razorpay_payment_id">
+    <input type="hidden" id="razorpay_order_id" name="razorpay_order_id">
+    <input type="hidden" id="razorpay_signature" name="razorpay_signature">
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var options = {
+                key: "rzp_test_cvS1Hu5zkwJQud", // Enter the Test API Key ID generated from Dashboard → Settings → API Keys
+                amount: "{{payment.amount}}", // Amount is in currency subunits.
+                currency: "INR",
+                order_id: "{{payment.id}}", // Your order_id from the backend.
+                name: "Connect",
+                description: "{{us.profileuser.plan.plan_name}}",
+                image: "{% static 'Icons/wifi-svgrepo-com.svg' %}",
+                prefill: {
+                    name: "{{us.first_name}} {{us.last_name}}",
+                    email: "{{us.email}}"
+                },
+                theme: {
+                    color: "dark"
+                },
+                handler: function (response){
+                    document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+                    document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+                    document.getElementById('razorpay_signature').value = response.razorpay_signature;
+
+                    // Dynamically submit the form to your Django backend
+                    document.getElementById('paymentForm').submit(); 
+                },
+                modal: {
+                    ondismiss: function(){
+                        // If the Razorpay modal is dismissed by the user, redirect to a failure page
+                        window.location.href = "{% url 'clients:PaymentFailure' payment.id %}";
+                    }
+                }
+            };
+            var rzp = new Razorpay(options);
+            rzp.open(); // Open the Razorpay payment modal
+        });
+    </script>
+    {# This hidden input is likely not needed unless you have a specific use for it #}
+    {# <input type="hidden" custom="Hidden Element" name="hidden"/> #}
+</form>
+{% endblock %}
