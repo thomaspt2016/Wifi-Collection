@@ -5,7 +5,7 @@ from django.views import View
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from common.models import CustomUser,InternetPlan,CodePoool,WifiCodeUpload,Profile
+from common.models import CustomUser,InternetPlan,CodePoool,WifiCodeUpload,Profile,Payment
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q,Count
 from common.forms import InternetPlanForm
@@ -16,15 +16,13 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 import datetime
-from .helper import get_next_month_25th
-# Create your views here.
+from django.db.models import Q,Sum
+
+
 class Ownerhomeview(LoginRequiredMixin,View):
     def get(self,request):
         return render(request, 'owner/ownhom.html')
     
-
-
-
 class OwnerClientsView(LoginRequiredMixin, View):
     def get(self, request):
         # Fields needed for CustomUser (client) directly
@@ -251,8 +249,7 @@ def download_file_view(request, upload_id):
     
 class CodePoolStatView(LoginRequiredMixin,View):
     def get(self,request):
-        codepool_data = CodePoool.objects.filter(is_deactivated=False
-                                                  ).select_related('assignedto', 
+        codepool_data = CodePoool.objects.all().exclude(remarks__in=['De-activated', 'Expired']).select_related('assignedto', 
                                                                 'sourcepdf','assignedto__profileuser__plan'
                                                                 ).all().order_by('assignedto')
         usr = CodePoool.objects.filter(assignedto__isnull=False).values('assignedto').distinct().count()
@@ -269,22 +266,16 @@ class CodePoolStatView(LoginRequiredMixin,View):
                 distinct=True
             )
         ).order_by('plan_name')
+        items_per_page = 10
+        paginator = Paginator(codepool_data, items_per_page)
 
-        # --- Pagination Implementation ---
-        items_per_page = 10 # Define how many items you want per page
-        paginator = Paginator(codepool_data, items_per_page) # Create a Paginator object
-
-        page_number = request.GET.get('page') # Get the current page number from the URL
+        page_number = request.GET.get('page')
         try:
             codepool_data_paginated = paginator.page(page_number) # Get the Page object
         except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
             codepool_data_paginated = paginator.page(1)
         except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
             codepool_data_paginated = paginator.page(paginator.num_pages)
-        # --- End Pagination Implementation ---
-
         context = {
             'codepool_data': codepool_data_paginated, # Pass the paginated data
             'distinct_users_count': usr,
@@ -320,8 +311,8 @@ class SearchViewCodes(LoginRequiredMixin,View):
         return render(request, 'owner/partials/coderow.html', context)
    
 class CodeDeactivation(LoginRequiredMixin,View):
-    def post(self, request, id):
-        codes_to_deactivate = CodePoool.objects.filter(Invoice_id=id, is_deactivated=False)
+    def post(self, request, invid):
+        codes_to_deactivate = CodePoool.objects.filter(Invoice=invid, is_deactivated=False)
 
         if not codes_to_deactivate.exists():
             clients = CodePoool.objects.filter(is_used=True, is_deactivated=False).select_related('assignedto', 'sourcepdf', 'assignedto__profileuser__plan').all().order_by('assignedto')
@@ -332,31 +323,58 @@ class CodeDeactivation(LoginRequiredMixin,View):
         codes_to_deactivate.update(is_deactivated=True, deactivated=datetime.datetime.today(),remarks = 'De-activated')
 
         Profile.objects.filter(user=user_to_deactivate_codes_for).update(
-            is_billable=False,
-            next_billdate=None,
-            planenddate=None,
             plan=None
         )
 
         clients = CodePoool.objects.filter(is_used=True, is_deactivated=False).select_related('assignedto', 'sourcepdf', 'assignedto__profileuser__plan').all().order_by('assignedto')
 
         return render(request, 'owner/partials/coderow.html', {'codepool_data': clients})
+    
 
 class PaymentsView(LoginRequiredMixin,View):
-    def get(self,request):
-        return render(request, 'owner/payments.html')
+    def get(self, request):
+        # Fetch all successful payments, ordered by date
+        payments = Payment.objects.filter(payment_status='Success').order_by('-payment_date')
+        Fpayments = Payment.objects.filter(payment_status ='Failed').order_by('-payment_date')
+        Cashpayments = Payment.objects.filter(payment_method ='Cash',payment_status='Success').order_by('-payment_date')
+        Onlinepayments = Payment.objects.filter(payment_method ='Online',payment_status='Success').order_by('-payment_date')
+        PendinPayments = Payment.objects.filter(payment_status ='Pending').order_by('-payment_date')
+
+
+        
+        # Calculate the sum of payments grouped by payment method
+        payment_methods_success = Payment.objects.filter(
+            payment_status='Success'
+        ).values('payment_method').annotate(
+            total_amount=Sum('payment_amount')
+        )
+
+        # Calculate the sum of payments grouped by collection agent.
+        # The lookup path has been corrected to traverse the models correctly:
+        # Payment -> CustomUser (via payment_user) -> Profile (via profileuser related_name) ->
+        # Building (via builing_id) -> CustomUser (via Agent)
+        payments_by_agent = Payment.objects.filter(
+            payment_status='Success'
+        ).values(
+            'payment_user__profileuser__builing_id__Agent__first_name',
+            'payment_user__profileuser__builing_id__Agent__last_name'
+        ).annotate(
+            total_amount=Sum('payment_amount')
+        ).order_by('payment_user__profileuser__builing_id__Agent')
+
+        # Create a context dictionary to pass the data to the template
+        context = {
+            'payments': payments,
+            'payment_methods_success': payment_methods_success,
+            'payments_by_agent': payments_by_agent,
+            'Fpayments':Fpayments,
+            'Cashpayments':Cashpayments,
+            'Onlinepayments':Onlinepayments,
+            'PendinPayments':PendinPayments
+        }
+        return render(request, 'owner/payments.html', context)
     
-class ReportsView(LoginRequiredMixin,View):
-    def get(self,request):
-        return render(request, 'owner/fiinreport.html')
-    
-class GeneralSettingView(LoginRequiredMixin,View):
-    def get(self,request):
-        return render(request, 'owner/systemset.html')
-    
-class APISettingView(LoginRequiredMixin,View):
-    def get(self,request):
-        return render(request, 'owner/apiset.html')
+
 
 class AcountDisable(LoginRequiredMixin,View):
     def post(self,request,id):
@@ -426,3 +444,28 @@ class UserPromotions(LoginRequiredMixin, View):
         prof.save()
 
         return redirect('owner:ownclients')
+
+class ProfiledetailView(LoginRequiredMixin, View):
+    def get(self, request,id):
+        try:
+            profile = Profile.objects.select_related(
+                                    'user',   # Fetches the CustomUser object
+                                    'plan'    # Fetches the InternetPlan object
+                                    ).prefetch_related(
+                                        'user__paymentsusr',          # Fetches all related Payment objects
+                                        'user__billingusr',           # Fetches all related BillingPlan objects
+                                        'user__assigned_codes',       # Fetches all related CodePoool objects
+                                        'user__uploaded_wifi_codes'   # Fetches all related WifiCodeUpload objects
+                                    ).order_by('user__assigned_remarks').get(user=id)
+            PaymentMethodSummary = Payment.objects.filter(
+                    payment_user=id,
+                    payment_status='Success'
+                ).values(
+                    'payment_method'  # Group the payments by their method
+                ).annotate(
+                    total_amount=Sum('payment_amount')  # Calculate the sum for each group
+                )
+
+            return render(request, 'owner/profile.html', {'profile': profile,'paymentmeth':PaymentMethodSummary})    
+        except:
+            return redirect('owner:ownclients')

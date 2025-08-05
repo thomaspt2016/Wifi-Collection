@@ -29,15 +29,13 @@ urlpatterns = [
     path('codeupload', views.CodeUploadView.as_view(), name='codeupload'),
     path('codepoolstat', views.CodePoolStatView.as_view(), name='codepoolstat'),
     path('payments', views.PaymentsView.as_view(), name='payments'),
-    path('reports', views.ReportsView.as_view(), name='reports'),
-    path('generalsetting', views.GeneralSettingView.as_view(), name='generalsetting'),
-    path('apisetting', views.APISettingView.as_view(), name='apisetting'),
     path('activecheck/<int:id>', views.AcountDisable.as_view(), name='activecheck'),
     path('searchuser',views.SearchUserView.as_view(),name='searchuser'),
     path('download/<int:upload_id>/', views.download_file_view, name='downloadfile'),
     path('codesearch',views.SearchViewCodes.as_view(),name='codesearch' ),
-    path('codedeactivation/<int:id>', views.CodeDeactivation.as_view(), name='codedeactivation'),
-    path('userupanddown/<int:id>',views.UserPromotions.as_view(),name='userupanddown')
+    path('codedeactivation/<str:invid>', views.CodeDeactivation.as_view(), name='codedeactivation'),
+    path('userupanddown/<int:id>',views.UserPromotions.as_view(),name='userupanddown'),
+    path('profiledetail/<int:id>', views.ProfiledetailView.as_view(), name='profiledetails'),
 ]
 
 if settings.DEBUG:

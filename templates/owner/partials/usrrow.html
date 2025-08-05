@@ -47,7 +47,7 @@
         <a href="{% url 'owner:userupanddown' c.id %}" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
             <img class="w-5 h-5" src="{% static 'owner icos/client/roller-coaste.svg' %}" alt="promo icon" />
         </a>
-            <a href="" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
+            <a href="{% url 'owner:profiledetails' c.id %}" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
                 <img class="w-5 h-5" src="{% static 'owner icos/client/profile.svg' %}" alt="Profile-Icon" />
             </a>
     </td>

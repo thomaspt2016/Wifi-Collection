@@ -125,7 +125,7 @@ class ProfiledetailView(LoginRequiredMixin, View):
             profile = models.Profile.objects.select_related(
                                     'user',   # Fetches the CustomUser object
                                     'plan'    # Fetches the InternetPlan object
-                                    ).prefetch_related(
+                                    ).filter(user__profileuser__builing_id__Agent=request.user).prefetch_related(
                                         'user__paymentsusr',          # Fetches all related Payment objects
                                         'user__billingusr',           # Fetches all related BillingPlan objects
                                         'user__assigned_codes',       # Fetches all related CodePoool objects

@@ -18,15 +18,15 @@ class Homeview(View):
             if request.user.role == "owner":
                 if prof.profile_comp ==False:
                     return redirect('common:profile')
-                return redirect('owner:ownerhome')
+                return redirect('owner:ownclients')
             elif request.user.role == "client":
                 if prof.profile_comp ==False:
                     return redirect('common:profile')
-                return redirect('clients:clienthome')
+                return redirect('clients:cliwificode')
             elif request.user.role == "coagent":
                 if prof.profile_comp ==False:
                     return redirect('common:profile')
-                return redirect('coagents:cohome') # <-- Redirect for collection agents
+                return redirect('coagents:coclients') # <-- Redirect for collection agents
             else:
                 return render(request, 'common/home.html')
         else:

@@ -71,7 +71,7 @@ class CodePoool(models.Model):
     is_deactivated = models.BooleanField(default=False)
     sourcepdf = models.ForeignKey(WifiCodeUpload, on_delete=models.CASCADE,blank=True,related_name="Source")
     Invoice = models.ForeignKey('Payment', on_delete=models.CASCADE, null=True, blank=True, related_name='Invoice')
-    remarks = models.CharField(max_length=100, null=True, blank=True)
+    remarks = models.CharField(max_length=100, null=True, blank=True,default='Active')
 
 
 class Profile(models.Model):

@@ -1,21 +1,312 @@
 {% extends 'owner/ownhom.html' %}
 {% load static %}
 {% block title %}
-<title>Payments</title>
+<title>Payments Dashboard</title>
 {% endblock %}
 {% block content %}
-<div>
-    <h2 class="text-2xl font-bold dark:text-white mb-4">Welcome to the Main Content Area!</h2>
-    <p class="text-gray-700 dark:text-gray-300">
-        Payments data from payment gateway and other sources
-    </p>
-    <div class="mt-6">
-        <p class="text-gray-700 dark:text-gray-300">
-            You can place any HTML content here, such as forms, tables, cards,
-            or dynamic data from your Django views.
+<div class="p-6 bg-gray-50 dark:bg-gray-900 min-h-screen">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-6">Payments Dashboard</h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+            Detailed reports and summaries of all successful payments.
         </p>
+
+        <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+                <li class="me-2" role="presentation">
+                    <button class="inline-block p-4 border-b-2 rounded-t-lg" id="successful-tab" data-tabs-target="#successful-payments" type="button" role="tab" aria-controls="successful-payments" aria-selected="true">Successful Payments</button>
+                </li>
+                <li class="me-2" role="presentation">
+                    <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="pending-tab" data-tabs-target="#pending-payments" type="button" role="tab" aria-controls="pending-payments" aria-selected="false">Pending Payments</button>
+                </li>
+                <li class="me-2" role="presentation">
+                    <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="failed-tab" data-tabs-target="#failed-payments" type="button" role="tab" aria-controls="failed-payments" aria-selected="false">Failed Payments</button>
+                </li>
+                 <li class="me-2" role="presentation">
+                    <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="cash-tab" data-tabs-target="#cash-payments" type="button" role="tab" aria-controls="cash-payments" aria-selected="false">Cash Payments</button>
+                </li>
+                <li class="me-2" role="presentation">
+                    <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="online-tab" data-tabs-target="#online-payments" type="button" role="tab" aria-controls="online-payments" aria-selected="false">Online Payments</button>
+                </li>
+                <li class="me-2" role="presentation">
+                    <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="by-method-tab" data-tabs-target="#by-method" type="button" role="tab" aria-controls="by-method" aria-selected="false">By Method</button>
+                </li>
+                <li role="presentation">
+                    <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300" id="by-agent-tab" data-tabs-target="#by-agent" type="button" role="tab" aria-controls="by-agent" aria-selected="false">By Agent</button>
+                </li>
+            </ul>
+        </div>
+
+        <div id="default-tab-content">
+            
+            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="successful-payments" role="tabpanel" aria-labelledby="successful-tab">
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Successful Payments</h2>
+                    {% if payments %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase text-sm leading-normal">
+                                    <th class="py-3 px-6 text-left rounded-tl-lg">Payment ID</th>
+                                    <th class="py-3 px-6 text-left">Date</th>
+                                    <th class="py-3 px-6 text-left">Client</th>
+                                    <th class="py-3 px-6 text-left">Agent</th>
+                                    <th class="py-3 px-6 text-left">Method</th>
+                                    <th class="py-3 px-6 text-left rounded-tr-lg">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-600 dark:text-gray-200 text-sm font-light">
+                                {% for payment in payments %}
+                                <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">{{ payment.InvoiceId }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_date|date:"M d, Y" }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_user.first_name }} {{ payment.payment_user.last_name }}</td>
+                                    <td class="py-3 px-6 text-left">
+                                        {% if payment.payment_user.profileuser.builing_id.Agent %}
+                                        {{ payment.payment_user.profileuser.builing_id.Agent.first_name }} {{ payment.payment_user.profileuser.builing_id.Agent.last_name }}
+                                        {% else %}
+                                        N/A
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_method }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_amount|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-gray-600 dark:text-gray-400 text-center py-4">No successful payments found.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="pending-payments" role="tabpanel" aria-labelledby="pending-tab">
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Pending Payments</h2>
+                    {% if PendinPayments %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase text-sm leading-normal">
+                                    <th class="py-3 px-6 text-left rounded-tl-lg">Payment ID</th>
+                                    <th class="py-3 px-6 text-left">Date</th>
+                                    <th class="py-3 px-6 text-left">Client</th>
+                                    <th class="py-3 px-6 text-left">Agent</th>
+                                    <th class="py-3 px-6 text-left">Method</th>
+                                    <th class="py-3 px-6 text-left rounded-tr-lg">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-600 dark:text-gray-200 text-sm font-light">
+                                {% for payment in PendinPayments %}
+                                <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">{{ payment.InvoiceId }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_date|date:"M d, Y" }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_user.first_name }} {{ payment.payment_user.last_name }}</td>
+                                    <td class="py-3 px-6 text-left">
+                                        {% if payment.payment_user.profileuser.builing_id.Agent %}
+                                        {{ payment.payment_user.profileuser.builing_id.Agent.first_name }} {{ payment.payment_user.profileuser.builing_id.Agent.last_name }}
+                                        {% else %}
+                                        N/A
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_method }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_amount|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-gray-600 dark:text-gray-400 text-center py-4">No pending payments found.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="failed-payments" role="tabpanel" aria-labelledby="failed-tab">
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Failed Payments</h2>
+                    {% if Fpayments %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase text-sm leading-normal">
+                                    <th class="py-3 px-6 text-left rounded-tl-lg">Payment ID</th>
+                                    <th class="py-3 px-6 text-left">Date</th>
+                                    <th class="py-3 px-6 text-left">Client</th>
+                                    <th class="py-3 px-6 text-left">Agent</th>
+                                    <th class="py-3 px-6 text-left">Method</th>
+                                    <th class="py-3 px-6 text-left rounded-tr-lg">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-600 dark:text-gray-200 text-sm font-light">
+                                {% for payment in Fpayments %}
+                                <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">{{ payment.InvoiceId }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_date|date:"M d, Y" }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_user.first_name }} {{ payment.payment_user.last_name }}</td>
+                                    <td class="py-3 px-6 text-left">
+                                        {% if payment.payment_user.profileuser.builing_id.Agent %}
+                                        {{ payment.payment_user.profileuser.builing_id.Agent.first_name }} {{ payment.payment_user.profileuser.builing_id.Agent.last_name }}
+                                        {% else %}
+                                        N/A
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_method }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_amount|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-gray-600 dark:text-gray-400 text-center py-4">No failed payments found.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="cash-payments" role="tabpanel" aria-labelledby="cash-tab">
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Cash Payments</h2>
+                    {% if Cashpayments %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase text-sm leading-normal">
+                                    <th class="py-3 px-6 text-left rounded-tl-lg">Payment ID</th>
+                                    <th class="py-3 px-6 text-left">Date</th>
+                                    <th class="py-3 px-6 text-left">Client</th>
+                                    <th class="py-3 px-6 text-left">Agent</th>
+                                    <th class="py-3 px-6 text-left">Method</th>
+                                    <th class="py-3 px-6 text-left rounded-tr-lg">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-600 dark:text-gray-200 text-sm font-light">
+                                {% for payment in Cashpayments %}
+                                <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">{{ payment.InvoiceId }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_date|date:"M d, Y" }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_user.first_name }} {{ payment.payment_user.last_name }}</td>
+                                    <td class="py-3 px-6 text-left">
+                                        {% if payment.payment_user.profileuser.builing_id.Agent %}
+                                        {{ payment.payment_user.profileuser.builing_id.Agent.first_name }} {{ payment.payment_user.profileuser.builing_id.Agent.last_name }}
+                                        {% else %}
+                                        N/A
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_method }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_amount|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-gray-600 dark:text-gray-400 text-center py-4">No cash payments found.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="online-payments" role="tabpanel" aria-labelledby="online-tab">
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Online Payments</h2>
+                    {% if Onlinepayments %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase text-sm leading-normal">
+                                    <th class="py-3 px-6 text-left rounded-tl-lg">Payment ID</th>
+                                    <th class="py-3 px-6 text-left">Date</th>
+                                    <th class="py-3 px-6 text-left">Client</th>
+                                    <th class="py-3 px-6 text-left">Agent</th>
+                                    <th class="py-3 px-6 text-left">Method</th>
+                                    <th class="py-3 px-6 text-left rounded-tr-lg">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-600 dark:text-gray-200 text-sm font-light">
+                                {% for payment in Onlinepayments %}
+                                <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">{{ payment.InvoiceId }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_date|date:"M d, Y" }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_user.first_name }} {{ payment.payment_user.last_name }}</td>
+                                    <td class="py-3 px-6 text-left">
+                                        {% if payment.payment_user.profileuser.builing_id.Agent %}
+                                        {{ payment.payment_user.profileuser.builing_id.Agent.first_name }} {{ payment.payment_user.profileuser.builing_id.Agent.last_name }}
+                                        {% else %}
+                                        N/A
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_method }}</td>
+                                    <td class="py-3 px-6 text-left">{{ payment.payment_amount|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-gray-600 dark:text-gray-400 text-center py-4">No online payments found.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="by-method" role="tabpanel" aria-labelledby="by-method-tab">
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Total Successful Payments by Method</h2>
+                    {% if payment_methods_success %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase text-sm leading-normal">
+                                    <th class="py-3 px-6 text-left rounded-tl-lg">Payment Method</th>
+                                    <th class="py-3 px-6 text-left rounded-tr-lg">Total Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-600 dark:text-gray-200 text-sm font-light">
+                                {% for item in payment_methods_success %}
+                                <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">{{ item.payment_method }}</td>
+                                    <td class="py-3 px-6 text-left">{{ item.total_amount|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-gray-600 dark:text-gray-400 text-center py-4">No payment method data found.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="by-agent" role="tabpanel" aria-labelledby="by-agent-tab">
+                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-6">
+                    <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Total Successful Payments by Agent</h2>
+                    {% if payments_by_agent %}
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full table-auto">
+                            <thead>
+                                <tr class="bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-300 uppercase text-sm leading-normal">
+                                    <th class="py-3 px-6 text-left rounded-tl-lg">Agent Name</th>
+                                    <th class="py-3 px-6 text-left rounded-tr-lg">Total Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-600 dark:text-gray-200 text-sm font-light">
+                                {% for item in payments_by_agent %}
+                                <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <td class="py-3 px-6 text-left whitespace-nowrap">
+                                        {{ item.payment_user__profileuser__builing_id__Agent__first_name }} {{ item.payment_user__profileuser__builing_id__Agent__last_name }}
+                                    </td>
+                                    <td class="py-3 px-6 text-left">{{ item.total_amount|floatformat:2 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-gray-600 dark:text-gray-400 text-center py-4">No agent payment data found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-
-
 {% endblock %}

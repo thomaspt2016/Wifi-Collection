@@ -51,10 +51,11 @@
                     <th scope="col" class="px-6 py-3">Assigned Date</th>
                     <th scope="col" class="px-6 py-3">Expiry Date</th>
                     <th scope="col" class="px-6 py-3">Deactivated</th>
+                    <th scope="col" class="px-6 py-3">Status</th>
                 </tr>
             </thead>
             <tbody>
-                {% include 'owner/partials/coderow.html' %}
+                {% include 'owner/partials/coderow.html' with codepool_data=codepool_data %}
             </tbody>
         </table>
     </div>
