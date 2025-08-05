@@ -191,7 +191,6 @@ class OrderFormView(LoginRequiredMixin, View):
             )
                 return redirect('clients:cashsuc')
         if Mode == 'online':
-                    print("online")
                     try:
                         us = models.CustomUser.objects.get(username = usr)
                         clinent = razorpay.Client(auth=("rzp_test_cvS1Hu5zkwJQud", "uEj70mAqVU0IhlyYzHqfLznq"))
@@ -221,86 +220,105 @@ class CashSuccessView(LoginRequiredMixin, View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class PaymentVerify(View):
-    def post(self,request):
-        print(request.POST)
+    def post(self, request):
         try:
-            paymenid = request.POST.get('razorpay_payment_id',' ')
-            orderid = request.POST.get('razorpay_order_id',' ')
-            signature = request.POST.get('razorpay_signature',' ')
-            if not all([paymenid, orderid, signature]):
+            payment_id = request.POST.get('razorpay_payment_id')
+            order_id = request.POST.get('razorpay_order_id')
+            signature = request.POST.get('razorpay_signature')
+
+            if not all([payment_id, order_id, signature]):
                 return HttpResponseBadRequest("Missing required parameters")
-            params = {
-                'razorpay_order_id': orderid,
-                'razorpay_payment_id': paymenid,
+
+            client = razorpay.Client(auth=("rzp_test_cvS1Hu5zkwJQud", "uEj70mAqVU0IhlyYzHqfLznq"))
+            params_dict = {
+                'razorpay_order_id': order_id,
+                'razorpay_payment_id': payment_id,
                 'razorpay_signature': signature
             }
-            clinent = razorpay.Client(auth=("rzp_test_cvS1Hu5zkwJQud", "uEj70mAqVU0IhlyYzHqfLznq"))
-            clinent.utility.verify_payment_signature(params)
-            payment = clinent.payment.fetch(paymenid)
-            if payment['status'] == 'captured':
-                payment = models.Payment.objects.get(online_payment_id = orderid)
-                payment.payment_status = 'Success'
-                payment.save()
-                if models.BillingPlan.objects.filter(billingusr = request.user, PlanStatus = 'Upcoming').exists():
-                    billing = models.BillingPlan.objects.create(
-                    paymentid = models.Payment.objects.get(online_payment_id = orderid),
-                    billingusr = request.user,
-                    billingplan = models.InternetPlan.objects.get(plan_id = models.Payment.objects.get(online_payment_id = orderid
-                                                                                                       ).payment_plan.plan_id),
-                    )
-                    print(f"DEBUG: Total BillingPlan records before check: {models.BillingPlan.objects.all().count()}")
-                    print("in upcomming")
-                    billing.PlanStatus = 'Upcoming'
-                    codes_to_update_ids = models.CodePoool.objects.filter(is_used=False).values_list('codeid', flat=True)[:payment.payment_plan.Num_Devices]
-                    models.CodePoool.objects.filter(codeid__in=codes_to_update_ids).update(
-                                                                                            is_used=True,
-                                                                                            assignedto=request.user,
-                                                                                            Invoice = models.Payment.objects.get(online_payment_id = orderid)
-                                                                                        )
-                    billing.save()
-                    invocef = models.Payment.objects.get(online_payment_id = orderid)
-                    utils.send_payment_success_email(request.user, payment.InvoiceId, payment.online_payment_id,
-                                                    payment.payment_plan.plan_name,
-                                                    models.CodePoool.objects.filter(is_used = True, assignedto = request.user,Invoice = invocef.InvoiceId),
-                                                    billing.billstartdate, billing.billendate)
-                else:
-                    billing = models.BillingPlan.objects.create(
-                    paymentid = models.Payment.objects.get(online_payment_id = orderid),
-                    billingusr = request.user,
-                    billingplan = models.InternetPlan.objects.get(plan_id = models.Payment.objects.get(online_payment_id = orderid
-                                                                                                       ).payment_plan.plan_id),
-                    )
-                    billing.PlanStatus = 'Current'
-                    print("in Current")
+            client.utility.verify_payment_signature(params_dict)
 
-                    print(f"DEBUG: Total BillingPlan records before check: {models.BillingPlan.objects.all().count()}")
-                    billing.billstartdate = datetime.date.today()
-                    billing.billendate = datetime.date.today() + datetime.timedelta(days=30)
-                    billing.save()
-                    models.Profile.objects.filter(user = request.user).update(plan = models.InternetPlan.objects.get(plan_id = models.Payment.objects.get(online_payment_id = orderid
-                                                                                                       ).payment_plan.plan_id))
-                    codes_to_update_ids = models.CodePoool.objects.filter(is_used=False).values_list('codeid', flat=True)[:payment.payment_plan.Num_Devices]
-                    models.CodePoool.objects.filter(codeid__in=codes_to_update_ids).update(
-                                                                                            is_used=True,
-                                                                                            assignedto=request.user,assigneddate = datetime.datetime.now(),
-                                                                        exiprydate = datetime.datetime.now() + datetime.timedelta(days=180),
-                                                                                        Invoice = models.Payment.objects.get(online_payment_id = orderid))
-                    invocef = models.Payment.objects.get(online_payment_id = orderid)
-                    utils.send_payment_success_email(request.user, payment.InvoiceId, payment.online_payment_id,
-                                                    payment.payment_plan.plan_name,
-                                                    models.CodePoool.objects.filter(is_used = True, assignedto = request.user,Invoice = invocef.InvoiceId),
-                                                    billing.billstartdate, billing.billendate)
-                return render(request, 'client/paysucesin.html')
+            payment_details = client.payment.fetch(payment_id)
+            if payment_details['status'] != 'captured':
+                return render(request, 'client/paymentf.html', {'error': 'Payment not captured.'})
+
+            invoice = models.Payment.objects.get(online_payment_id=order_id)
+            invoice.payment_status = 'Success'
+            invoice.save()
+
+            internet_plan = invoice.payment_plan
+            billing_user = request.user
+            
+            codes_to_assign_count = internet_plan.Num_Devices
+            
+            code_update_data = {
+                'is_used': True,
+                'assignedto': billing_user,
+                'Invoice': invoice,
+            }
+
+            has_current_plan = models.BillingPlan.objects.filter(billingusr=billing_user, PlanStatus='Current').exists()
+            has_upcoming_plan = models.BillingPlan.objects.filter(billingusr=billing_user, PlanStatus='Upcoming').exists()
+
+            if has_current_plan or has_upcoming_plan:
+                billing_status = 'Upcoming'
+                code_remarks = 'Upcoming'
+                start_date = None
+                end_date = None
+            else:
+                billing_status = 'Current'
+                code_remarks = 'Active'
+                start_date = datetime.date.today()
+                end_date = start_date + datetime.timedelta(days=30)
+                
+                models.Profile.objects.filter(user=billing_user).update(plan=internet_plan)
+                
+                code_update_data.update({
+                    'assigneddate': datetime.datetime.now(),
+                    'exiprydate': datetime.datetime.now() + datetime.timedelta(days=180),
+                })
+            
+            code_update_data['remarks'] = code_remarks
+            
+            models.CodePoool.objects.filter(is_used=False)[:codes_to_assign_count].update(**code_update_data)
+                
+            billing = models.BillingPlan.objects.create(
+                paymentid=invoice,
+                billingusr=billing_user,
+                billingplan=internet_plan,
+                PlanStatus=billing_status,
+                billstartdate=start_date,
+                billendate=end_date
+            )
+            
+            assigned_codes = models.CodePoool.objects.filter(assignedto=billing_user, Invoice=invoice)
+            utils.send_payment_success_email(
+                billing_user,
+                invoice.InvoiceId,
+                invoice.online_payment_id,
+                internet_plan.plan_name,
+                assigned_codes,
+                billing.billstartdate,
+                billing.billendate
+            )
+
+            return render(request, 'client/paysucesin.html')
+
         except razorpay.errors.SignatureVerificationError as e:
             print(f"Signature verification failed: {e}")
-            return render(request, 'client/paymentf.html', {'error': 'Payment verification failed: Invalid signature.'})
+            return render(request, 'client/paymentf.html', {'error': 'Invalid payment signature.'})
+
         except razorpay.errors.BadRequestError as e:
-            # Handle other Razorpay API errors (e.g., payment_id not found)
             print(f"Razorpay API error: {e}")
             return render(request, 'client/paymentf.html', {'error': f'Razorpay API Error: {e}'})
+
         except Exception as e:
-            # Catch any other unexpected errors
             print(f"An unexpected error occurred: {e}")
+            try:
+                invoice = models.Payment.objects.get(online_payment_id=order_id)
+                invoice.payment_status = 'Failed'
+                invoice.save()
+            except models.Payment.DoesNotExist:
+                pass 
             return render(request, 'client/paymentf.html', {'error': f'An unexpected error occurred: {e}'})
 
 

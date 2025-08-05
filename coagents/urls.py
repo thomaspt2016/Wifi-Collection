@@ -22,4 +22,10 @@ app_name = 'coagents'
 urlpatterns = [
     path('cohome',views.CoHomeView.as_view(),name='cohome'),
     path('coclients', views.CoClientsView.as_view(), name='coclients'),
+    path('searchuser', views.SearchUserView.as_view(), name='searchuser'),
+    path('dues',views.DueViews.as_view(),name='DueView'),
+    path('profiledetails/<int:id>',views.ProfiledetailView.as_view(),name='profiledetails'),
+    path('activecheck/<int:id>', views.AcountDisable.as_view(), name='activecheck'),
+    path('paymentsucs/<str:id>', views.CashPaymentSuccess.as_view(), name='paymentsucs'),
+    path('paymentsdel/<str:id>', views.CashPaymentDelete.as_view(), name='paymentsdel'),
 ]

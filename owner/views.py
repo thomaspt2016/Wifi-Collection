@@ -321,22 +321,26 @@ class SearchViewCodes(LoginRequiredMixin,View):
    
 class CodeDeactivation(LoginRequiredMixin,View):
     def post(self, request, id):
-        user_to_deactivate_codes_for = get_object_or_404(CustomUser, pk=id)
-        user_to_deactivate_codes_for.assigned_codes.all().update(is_deactivated=True,deactivated = datetime.datetime.today())
+        codes_to_deactivate = CodePoool.objects.filter(Invoice_id=id, is_deactivated=False)
+
+        if not codes_to_deactivate.exists():
+            clients = CodePoool.objects.filter(is_used=True, is_deactivated=False).select_related('assignedto', 'sourcepdf', 'assignedto__profileuser__plan').all().order_by('assignedto')
+            return render(request, 'owner/partials/coderow.html', {'codepool_data': clients})
+
+        user_to_deactivate_codes_for = codes_to_deactivate.first().assignedto
+        
+        codes_to_deactivate.update(is_deactivated=True, deactivated=datetime.datetime.today(),remarks = 'De-activated')
+
         Profile.objects.filter(user=user_to_deactivate_codes_for).update(
             is_billable=False,
             next_billdate=None,
             planenddate=None,
             plan=None
         )
-        clients = CodePoool.objects.filter(is_used=True,is_deactivated=False
-                                                  ).select_related('assignedto', 
-                                                                'sourcepdf','assignedto__profileuser__plan'
-                                                                ).all().order_by('assignedto')
+
+        clients = CodePoool.objects.filter(is_used=True, is_deactivated=False).select_related('assignedto', 'sourcepdf', 'assignedto__profileuser__plan').all().order_by('assignedto')
 
         return render(request, 'owner/partials/coderow.html', {'codepool_data': clients})
-    
-
 
 class PaymentsView(LoginRequiredMixin,View):
     def get(self,request):

@@ -13,7 +13,7 @@
         {% if code_obj.is_used %}
         <label class="inline-flex items-center cursor-pointer">
             <input type="checkbox" value="true" class="sr-only peer" {% if code_obj.is_deactivated %}checked{% endif %}
-                hx-post="{% url 'owner:codedeactivation' id=code_obj.assignedto.id %}"
+                hx-post="{% url 'owner:codedeactivation' id=code_obj.Invoice %}"
                 hx-target="#client-table-scroll-area tbody" name="is_deactivated" hx-swap="innerHTML"
                 hx-confirm="{% if not code_obj.is_deactivated %}Are you sure you want to DEACTIVATE this code and ALL other codes assigned to 
                 {{ code_obj.assignedto.first_name }} {{code_obj.assignedto.last_name|default:'This' }}? This action cannot be undone.{% endif %}">

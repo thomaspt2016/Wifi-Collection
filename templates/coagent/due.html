@@ -1,0 +1,83 @@
+{% extends 'coagent/cohome.html' %}
+{% load static %}
+{% block title %}
+<title>Due Collection</title>
+{% endblock %}
+{% block content %}
+<div class="relative shadow-md sm:rounded-lg mt-8">
+    <div class="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4">
+        <h2 class="text-2xl font-bold dark:text-white">Pending Payments</h2>
+    </div>
+
+    {% if duepay %}
+    <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                    <th scope="col" class="px-6 py-3">
+                        Client
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Building
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Amount
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Plan
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Status
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                        Action
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in duepay %}
+                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                        <div class="text-base font-semibold">{{ payment.payment_user.first_name }} {{ payment.payment_user.last_name }}</div>
+                        <div class="font-normal text-gray-500">{{ payment.payment_user.email }}</div>
+                    </th>
+                    <td class="px-6 py-4">
+                        {% if payment.payment_user.profileuser.builing_id %}
+                        {{ payment.payment_user.profileuser.builing_id.building_name }} - {{ payment.payment_user.profileuser.floor }}-{{ payment.payment_user.profileuser.room }}
+                        {% else %}
+                        N/A
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                        ₹{{ payment.payment_amount }}
+                    </td>
+                    <td class="px-6 py-4">
+                        {{ payment.payment_plan.plan_name }}
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">
+                            {{ payment.payment_status }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        {% if payment.has_upcoming_plan %}
+                        <form action="{% url 'coagents:paymentsdel' payment.InvoiceId %}" method="post" onsubmit="return confirm('Are you sure you want to cancel this payment?');">
+                            {% csrf_token %}
+                            <button type="submit" class="font-medium text-red-600 dark:text-red-500 hover:underline focus:outline-none focus:ring focus:border-red-300">
+                                Cancel Payment
+                            </button>
+                        </form>
+                        {% else %}
+                        <a href="{% url 'coagents:paymentsucs' payment.InvoiceId %}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Mark as Paid</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p class="mt-4 text-gray-600 dark:text-gray-400">No pending payments found for your clients.</p>
+    {% endif %}
+</div>
+{% endblock %}
