@@ -5,7 +5,7 @@ from django.views import View
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from common.models import CustomUser,InternetPlan,CodePoool,WifiCodeUpload,Profile,Payment,Building
+from common.models import CustomUser,InternetPlan,CodePoool,WifiCodeUpload,Profile,Payment,Building,Ticketing,TicketUpdates
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q,Count
 from common.forms import InternetPlanForm
@@ -492,3 +492,9 @@ class update_agent_buildings(LoginRequiredMixin, View):
             return redirect('owner:collectionagents')
         except:
             return redirect('owner:collectionagents')
+
+
+class TicketView(LoginRequiredMixin, View):
+    def get(self, request):
+        ticketdetails = Ticketing.objects.all().prefetch_related('updates').order_by('-ticketdate')
+        return render(request, 'owner/tickets.html', {'ticketdetails': ticketdetails})

@@ -1,0 +1,151 @@
+{% extends 'owner/ownhom.html' %}
+{% load static %}
+
+{% block title %}
+<title>Ticket Management</title>
+{% endblock %}
+
+{% block content %}
+<div class="p-4">
+    <div class="w-full">
+        {% if ticketdetails %}
+        <div class="bg-white dark:bg-gray-700 rounded-lg shadow-xl border border-gray-200 dark:border-gray-600 p-6">
+            <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 text-center">
+                Tickets By Users
+            </h2>
+            <div id="tickets-accordion" data-accordion="collapse">
+                {% for tic in ticketdetails %}
+                <h2 id="accordion-heading-{{ tic.ticketid }}">
+                    <button type="button" class="flex items-center justify-between w-full p-5 font-medium
+                    rtl:text-right text-gray-500 border border-gray-200 {% if not forloop.last %}border-b-0{% endif %}
+                    rounded-t-xl focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-gray-400
+                    hover:bg-gray-100 dark:hover:bg-gray-800 gap-3" data-accordion-target="#accordion-body-{{ tic.ticketid }}"
+                    aria-expanded="false" aria-controls="accordion-body-{{ tic.ticketid }}">
+                        <div class="flex flex-wrap items-center justify-between w-full">
+                            <span class="text-lg font-semibold text-gray-900 dark:text-white">{{ tic.ticketsubj }}</span>
+                            <h6 class="text-sm text-gray-600 dark:text-gray-400 ms-auto me-4">{{ tic.ticketdate|date:"M d, Y H:i" }}</h6>
+                            {% if tic.ticketstatus == "Open" %}
+                            <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-purple-900 dark:text-purple-300">Open</span>
+                            {% elif tic.ticketstatus == "Closed" %}
+                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">Closed</span>
+                            {% elif tic.ticketstatus == "In Progress" %}
+                            <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-yellow-900 dark:text-yellow-300">In Progress</span>
+                            {% endif %}
+                            <h6 class="text-sm text-blue-600 dark:text-blue-400 ms-4">Agent: {% if tic.ticketto %}{{ tic.ticketto.first_name }} {{ tic.ticketto.last_name }}{% else %}Unassigned{% endif %}</h6>
+
+                            {% if tic.ticketpriority == "low" %}
+                            <span class="bg-indigo-100 text-indigo-800 text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-indigo-400 border border-indigo-400 ms-4">Low</span>
+                            {% elif tic.ticketpriority == "medium" %}
+                            <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-yellow-300 border border-yellow-300 ms-4">Medium</span>
+                            {% elif tic.ticketpriority == "high" %}
+                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-green-400 border border-green-400 ms-4">High</span>
+                            {% elif tic.ticketpriority == "urgent" %}
+                            <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-red-400 border border-red-400 ms-4">Urgent</span>
+                            {% endif %}
+                        </div>
+                        <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                        </svg>
+                    </button>
+                </h2>
+                <div id="accordion-body-{{ tic.ticketid }}" class="hidden" aria-labelledby="accordion-heading-{{ tic.ticketid }}">
+                    <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                        <h4 class="text-md font-semibold text-gray-900 dark:text-white mb-2">Conversation:</h4>
+
+                        <div class="flex justify-start mb-4">
+                            <div class="bg-blue-100 dark:bg-blue-800 dark:bg-opacity-50 text-blue-900 dark:text-blue-200 p-3 rounded-lg max-w-2/3 shadow-sm">
+                                <p class="font-bold text-sm mb-1">{{ tic.ticketraised.first_name }} {{ tic.ticketraised.last_name }}:</p>
+                                <p class="text-sm">{{ tic.ticketdesc }}</p>
+                                {% if tic.ticketfile_basename %}
+                                <p class="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                                    Attachment: <a href="{{ tic.ticketfile.url }}" target="_blank" class="hover:underline">{{ tic.ticketfile_basename }}</a>
+                                </p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        {% if tic.updates.all %}
+                            {% for update in tic.updates.all %}
+                                {% if update.ticketupdateby == tic.ticketraised %}
+                                    <div class="flex justify-start mb-4">
+                                        <div class="bg-blue-100 dark:bg-blue-800 dark:bg-opacity-50 text-blue-900 dark:text-blue-200 p-3 rounded-lg max-w-2/3 shadow-sm">
+                                            <p class="font-bold text-sm mb-1">{{ tic.ticketraised.first_name }} {{ tic.ticketraised.last_name }} ({{ update.ticketupdate|date:"H:i" }}):</p>
+                                            <p class="text-sm">{{ update.ticketupdatedesc }}</p>
+                                            {% if update.ticketupdatefile_basename %}
+                                            <p class="text-xs text-blue-700 dark:text-blue-300 mt-1">
+                                                Attachment: <a href="{{ update.ticketupdatefile.url }}" target="_blank" class="hover:underline">{{ update.ticketupdatefile_basename }}</a>
+                                            </p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="flex justify-end mb-4">
+                                        <div class="bg-gray-100 dark:bg-gray-600 dark:bg-opacity-50 text-gray-900 dark:text-gray-200 p-3 rounded-lg max-w-2/3 shadow-sm">
+                                            <p class="font-bold text-sm mb-1">
+                                                {% if update.ticketupdateby %}{{ update.ticketupdateby.first_name }} {{ update.ticketupdateby.last_name }}{% else %}Agent{% endif %} ({{ update.ticketupdate|date:"H:i" }}):
+                                            </p>
+                                            <p class="text-sm">{{ update.ticketupdatedesc }}</p>
+                                            {% if update.ticketupdatefile_basename %}
+                                            <p class="text-xs text-gray-700 dark:text-gray-300 mt-1">
+                                                Attachment: <a href="{{ update.ticketupdatefile.url }}" target="_blank" class="hover:underline">{{ update.ticketupdatefile_basename }}</a>
+                                            </p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <div class="bg-white dark:bg-gray-700 rounded-lg shadow-xl border border-gray-200 dark:border-gray-600 p-6">
+            <h2 class="text-2xl font-extrabold text-gray-900 dark:text-white mb-6 text-center">
+                No tickets found.
+            </h2>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if messages %}
+    <div class="mb-4">
+        {% for message in messages %}
+            <div class="p-4 mb-4 text-sm rounded-lg message-alert
+                {% if message.tags == 'success' %}
+                    bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200
+                {% elif message.tags == 'error' %}
+                    bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-200
+                {% elif message.tags == 'warning' %}
+                    bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200
+                {% elif message.tags == 'info' %}
+                    bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-200
+                {% else %}
+                    bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200
+                {% endif %}" role="alert">
+                <span class="font-medium">{{ message }}</span>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js" defer></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const messageAlerts = document.querySelectorAll('.message-alert');
+        messageAlerts.forEach(function(alert) {
+            setTimeout(function() {
+                alert.style.transition = 'opacity 0.5s ease-out';
+                alert.style.opacity = '0';
+                setTimeout(function() {
+                    alert.style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+    });
+</script>
+{% endblock %}
