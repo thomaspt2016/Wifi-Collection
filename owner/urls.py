@@ -38,6 +38,8 @@ urlpatterns = [
     path('profiledetail/<int:id>', views.ProfiledetailView.as_view(), name='profiledetails'),
     path('updateagentbuildings/<int:id>/', views.update_agent_buildings.as_view(), name='updateagentbuildings'),
     path('ticket', views.TicketView.as_view(), name='ticket'),
+    path('planstatus/<int:id>', views.PlanDeactivation.as_view(), name='planstatus'),
+    path('planedit/<int:id>', views.planeditform.as_view(), name='planedit'),
 ]
 
 if settings.DEBUG:

@@ -86,7 +86,7 @@
                                 {% if update.ticketupdateby == tic.ticketraised %}
                                     <div class="flex justify-start mb-4">
                                         <div class="bg-blue-100 dark:bg-blue-800 dark:bg-opacity-50 text-blue-900 dark:text-blue-200 p-3 rounded-lg max-w-2/3 shadow-sm">
-                                            <p class="font-bold text-sm mb-1">You ({{ update.ticketupdate|date:"H:i" }}):</p>
+                                            <p class="font-bold text-sm mb-1">You ({{ update.ticketupdate|date:"M d, Y H:i" }}):</p>
                                             <p class="text-sm">{{ update.ticketupdatedesc }}</p>
                                             {% if update.ticketupdatefile_basename %}
                                             <p class="text-xs text-blue-700 dark:text-blue-300 mt-1">
@@ -99,7 +99,7 @@
                                     <div class="flex justify-end mb-4">
                                         <div class="bg-gray-100 dark:bg-gray-600 dark:bg-opacity-50 text-gray-900 dark:text-gray-200 p-3 rounded-lg max-w-2/3 shadow-sm">
                                             <p class="font-bold text-sm mb-1">
-                                                {% if update.ticketupdateby %}{{ update.ticketupdateby.first_name }} {{ update.ticketupdateby.last_name }}{% else %}Agent{% endif %} ({{ update.ticketupdate|date:"H:i" }}):
+                                                {% if update.ticketupdateby %}{{ update.ticketupdateby.first_name }} {{ update.ticketupdateby.last_name }}{% else %}Agent{% endif %} ({{ update.ticketupdate|date:"M d, Y H:i" }}):
                                             </p>
                                             <p class="text-sm">{{ update.ticketupdatedesc }}</p>
                                             {% if update.ticketupdatefile_basename %}

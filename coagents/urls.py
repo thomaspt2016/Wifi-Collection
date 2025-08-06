@@ -28,4 +28,7 @@ urlpatterns = [
     path('activecheck/<int:id>', views.AcountDisable.as_view(), name='activecheck'),
     path('paymentsucs/<str:id>', views.CashPaymentSuccess.as_view(), name='paymentsucs'),
     path('paymentsdel/<str:id>', views.CashPaymentDelete.as_view(), name='paymentsdel'),
+    path('tickets',views.Ticketview.as_view(),name='ticketview'),
+    path('ticketreply/<int:ticket_id>', views.TicketReplyView.as_view(), name='ticketreply'),
+    path('ticketclose/<int:ticket_id>',views.TicketClose.as_view(),name='ticketclose')
 ]

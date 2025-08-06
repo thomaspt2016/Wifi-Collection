@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.contrib.auth import authenticate,login,logout
-from .models import CustomUser,Profile,Building
+from .models import CustomUser,Profile,Building,InternetPlan
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 # Create your views here.
@@ -38,7 +38,9 @@ class AboutUsview(View):
 
 class PricingView(View):
     def get(self, request):
-        return render(request, 'common/pricing.html')
+        plans = InternetPlan.objects.filter(planstatus=True)
+        context = {'plans':plans}
+        return render(request, 'common/pricing.html',context)
 
 class SignupView(View):
     def get(self, request):
@@ -274,3 +276,28 @@ class ProfileEditView(View, LoginRequiredMixin):
             return render(request, 'coagent/editprofile.html', context)
         else:
             return redirect('common:home')
+
+class ContacformEmail(View):
+    def post(self, request):
+        print(request.POST)
+        owne = CustomUser.objects.filter(role="owner").first()
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message'," ")
+        print(email, subject, message)
+        send_mail(
+            subject,
+            message,
+            email,
+            [owne.email],
+            fail_silently=False,
+            )
+        messages.success(request, 'Email sent successfully!')
+        return redirect('common:contactus')
+class PrivacyPolicy(View):
+    def get(self, request):
+        return render(request, 'common/privacy.html')
+    
+class TermsandConditions(View):
+    def get(self, request):
+        return render(request, 'common/terms.html')

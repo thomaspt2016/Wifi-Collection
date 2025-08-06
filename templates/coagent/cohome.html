@@ -160,6 +160,14 @@
                             <span class="flex-1 whitespace-nowrap sidebar-text">Dues</span>
                         </a>
                     </li>
+                    
+                        <a href="{% url 'coagents:ticketview' %}"
+                            class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-100 dark:hover:bg-gray-700 group">
+                            <img class="flex-shrink-0 w-5 h-5 text-gray-600 transition duration-75 dark:text-gray-400 group-hover:text-teal-800 dark:group-hover:text-white me-3"
+                                src="{% static 'coagent/wallet-money.svg' %}" alt="Pending Collections icon" />
+                            <span class="flex-1 whitespace-nowrap sidebar-text">Ticket</span>
+                        </a>
+                    </li>
                     <li>
                         <a href="{% url 'common:profileupdate' request.user.id %}"
                             class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-teal-100 dark:hover:bg-gray-700 group">

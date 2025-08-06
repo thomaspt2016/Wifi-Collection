@@ -13,6 +13,7 @@ from django.db.models import Q,Sum
 from django.db.models import Exists, OuterRef
 from common import utils
 import datetime
+from clients import forms
 
 
 class CoHomeView(LoginRequiredMixin,View):
@@ -275,3 +276,34 @@ class CashPaymentSuccess(LoginRequiredMixin, View):
 
         except models.Payment.DoesNotExist:
             return redirect('DueView')
+        
+class Ticketview(LoginRequiredMixin, View):
+    def get(self, request):
+        teplyform = forms.TicketReply()
+        tickets = models.Ticketing.objects.filter(
+            ticketto=request.user
+        ).prefetch_related('updates').order_by('-ticketdate')
+
+        return render(request, 'coagent/tickets.html', {'tickets': tickets,'reply_form':teplyform})
+class TicketReplyView(LoginRequiredMixin, View):
+    def post(self, request, ticket_id):
+        ticket = models.Ticketing.objects.get(ticketid=ticket_id)
+        reply_form = forms.TicketReply(request.POST, request.FILES)
+        if reply_form.is_valid():
+            reply = reply_form.save(commit=False)
+            reply.ticketupdateby = request.user
+            reply.ticketid = ticket
+            ticket.ticketstatus = 'In Progress'
+            ticket.save()
+            reply.save()
+            messages.success(request, 'Reply sent successfully!')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+        return redirect('coagents:ticketview')
+
+class TicketClose(View):
+    def post(self, request, ticket_id):
+        ticket = models.Ticketing.objects.get(ticketid=ticket_id)
+        ticket.ticketstatus = 'Closed'
+        ticket.save()
+        return redirect('coagents:ticketview')

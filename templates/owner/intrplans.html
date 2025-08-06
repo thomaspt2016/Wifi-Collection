@@ -165,18 +165,28 @@
                   {{ plan.No_Users}}
                 </td>
                 <td class="px-6 py-4">
-                  <a href="" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
+                  <a href="{% url 'owner:planedit' plan.plan_id %}" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
                     <img class="w-5 h-5" src="{% static 'owner icos/client/edit-alt.svg' %}" alt="Edit icon" />
                   </a>
                   {% if plan.planstatus %}
-                    <a href="" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
-                        <img class="w-5 h-5" src="{% static 'owner icos/client/pause-button.svg' %}" alt="Pause Plan"/>
-                    </a>
-                {% else %}
-                    <a href="" class="inline-block text-blue-600 dark:text-blue-500 hover:underline me-3">
-                        <img class="w-5 h-5" src="{% static 'owner icos/client/play-button.svg' %}" alt="Activate Plan"/>
-                    </a>
-                {% endif %}
+                      {# Form to deactivate the plan when it's currently active #}
+                      <form action="{% url 'owner:planstatus' plan.plan_id %}" method="post" class="inline-block">
+                          {% csrf_token %} {# Django's CSRF token for security #}
+                          <input type="hidden" name="action" value="deactivate"> {# Indicate the action to be performed #}
+                          <button type="submit" class="p-0 border-none bg-transparent cursor-pointer" title="Pause Plan">
+                              <img class="w-5 h-5" src="{% static 'owner icos/client/pause-button.svg' %}" alt="Pause Plan"/>
+                          </button>
+                      </form>
+                  {% else %}
+                      {# Form to activate the plan when it's currently inactive #}
+                      <form action="{% url 'owner:planstatus' plan.plan_id %}" method="post" class="inline-block">
+                          {% csrf_token %} {# Django's CSRF token for security #}
+                          <input type="hidden" name="action" value="activate"> {# Indicate the action to be performed #}
+                          <button type="submit" class="p-0 border-none bg-transparent cursor-pointer" title="Activate Plan">
+                              <img class="w-5 h-5" src="{% static 'owner icos/client/play-button.svg' %}" alt="Activate Plan"/>
+                          </button>
+                      </form>
+                  {% endif %}
                 </td>
               </tr>
               {% endfor %}

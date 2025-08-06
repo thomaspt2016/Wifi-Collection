@@ -498,3 +498,28 @@ class TicketView(LoginRequiredMixin, View):
     def get(self, request):
         ticketdetails = Ticketing.objects.all().prefetch_related('updates').order_by('-ticketdate')
         return render(request, 'owner/tickets.html', {'ticketdetails': ticketdetails})
+
+class PlanDeactivation(LoginRequiredMixin, View):
+    def post(self, request, id):
+        print(id)
+        print(request.POST)
+        if request.POST.get('action') == 'deactivate':
+            InternetPlan.objects.filter(plan_id=id).update(planstatus=False)
+            return redirect('owner:internetplans')
+        else:
+            InternetPlan.objects.filter(plan_id=id).update(planstatus=True)
+            return redirect('owner:internetplans')
+
+class planeditform(LoginRequiredMixin, View):
+    def get(self, request, id):
+        plan = InternetPlan.objects.get(plan_id=id)
+        form = InternetPlanForm(instance=plan)
+        return render(request, 'owner/planedit.html', {'form': form, 'plan': plan})
+
+    def post(self, request, id):
+        plan = InternetPlan.objects.get(plan_id=id)
+        form = InternetPlanForm(request.POST, instance=plan)
+        if form.is_valid():
+            form.save()
+            return redirect('owner:internetplans')
+        return render(request, 'owner/partials/planeditform.html', {'form': form, 'plan': plan})
