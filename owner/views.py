@@ -5,7 +5,7 @@ from django.views import View
 from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
-from common.models import CustomUser,InternetPlan,CodePoool,WifiCodeUpload,Profile,Payment
+from common.models import CustomUser,InternetPlan,CodePoool,WifiCodeUpload,Profile,Payment,Building
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q,Count
 from common.forms import InternetPlanForm
@@ -73,15 +73,25 @@ class CollectionAgentsView(LoginRequiredMixin, View):
     def get(self, request):
         collection_agents = CustomUser.objects.filter(role='coagent')
         agents_data = []
+        unique_building_names = Building.objects.values_list('building_name', flat=True).distinct()
+        allbul = list(unique_building_names)
+
         for agent in collection_agents:
-            unique_building_names = agent.buildings_managed.all().values_list('building_name', flat=True).distinct()
+            # Get the list of building names for the current agent
+            unique_building_names = list(agent.buildings_managed.all().values_list('building_name', flat=True).distinct())
             
             agents_data.append({
                 'agent': agent,
-                'unique_buildings': unique_building_names
+                'unique_buildings': unique_building_names,
             })
-        return render(request, 'owner/colla.html', {'agents_data': agents_data})
-    
+        
+        context = {
+            'agents_data': agents_data,
+            'all_buildings': allbul,
+        }
+
+        return render(request, 'owner/colla.html', context)
+
 class SearchViewPool(LoginRequiredMixin,View):
     def post(self, request):
         search_query = request.POST.get('search_query', '').strip()
@@ -93,6 +103,7 @@ class SearchViewPool(LoginRequiredMixin,View):
         else:
             search_results = []
         return render(request, 'owner/search_results.html', {'search_results': search_results})
+    
 
 
 class InternetplansView(LoginRequiredMixin, View):
@@ -333,7 +344,6 @@ class CodeDeactivation(LoginRequiredMixin,View):
 
 class PaymentsView(LoginRequiredMixin,View):
     def get(self, request):
-        # Fetch all successful payments, ordered by date
         payments = Payment.objects.filter(payment_status='Success').order_by('-payment_date')
         Fpayments = Payment.objects.filter(payment_status ='Failed').order_by('-payment_date')
         Cashpayments = Payment.objects.filter(payment_method ='Cash',payment_status='Success').order_by('-payment_date')
@@ -469,3 +479,16 @@ class ProfiledetailView(LoginRequiredMixin, View):
             return render(request, 'owner/profile.html', {'profile': profile,'paymentmeth':PaymentMethodSummary})    
         except:
             return redirect('owner:ownclients')
+
+class update_agent_buildings(LoginRequiredMixin, View):
+    def post(self, request, id):
+        try:
+            print(id)
+            agent = CustomUser.objects.get(id=id)
+            Building.objects.filter(Agent=agent).update(Agent=None)
+            buldinnlst = request.POST.getlist('buildings')
+            for name in buldinnlst:
+                Building.objects.filter(building_name=name).update(Agent=agent)
+            return redirect('owner:collectionagents')
+        except:
+            return redirect('owner:collectionagents')

@@ -1,29 +1,81 @@
 {% extends 'owner/ownhom.html' %}
 {% load static %}
-    {% block title %}
-    <title>Clients</title>
-    {% endblock %}
+    {% block title %}
+    <title>Clients</title>
+    {% endblock %}
 {% block content %}
+
 <div class="relative shadow-md sm:rounded-lg mt-8">
+    <div class="flex items-center flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 gap-x-4">
+        {# Loop through the list of agent dictionaries #}
+        {% for agent_data in agents_data %}
+        <div class="block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-100 dark:bg-gray-800
+             dark:border-gray-700 dark:hover:bg-gray-700 flex-1">
+            <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{ agent_data.agent.first_name }} {{ agent_data.agent.last_name }}</h5>
+            
+            <p class="font-normal text-gray-700 dark:text-gray-400">Managed Buildings:</p>
+
+            <form method="post" action="{% url 'owner:updateagentbuildings' agent_data.agent.id %}">
+                {% csrf_token %}
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
+                    {% for building_name in all_buildings %}
+    {% if building_name in agent_data.unique_buildings %}
+        <div class="flex items-center">
+            <input id="building-{{ agent_data.agent.id }}-{{ forloop.counter }}" 
+                   type="checkbox" 
+                   name="buildings" 
+                   value="{{ building_name }}" 
+                   class="w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-green-500 dark:focus:ring-green-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                   checked
+                   > <label for="building-{{ agent_data.agent.id }}-{{ forloop.counter }}" 
+                   class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                {{ building_name }}
+            </label>
+        </div>
+    {% else %}
+        <div class="flex items-center">
+            <input id="building-{{ agent_data.agent.id }}-{{ forloop.counter }}" 
+                   type="checkbox" 
+                   name="buildings" 
+                   value="{{ building_name }}" 
+                   class="w-4 h-4 text-gray-400 bg-gray-100 border-gray-300 rounded-sm 
+                   focus:ring-gray-300 dark:focus:ring-gray-600 dark:ring-offset-gray-800 
+                   focus:ring-2 dark:bg-gray-700 dark:border-gray-600" >
+            <label for="building-{{ agent_data.agent.id }}-{{ forloop.counter }}" 
+                   class="ms-2 text-sm font-medium text-red-600 dark:text-red-400">
+                {{ building_name }}
+            </label>
+        </div>
+    {% endif %}
+{% empty %}
+    <p class="text-gray-500 dark:text-gray-400">No buildings available.</p>
+{% endfor %}
+                </div>
+                
+                <button type="submit" class="mt-4 text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-800">
+                    Update Buildings
+                </button>
+            </form>
+            
+            <p class="font-normal text-gray-700 dark:text-gray-400 mt-2">Phone: {{ agent_data.agent.profileuser.phone }}</p>
+        </div>
+        {% empty %}
+        {# This block runs if the agents_data list is empty #}
+        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm w-full text-center">
+            <p class="text-gray-500 dark:text-gray-400">No collection agents found.</p>
+        </div>
+        {% endfor %}
+    </div>
+    ---
     <div id="client-table-scroll-area" class="overflow-y-auto max-h-[calc(100vh-200px)]">
         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 sticky top-0">
                 <tr>
-                    <th scope="col" class="px-6 py-3">
-                        Name
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Bulding
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Phone Number
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Acc Status
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                        Action
-                    </th>
+                    <th scope="col" class="px-6 py-3">Name</th>
+                    <th scope="col" class="px-6 py-3">Building</th>
+                    <th scope="col" class="px-6 py-3">Phone Number</th>
+                    <th scope="col" class="px-6 py-3">Acc Status</th>
+                    <th scope="col" class="px-6 py-3">Action</th>
                 </tr>
             </thead>
             {% include 'owner/partials/agentrow.html' %}
@@ -65,6 +117,7 @@
     </ul>
 </nav>
 
+
 {# Custom Scrollbar Styles #}
 <style>
     /* For Webkit browsers (Chrome, Safari, Edge, Opera) */
@@ -93,4 +146,5 @@
         scrollbar-color: #2cb877 #f0f0f0; /* thumb color track color (Green and light gray) */
     }
 </style>
+
 {% endblock %}

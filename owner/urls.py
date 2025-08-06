@@ -36,6 +36,7 @@ urlpatterns = [
     path('codedeactivation/<str:invid>', views.CodeDeactivation.as_view(), name='codedeactivation'),
     path('userupanddown/<int:id>',views.UserPromotions.as_view(),name='userupanddown'),
     path('profiledetail/<int:id>', views.ProfiledetailView.as_view(), name='profiledetails'),
+    path('updateagentbuildings/<int:id>/', views.update_agent_buildings.as_view(), name='updateagentbuildings'),
 ]
 
 if settings.DEBUG:
