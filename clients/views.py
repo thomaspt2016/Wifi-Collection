@@ -12,13 +12,27 @@ import razorpay
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from common import utils
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.utils.decorators import method_decorator
 
+def Client_required(function):
+    def wrap(request, *args, **kwargs):
+        usr = models.CustomUser.objects.get(id=request.user.id)
+        print(usr.role)
+        if usr.role == 'client':
+            return function(request, *args, **kwargs)
+        else:
+            return redirect(reverse('common:home'))
+    return wrap
 
+@method_decorator(Client_required, name='dispatch')
 class ClientHomeView(LoginRequiredMixin,View):#this is where dashboard codes comes in
     def get(self,request):
-        return render(request, 'client/clienthome.html')
+        return redirect('common:home')
 
 
+@method_decorator(Client_required, name='dispatch')
 class WificodesView(LoginRequiredMixin, View):
     def get(self, request):
         usr = request.user
@@ -26,22 +40,26 @@ class WificodesView(LoginRequiredMixin, View):
         codes = models.CodePoool.objects.filter(assignedto = usr,is_used = True,exiprydate__gt=datetime.datetime.now()).order_by('-exiprydate')
         return render(request, 'client/cliwificode.html',{'codeobject':codes,'billingplan':billplan})
     
+@method_decorator(Client_required, name='dispatch')
 class CurrentBillView(LoginRequiredMixin, View):
     def get(self, request):
         planobj = models.InternetPlan.objects.all()
+        codecoutn = models.CodePoool.objects.filter(is_used = False).count()
         try:
             billplan = models.BillingPlan.objects.filter(billingusr = request.user, PlanStatus = 'Upcoming').first()
-            return render(request, 'client/clibill.html',{'plan': planobj,'billplan':billplan})
+            return render(request, 'client/clibill.html',{'plan': planobj,'billplan':billplan,'codecount':codecoutn})
         except:
-            return render(request, 'client/clibill.html',{'plan': planobj})
+            return render(request, 'client/clibill.html',{'plan': planobj,'codecount':codecoutn})
 
     
+@method_decorator(Client_required, name='dispatch')
 class PaymenHistoryView(LoginRequiredMixin,View):
     def get(self, request):
         usr = request.user
         payhist = models.Payment.objects.filter(payment_user = usr)
         return render(request, 'client/payhist.html',{'paymenthist':payhist})
 
+@method_decorator(Client_required, name='dispatch')
 class RaiseTicketView(LoginRequiredMixin, View):
     def get(self, request):
         forminst = TicketRasing()
@@ -141,6 +159,7 @@ class RaiseTicketView(LoginRequiredMixin, View):
                         upd.ticketupdatefile_basename = None
             return render(request, 'client/ticket.html', {'form': forminst, 'tickets': tickets})
 
+@method_decorator(Client_required, name='dispatch')
 class TicketReplyView(LoginRequiredMixin, View):
     def post(self, request, ticket_id):
         ticket = models.Ticketing.objects.get(ticketid=ticket_id)
@@ -157,10 +176,12 @@ class TicketReplyView(LoginRequiredMixin, View):
             messages.error(request, 'Please correct the errors below.')
         return redirect('clients:raise')
 
+@method_decorator(Client_required, name='dispatch')
 class FAQView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'client/faq.html')
     
+@method_decorator(Client_required, name='dispatch')
 class OrderFormView(LoginRequiredMixin, View):
     def get(self, request,id):
         planobj = models.InternetPlan.objects.get(plan_id=id)
@@ -169,9 +190,9 @@ class OrderFormView(LoginRequiredMixin, View):
             if prof.plan.plan_name == planobj.plan_name:
                 billing_action = 'Renew'
             elif prof.plan.plan_name > planobj.plan_name:
-                billing_action = 'Downgrade'
-            else:
                 billing_action = 'Upgrade'
+            else:
+                billing_action = 'Downgrade'
             return render(request, 'client/orderfor.html', {'plan': planobj,'billing_action': billing_action})
         except Exception as e:
             print(e)
@@ -214,13 +235,18 @@ class OrderFormView(LoginRequiredMixin, View):
                     
         return redirect('clients:cashsuc')
 
+@method_decorator(Client_required, name='dispatch')
 class CashSuccessView(LoginRequiredMixin, View):
     def get(self, request):
         return render(request, 'client/paycashsuc.html')
 
+
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class PaymentVerify(View):
     def post(self, request):
+        print(request.POST)
         try:
             payment_id = request.POST.get('razorpay_payment_id')
             order_id = request.POST.get('razorpay_order_id')
@@ -238,6 +264,7 @@ class PaymentVerify(View):
             client.utility.verify_payment_signature(params_dict)
 
             payment_details = client.payment.fetch(payment_id)
+            print(payment_details)
             if payment_details['status'] != 'captured':
                 return render(request, 'client/paymentf.html', {'error': 'Payment not captured.'})
 
@@ -250,12 +277,19 @@ class PaymentVerify(View):
             
             codes_to_assign_count = internet_plan.Num_Devices
             
+            # --- START OF FIX ---
+            # 1. Select the IDs of the codes you want to update.
+            # `values_list('id', flat=True)` retrieves a list of IDs efficiently.
+            code_ids_to_update = list(models.CodePoool.objects.filter(is_used=False).values_list('codeid', flat=True)[:codes_to_assign_count])
+            
+            # 2. Define the data for the update.
             code_update_data = {
                 'is_used': True,
                 'assignedto': billing_user,
                 'Invoice': invoice,
             }
 
+            # 3. Add other data based on plan status.
             has_current_plan = models.BillingPlan.objects.filter(billingusr=billing_user, PlanStatus='Current').exists()
             has_upcoming_plan = models.BillingPlan.objects.filter(billingusr=billing_user, PlanStatus='Upcoming').exists()
 
@@ -279,8 +313,11 @@ class PaymentVerify(View):
             
             code_update_data['remarks'] = code_remarks
             
-            models.CodePoool.objects.filter(is_used=False)[:codes_to_assign_count].update(**code_update_data)
-                
+            # 4. Perform the update using the list of IDs.
+            # The `id__in` filter creates an unsliced queryset, which can be updated.
+            models.CodePoool.objects.filter(codeid__in=code_ids_to_update).update(**code_update_data)
+            # --- END OF FIX ---
+            
             billing = models.BillingPlan.objects.create(
                 paymentid=invoice,
                 billingusr=billing_user,
@@ -322,6 +359,7 @@ class PaymentVerify(View):
             return render(request, 'client/paymentf.html', {'error': f'An unexpected error occurred: {e}'})
 
 
+@method_decorator(Client_required, name='dispatch')
 class PayCancel(View):
     def get(self, request,i):
         try:
@@ -335,6 +373,7 @@ class PayCancel(View):
             print(f"Error updating payment {i} status to Failed: {e}")
             return render(request, 'client/paymentf.html',{"error":e})
 
+@method_decorator(Client_required, name='dispatch')
 class TicketClose(View):
     def post(self, request, ticket_id):
         ticket = models.Ticketing.objects.get(ticketid=ticket_id)

@@ -14,12 +14,26 @@ from django.db.models import Exists, OuterRef
 from common import utils
 import datetime
 from clients import forms
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.utils.decorators import method_decorator
 
+def Co_Agent_required(function):
+    def wrap(request, *args, **kwargs):
+        usr = models.CustomUser.objects.get(id=request.user.id)
+        print(usr.role)
+        if usr.role == 'coagent':
+            return function(request, *args, **kwargs)
+        else:
+            return redirect(reverse('common:home'))
+    return wrap
 
+@method_decorator(Co_Agent_required, name='dispatch')
 class CoHomeView(LoginRequiredMixin,View):
     def get(self,request):
-        return render(request, 'coagent/cohome.html')
+        return redirect('common:home')
     
+@method_decorator(Co_Agent_required, name='dispatch')
 class CoClientsView(LoginRequiredMixin,View):
     def get(self, request):
         customuser_fields = [
@@ -62,6 +76,7 @@ class CoClientsView(LoginRequiredMixin,View):
 
         return render(request, 'coagent/coclients.html', {'client': clients})
 
+@method_decorator(Co_Agent_required, name='dispatch')
 class SearchUserView(LoginRequiredMixin, View):
     def get(self, request):
         query = request.GET.get('q', '').strip()
@@ -99,6 +114,7 @@ class SearchUserView(LoginRequiredMixin, View):
         return render(request, 'coagent/partials/usrrow.html', {'client': clients})
 
 
+@method_decorator(Co_Agent_required, name='dispatch')
 class DueViews(LoginRequiredMixin, View):
     def get(self, request):
         print("in dues")
@@ -120,6 +136,8 @@ class DueViews(LoginRequiredMixin, View):
         ).order_by('payment_user__last_name', 'payment_user__first_name')
         
         return render(request, 'coagent/due.html',{'duepay': pendingpay})
+    
+@method_decorator(Co_Agent_required, name='dispatch')
 class ProfiledetailView(LoginRequiredMixin, View):
     def get(self, request,id):
         try:
@@ -144,6 +162,8 @@ class ProfiledetailView(LoginRequiredMixin, View):
             return render(request, 'coagent/profile.html', {'profile': profile,'paymentmeth':PaymentMethodSummary})    
         except:
             return redirect('coagents:coclients')
+        
+@method_decorator(Co_Agent_required, name='dispatch')
 class AcountDisable(LoginRequiredMixin,View):
     def post(self,request,id):
         us = models.CustomUser.objects.get(id = id)
@@ -162,6 +182,7 @@ class AcountDisable(LoginRequiredMixin,View):
         ).first()
         return render(request, 'coagent/partials/usrrow.html', {'client': [updated_client]})
 
+@method_decorator(Co_Agent_required, name='dispatch')
 class CashPaymentDelete(LoginRequiredMixin, View):
     def post(self, request, id):
         payobj=models.Payment.objects.get(InvoiceId=id)
@@ -169,6 +190,7 @@ class CashPaymentDelete(LoginRequiredMixin, View):
         payobj.save()
         return redirect('coagents:DueView')
 
+@method_decorator(Co_Agent_required, name='dispatch')
 class CashPaymentSuccess(LoginRequiredMixin, View):
     def post(self, request, id):
         """
@@ -277,6 +299,7 @@ class CashPaymentSuccess(LoginRequiredMixin, View):
         except models.Payment.DoesNotExist:
             return redirect('DueView')
         
+@method_decorator(Co_Agent_required, name='dispatch')
 class Ticketview(LoginRequiredMixin, View):
     def get(self, request):
         teplyform = forms.TicketReply()
@@ -285,6 +308,8 @@ class Ticketview(LoginRequiredMixin, View):
         ).prefetch_related('updates').order_by('-ticketdate')
 
         return render(request, 'coagent/tickets.html', {'tickets': tickets,'reply_form':teplyform})
+    
+@method_decorator(Co_Agent_required, name='dispatch')
 class TicketReplyView(LoginRequiredMixin, View):
     def post(self, request, ticket_id):
         ticket = models.Ticketing.objects.get(ticketid=ticket_id)
@@ -301,6 +326,7 @@ class TicketReplyView(LoginRequiredMixin, View):
             messages.error(request, 'Please correct the errors below.')
         return redirect('coagents:ticketview')
 
+@method_decorator(Co_Agent_required, name='dispatch')
 class TicketClose(View):
     def post(self, request, ticket_id):
         ticket = models.Ticketing.objects.get(ticketid=ticket_id)

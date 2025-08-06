@@ -17,12 +17,26 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 import datetime
 from django.db.models import Q,Sum
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.utils.decorators import method_decorator
 
+def owner_required(function):
+    def wrap(request, *args, **kwargs):
+        usr = CustomUser.objects.get(id=request.user.id)
+        print(usr.role)
+        if usr.role == 'owner':
+            return function(request, *args, **kwargs)
+        else:
+            return redirect(reverse('common:home'))
+    return wrap
 
+@method_decorator(owner_required, name='dispatch')
 class Ownerhomeview(LoginRequiredMixin,View):
     def get(self,request):
-        return render(request, 'owner/ownhom.html')
+        return redirect('common:home')
     
+@method_decorator(owner_required, name='dispatch')
 class OwnerClientsView(LoginRequiredMixin, View):
     def get(self, request):
         # Fields needed for CustomUser (client) directly
@@ -68,7 +82,7 @@ class OwnerClientsView(LoginRequiredMixin, View):
         # --- End Pagination Logic ---
 
         return render(request, 'owner/clients.html', {'client': clients})
-
+@method_decorator(owner_required, name='dispatch')
 class CollectionAgentsView(LoginRequiredMixin, View):
     def get(self, request):
         collection_agents = CustomUser.objects.filter(role='coagent')
@@ -92,6 +106,7 @@ class CollectionAgentsView(LoginRequiredMixin, View):
 
         return render(request, 'owner/colla.html', context)
 
+@method_decorator(owner_required, name='dispatch')
 class SearchViewPool(LoginRequiredMixin,View):
     def post(self, request):
         search_query = request.POST.get('search_query', '').strip()
@@ -106,6 +121,7 @@ class SearchViewPool(LoginRequiredMixin,View):
     
 
 
+@method_decorator(owner_required, name='dispatch')
 class InternetplansView(LoginRequiredMixin, View):
     def get(self, request):
         form = InternetPlanForm()
@@ -128,6 +144,7 @@ class InternetplansView(LoginRequiredMixin, View):
             return render(request, 'owner/intrplans.html', {'form': form, 'all_plans': plans})
 
     
+@method_decorator(owner_required, name='dispatch')
 class CodeUploadView(LoginRequiredMixin, View):
     def get(self, request):
         ta = WifiCodeUpload.objects.all()
@@ -258,6 +275,7 @@ def download_file_view(request, upload_id):
             return response
     raise Http404
     
+@method_decorator(owner_required, name='dispatch')
 class CodePoolStatView(LoginRequiredMixin,View):
     def get(self,request):
         codepool_data = CodePoool.objects.all().exclude(remarks__in=['De-activated', 'Expired']).select_related('assignedto', 
@@ -296,6 +314,7 @@ class CodePoolStatView(LoginRequiredMixin,View):
         }
         return render(request, 'owner/codepoo.html', context)
 
+@method_decorator(owner_required, name='dispatch')
 class SearchViewCodes(LoginRequiredMixin,View):
     def get(self, request):
         search_query = request.GET.get('q', '').strip() 
@@ -321,6 +340,7 @@ class SearchViewCodes(LoginRequiredMixin,View):
         }
         return render(request, 'owner/partials/coderow.html', context)
    
+@method_decorator(owner_required, name='dispatch')
 class CodeDeactivation(LoginRequiredMixin,View):
     def post(self, request, invid):
         codes_to_deactivate = CodePoool.objects.filter(Invoice=invid, is_deactivated=False)
@@ -342,6 +362,7 @@ class CodeDeactivation(LoginRequiredMixin,View):
         return render(request, 'owner/partials/coderow.html', {'codepool_data': clients})
     
 
+@method_decorator(owner_required, name='dispatch')
 class PaymentsView(LoginRequiredMixin,View):
     def get(self, request):
         payments = Payment.objects.filter(payment_status='Success').order_by('-payment_date')
@@ -386,6 +407,7 @@ class PaymentsView(LoginRequiredMixin,View):
     
 
 
+@method_decorator(owner_required, name='dispatch')
 class AcountDisable(LoginRequiredMixin,View):
     def post(self,request,id):
         us = CustomUser.objects.get(id = id)
@@ -404,6 +426,7 @@ class AcountDisable(LoginRequiredMixin,View):
         ).first()
         return render(request, 'owner/partials/usrrow.html', {'client': [updated_client]})
 
+@method_decorator(owner_required, name='dispatch')
 class SearchUserView(LoginRequiredMixin, View):
     def get(self, request):
         query = request.GET.get('q', '').strip()
@@ -438,6 +461,9 @@ class SearchUserView(LoginRequiredMixin, View):
         if not clients.object_list.exists() and query: 
             pass
         return render(request, 'owner/partials/usrrow.html', {'client': clients})
+    
+
+@method_decorator(owner_required, name='dispatch')
 class UserPromotions(LoginRequiredMixin, View):
     def get(self, request,id):
         user = get_object_or_404(CustomUser, pk=id)
@@ -455,6 +481,7 @@ class UserPromotions(LoginRequiredMixin, View):
 
         return redirect('owner:ownclients')
 
+@method_decorator(owner_required, name='dispatch')
 class ProfiledetailView(LoginRequiredMixin, View):
     def get(self, request,id):
         try:
@@ -480,6 +507,7 @@ class ProfiledetailView(LoginRequiredMixin, View):
         except:
             return redirect('owner:ownclients')
 
+@method_decorator(owner_required, name='dispatch')
 class update_agent_buildings(LoginRequiredMixin, View):
     def post(self, request, id):
         try:
@@ -494,11 +522,13 @@ class update_agent_buildings(LoginRequiredMixin, View):
             return redirect('owner:collectionagents')
 
 
+@method_decorator(owner_required, name='dispatch')
 class TicketView(LoginRequiredMixin, View):
     def get(self, request):
         ticketdetails = Ticketing.objects.all().prefetch_related('updates').order_by('-ticketdate')
         return render(request, 'owner/tickets.html', {'ticketdetails': ticketdetails})
 
+@method_decorator(owner_required, name='dispatch')
 class PlanDeactivation(LoginRequiredMixin, View):
     def post(self, request, id):
         print(id)
@@ -510,6 +540,7 @@ class PlanDeactivation(LoginRequiredMixin, View):
             InternetPlan.objects.filter(plan_id=id).update(planstatus=True)
             return redirect('owner:internetplans')
 
+@method_decorator(owner_required, name='dispatch')
 class planeditform(LoginRequiredMixin, View):
     def get(self, request, id):
         plan = InternetPlan.objects.get(plan_id=id)
